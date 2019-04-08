@@ -66,7 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 new Text('isLogin: $isLogin\n'),
                 new Text('accesToken: $accesToken\n'),
-                new Text('refreshToken: $refreshToken\n'),
                 new Text('tokenType: $tokenType\n'),
                 new Text('user: $name\n'),
               ],
@@ -87,6 +86,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: buttonLogoutPressed,
                 child: new Text(
                   "LogOut",
+                  style: new TextStyle(
+                      fontSize: 12.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: "Roboto"),
+                )),
+            new FlatButton(
+                key: null,
+                onPressed: buttonTokenPressed,
+                child: new Text(
+                  "GetToken",
                   style: new TextStyle(
                       fontSize: 12.0,
                       color: Colors.black,
@@ -130,27 +140,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> buttonLoginPressed() async {
     NaverLoginResult res = await FlutterNaverLogin.logIn();
+    if (res.loginStatus.isLogin) {
+      setState(() {
+        isLogin = res.loginStatus.isLogin;
+        accesToken = res.loginStatus.accessToken;
+        tokenType = res.loginStatus.tokenType;
+      });
+    }
+  }
+
+  Future<void> buttonTokenPressed() async {
+    NaverLoginResult res = await FlutterNaverLogin.logIn();
+    print(res);
     setState(() {
-      isLogin = true;
-      accesToken = res.token.accessToken;
-      refreshToken = res.token.refreshToken;
-      tokenType = res.token.tokenType;
+      accesToken = res.tokenStatus.accessToken;
+      tokenType = res.tokenStatus.tokenType;
     });
   }
 
   Future<void> buttonLogoutPressed() async {
     NaverLoginResult res = await FlutterNaverLogin.logOut();
+    if (!res.loginStatus.isLogin) {
+      setState(() {
+        isLogin = res.loginStatus.isLogin;
+        accesToken = res.loginStatus.accessToken;
+        tokenType = res.loginStatus.tokenType;
+      });
+    }
     print('로그아웃');
-    print(res.token);
-    print(res.status);
   }
 
   Future<void> buttonGetUserPressed() async {
     NaverLoginResult res = await FlutterNaverLogin.getProfile();
     print('유저정보');
-    print(res.profile.name);
+    print(res.profileStatus.name);
     setState(() {
-      name = res.profile.name;
+      name = res.profileStatus.name;
     });
   }
 }

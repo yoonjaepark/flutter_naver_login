@@ -6,11 +6,10 @@ import Alamofire
 public class SwiftFlutterNaverLoginPlugin: NSObject, FlutterPlugin, NaverThirdPartyLoginConnectionDelegate {
     let METHOD_LOG_IN: String = "logIn";
     let METHOD_LOG_OUT: String = "logOut";
-    let METHOD_GET_CURRENT_ACCESS_TOKEN: String = "getCurrentAccessToken";
+    let METHOD_GET_CURRENT_ACCESS_TOKEN: String = "getToken";
     let METHOD_GET_USER_ME: String = "getUserMe";
     var naverResult: FlutterResult!
     let loginInstance = NaverThirdPartyLoginConnection.getSharedInstance();
-    
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "flutter_naver_login", binaryMessenger: registrar.messenger())
@@ -24,27 +23,27 @@ public class SwiftFlutterNaverLoginPlugin: NSObject, FlutterPlugin, NaverThirdPa
         instance.loginInstance?.appName = kServiceAppName;
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-    
-    
-    
+
     //MARK: - OAuth20 deleagate
     public func oauth20ConnectionDidFinishRequestACTokenWithAuthCode() {
         // 로그인이 성공했을 경우 호출
         print("oauth20ConnectionDidFinishRequestACTokenWithAuthCode");
-        var loginResult = [String : String]()
+        var loginResult = [String : Any]()
         loginResult["status"] = "loggedIn"
         loginResult["accessToken"] = loginInstance?.accessToken as String?
-        loginResult["refreshToken"] = loginInstance?.refreshToken as String?
+        loginResult["isLogin"] = true
         loginResult["tokenType"] = loginInstance?.tokenType as String?
         naverResult(loginResult);
     }
     
-    
     public func oauth20Connection(_ oauthConnection: NaverThirdPartyLoginConnection!, didFailWithError error: Error!) {
         /* 로그인 실패시에 호출되며 실패 이유와 메시지 확인 가능합니다. */
         print("oauth20Connection");
+        var errorResult = [String : String]()
+        errorResult["status"] = "error"
+        errorResult["errorMessage"] = error as! String?
+        naverResult(errorResult)
     }
-    
     
     //MARK: - OAuth20 deleagate
     public func oauth20ConnectionDidOpenInAppBrowser(forOAuth request: URLRequest!) {
@@ -57,14 +56,22 @@ public class SwiftFlutterNaverLoginPlugin: NSObject, FlutterPlugin, NaverThirdPa
    public func oauth20ConnectionDidFinishRequestACTokenWithRefreshToken() {
         // 이미 로그인이 되어있는 경우 access 토큰을 업데이트 하는 경우
         print("oauth20ConnectionDidFinishRequestACTokenWithRefreshToken");
+        var tokenResult = [String : String]()
+        tokenResult["status"] = "getToken"
+        tokenResult["accessToken"] = loginInstance?.accessToken
+        tokenResult["tokenType"] = loginInstance?.tokenType
+        naverResult(tokenResult);
     }
-    
-    
     
    public func oauth20ConnectionDidFinishDeleteToken() {
         // 로그아웃이나 토큰이 삭제되는 경우
+        var logoutResult = [String : Any]()
+        logoutResult["status"] = "loggedOut"
+        logoutResult["isLogin"] = false
+        logoutResult["accessToken"] = loginInstance?.accessToken
+        logoutResult["tokenType"] = loginInstance?.tokenType
         print("oauth20ConnectionDidFinishDeleteToken");
-        naverResult(true);
+        naverResult(logoutResult);
     }
     
     func getUserInfo(_res: @escaping FlutterResult) {
@@ -106,11 +113,15 @@ public class SwiftFlutterNaverLoginPlugin: NSObject, FlutterPlugin, NaverThirdPa
                     guard let res = response.result.value as? [String: Any] else {return}
                     guard var _res = res["response"] as? [String: Any] else {return}
                     _res["status"] = "getUserMe"
-                    result(_res);
+                self.naverResult(_res);
             }
             break;
         case METHOD_GET_CURRENT_ACCESS_TOKEN:
-            result(loginInstance?.accessToken);
+            var tokenResult = [String : String]()
+            tokenResult["status"] = "getToken"
+            tokenResult["accessToken"] = loginInstance?.accessToken
+            tokenResult["tokenType"] = loginInstance?.tokenType
+            self.naverResult(tokenResult);
             break;
         default:
             break;

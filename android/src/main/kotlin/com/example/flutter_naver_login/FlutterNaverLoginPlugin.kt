@@ -3,6 +3,7 @@ package com.example.flutter_naver_login
 import android.app.Activity
 import android.content.Context
 import android.os.AsyncTask
+import android.util.Log
 import android.widget.Toast
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
@@ -28,7 +29,7 @@ class FlutterNaverLoginPlugin : MethodCallHandler {
 
     private val METHOD_LOG_IN = "logIn"
     private val METHOD_LOG_OUT = "logOut"
-    private val METHOD_GET_CURRENT_ACCESS_TOKEN = "getCurrentAccessToken"
+    private val METHOD_GET_TOKEN = "getToken"
     private val METHOD_GET_USER_ME = "getUserMe"
 
     private val LOG_TAG = "naverLoginPlugin"
@@ -36,9 +37,9 @@ class FlutterNaverLoginPlugin : MethodCallHandler {
     /**
      * 네이버 개발자 등록한 client 정보를 넣어준다.
      */
-    private val OAUTH_CLIENT_ID = "OAUTH_CLIENT_ID"
-    private val OAUTH_CLIENT_SECRET = "OAUTH_CLIENT_SECRET"
-    private val OAUTH_CLIENT_NAME = "OAUTH_CLIENT_NAME"
+    private val OAUTH_CLIENT_ID = "HPkxqxTD78VrBP1WLsvn"
+    private val OAUTH_CLIENT_SECRET = "RrviRRnldR"
+    private val OAUTH_CLIENT_NAME = "플루터"
 
     private val mOAuthLoginInstance: OAuthLogin
     private val currentActivity: Activity
@@ -65,7 +66,15 @@ class FlutterNaverLoginPlugin : MethodCallHandler {
             "getPlatformVersion" -> result.success("Android " + android.os.Build.VERSION.RELEASE)
             METHOD_LOG_IN -> this.login(result)
             METHOD_LOG_OUT -> this.logout(result)
-            METHOD_GET_CURRENT_ACCESS_TOKEN -> result.success(mOAuthLoginInstance.getState(mContext).toString())
+            METHOD_GET_TOKEN -> {
+                result.success(object : HashMap<String, String>() {
+                    init {
+                        put("status", "getToken")
+                        put("accessToken", mOAuthLoginInstance.getAccessToken(mContext))
+                        put("tokenType", mOAuthLoginInstance.getTokenType(mContext))
+                    }
+                })
+            }
             METHOD_GET_USER_ME -> {
                 val accessToken = mOAuthLoginInstance.getAccessToken(mContext)
 
@@ -97,21 +106,25 @@ class FlutterNaverLoginPlugin : MethodCallHandler {
                     val refreshToken = mOAuthLoginInstance.getRefreshToken(mContext)
                     val expiresAt = mOAuthLoginInstance.getExpiresAt(mContext)
                     val tokenType = mOAuthLoginInstance.getTokenType(mContext)
-                    result.success(object : HashMap<String, String>() {
+                    result.success(object : HashMap<String, Any>() {
                         init {
                             put("status", "loggedIn")
                             put("accessToken", accessToken)
-                            put("refreshToken", refreshToken)
+                            put("isLogin", true)
                             put("tokenType", tokenType)
                         }
                     })
-                    // put("expiresAt", String.valueOf(expiresAt));
-
                 } else {
                     val errorCode = mOAuthLoginInstance.getLastErrorCode(mContext).code
                     val errorDesc = mOAuthLoginInstance.getLastErrorDesc(mContext)
                     result.success(null)
-                    Toast.makeText(mContext, "errorCode:$errorCode, errorDesc:$errorDesc", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(mContext, "errorCode:$errorCode, errorDesc:$errorDesc", Toast.LENGTH_SHORT).show()
+                    result.success(object : HashMap<String, String>() {
+                        init {
+                            put("status", "error")
+                            put("errorMessage", "errorCode:$errorCode, errorDesc:$errorDesc")
+                        }
+                    })
                 }
             }
         }
@@ -119,35 +132,40 @@ class FlutterNaverLoginPlugin : MethodCallHandler {
     }
 
     fun logout(result: Result) {
-        DeleteTokenTask().setExecute(result)
-        DeleteTokenTask().execute()
+        DeleteTokenTask().execute(result)
     }
 
-    private inner class DeleteTokenTask : AsyncTask<Void, Void, Void>() {
-        var LoginInstanceResult: Result? = null;
-        override fun doInBackground(vararg params: Void?): Void? {
+    private inner class DeleteTokenTask : AsyncTask<Result, Void, Void>() {
+        override fun doInBackground(vararg params: Result?): Void? {
+            var LoginInstanceResult: Result? = params[0];
             val isSuccessDeleteToken = mOAuthLoginInstance.logoutAndDeleteToken(mContext)
 
-            if (!isSuccessDeleteToken) {
+            if (isSuccessDeleteToken) {
+                LoginInstanceResult?.success(object : HashMap<String, Any>() {
+                    init {
+                        put("status", "loggedOut")
+                        put("isLogin", false)
+                        put("accessToken", mOAuthLoginInstance.getAccessToken(mContext))
+                        put("tokenType", mOAuthLoginInstance.getTokenType(mContext))
+                    }
+                })
+            } else {
                 // 서버에서 token 삭제에 실패했어도 클라이언트에 있는 token 은 삭제되어 로그아웃된 상태이다
                 // 실패했어도 클라이언트 상에 token 정보가 없기 때문에 추가적으로 해줄 수 있는 것은 없음
-//        Log.d(TAG, "errorCode:" + mOAuthLoginInstance.getLastErrorCode(mContext))
-//        Log.d(TAG, "errorDesc:" + mOAuthLoginInstance.getLastErrorDesc(mContext))
+                val errorCode = mOAuthLoginInstance.getLastErrorCode(mContext).code
+                val errorDesc = mOAuthLoginInstance.getLastErrorDesc(mContext)
+                LoginInstanceResult?.success(object : HashMap<String, String>() {
+                    init {
+                        put("status", "error")
+                        put("errorMessage", "errorCode:$errorCode, errorDesc:$errorDesc")
+                    }
+                })
             }
 
             return null
         }
 
-        fun setExecute(res: Result) {
-            LoginInstanceResult = res
-        }
-
         override fun onPostExecute(v: Void?) {
-            LoginInstanceResult?.success(object : HashMap<String, String>() {
-                init {
-                    put("status", "loggedOut")
-                }
-            })
         }
     }
 
@@ -187,7 +205,6 @@ class FlutterNaverLoginPlugin : MethodCallHandler {
         }
     }
 
-
     @Throws(JSONException::class)
     fun jsonToMap(t: String): HashMap<String, String> {
 
@@ -200,7 +217,6 @@ class FlutterNaverLoginPlugin : MethodCallHandler {
             val value = jObject.getString(key)
             map[key] = value
         }
-        println("map : $map")
         return map
     }
 }
