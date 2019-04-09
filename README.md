@@ -1,6 +1,6 @@
 # flutter_naver_login
 [![Build Status](https://img.shields.io/badge/pub-v0.0.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
-[![Build Status](https://img.shields.io/badge/build-v0.0.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 
 A Flutter plugin for using the native Naver Login SDKs on Android and iOS.
 
@@ -21,7 +21,7 @@ See the [installation instructions on pub](https://pub.dartlang.org/packages/flu
 
 This assume that you have performed the "link app to package name and base class [the Naver Login documentation for Android site](https://developers.naver.com/docs/login/android/).
 
-Your Application Info" is shown in the for Naver Developer Website.
+Your Application Info is shown in the for Naver Developer Website.
 
 Then find out what the Client ID is. The Naver Client ID can be found on the Naver App Dashboard from the Naver Developer Console.
 
@@ -56,7 +56,7 @@ Then simply copy and paste into _ROOT_.
 ```
 
 
-A sample of the file can be found here. [here]().
+A sample of the file can be found here. [here](https://github.com/yoonjaepark/flutter_naver_login/blob/master/example/android/app/src/main/AndroidManifest.xml).
 
 Done!
 
@@ -113,7 +113,7 @@ After you've done that, find out what your Naver App Client ID is. You can find 
       </dict>
    </dict>
 ```
-A sample of a complete Info.plist file can be found [here]().
+A sample of a complete Info.plist file can be found [here](https://github.com/yoonjaepark/flutter_naver_login/blob/master/example/ios/Runner/Info.plist).
 
 Done!
 
