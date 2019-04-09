@@ -1,4 +1,4 @@
-package com.example.flutter_naver_login
+package com.yoonjaepark.flutter_naver_login
 
 import android.app.Activity
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.example.flutter_naver_login_example
+package com.yoonjaepark.flutter_naver_login_example
 
 import android.os.Bundle
 

@@ -396,8 +396,8 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = 9E6A33L48Y;
 				ENABLE_BITCODE = NO;
-				FLUTTER_APPLICATION_PATH = /Users/yoonjaepark/dev/flutter_naver_login_old/example;
-				FLUTTER_TARGET = /Users/yoonjaepark/dev/flutter_naver_login_old/example/lib/main.dart;
+				FLUTTER_APPLICATION_PATH = /Users/yoonjaepark/dev/flutter_naver_login/example;
+				FLUTTER_TARGET = /Users/yoonjaepark/dev/flutter_naver_login/example/lib/main.dart;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -410,7 +410,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterNaverLoginExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonjaepark.flutterNaverLoginExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -533,8 +533,8 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = 9E6A33L48Y;
 				ENABLE_BITCODE = NO;
-				FLUTTER_APPLICATION_PATH = /Users/yoonjaepark/dev/flutter_naver_login_old/example;
-				FLUTTER_TARGET = /Users/yoonjaepark/dev/flutter_naver_login_old/example/lib/main.dart;
+				FLUTTER_APPLICATION_PATH = /Users/yoonjaepark/dev/flutter_naver_login/example;
+				FLUTTER_TARGET = /Users/yoonjaepark/dev/flutter_naver_login/example/lib/main.dart;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -546,7 +546,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterNaverLoginExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonjaepark.flutterNaverLoginExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -564,8 +564,8 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = 9E6A33L48Y;
 				ENABLE_BITCODE = NO;
-				FLUTTER_APPLICATION_PATH = /Users/yoonjaepark/dev/flutter_naver_login_old/example;
-				FLUTTER_TARGET = /Users/yoonjaepark/dev/flutter_naver_login_old/example/lib/main.dart;
+				FLUTTER_APPLICATION_PATH = /Users/yoonjaepark/dev/flutter_naver_login/example;
+				FLUTTER_TARGET = /Users/yoonjaepark/dev/flutter_naver_login/example/lib/main.dart;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -578,7 +578,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.flutterNaverLoginExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonjaepark.flutterNaverLoginExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;

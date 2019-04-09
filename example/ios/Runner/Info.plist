@@ -19,13 +19,13 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>kServiceAppUrlScheme</key>
-	<string>flutternaverlogin</string>
+	<string>kServiceAppUrlScheme</string>
 	<key>kConsumerKey</key>
-	<string>HPkxqxTD78VrBP1WLsvn</string>
+	<string>kConsumerKey</string>
 	<key>kConsumerSecret</key>
-	<string>RrviRRnldR</string>
+	<string>kConsumerSecret</string>
 	<key>kServiceAppName</key>
-	<string>플루터</string>
+	<string>kServiceAppName</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
