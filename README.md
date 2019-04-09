@@ -1,14 +1,12 @@
 # flutter_naver_login
-
-[![pub package](https://img.shields.io/pub/v/flutter_facebook_login.svg)](https://pub.dartlang.org/packages/flutter_facebook_login)
- [![Build Status](https://travis-ci.org/roughike/flutter_facebook_login.svg?branch=master)](https://travis-ci.org/roughike/flutter_facebook_login) 
- [![Coverage Status](https://coveralls.io/repos/github/roughike/flutter_facebook_login/badge.svg)](https://coveralls.io/github/roughike/flutter_facebook_login)
+[![Build Status](https://img.shields.io/badge/pub-v0.0.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/build-v0.0.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 
 A Flutter plugin for using the native Naver Login SDKs on Android and iOS.
 
 ## AndroidX support
 
-* for [AndroidX Flutter projects](https://flutter.dev/docs/development/packages-and-plugins/androidx-compatibility), use versions 2.0.0 and up.
+- for [AndroidX Flutter projects](https://flutter.dev/docs/development/packages-and-plugins/androidx-compatibility), not yet.
 
 ## Installation
 
@@ -21,45 +19,44 @@ See the [installation instructions on pub](https://pub.dartlang.org/packages/flu
 
 ### Android
 
-This assumes that you've done the _"Associate Your Package Name and Default Class with Your App"_ and
- _"Provide the Development and Release Key Hashes for Your App"_ in the [the Facebook Login documentation for Android site](https://developers.facebook.com/docs/facebook-login/android).
+This assume that you have performed the "link app to package name and base class [the Naver Login documentation for Android site](https://developers.naver.com/docs/login/android/).
 
-After you've done that, find out what your _Facebook App ID_ is. You can find your Facebook App ID in your Facebook App's dashboard in the Facebook developer console.
+Your Application Info" is shown in the for Naver Developer Website.
 
-Once you have the Facebook App ID figured out, youll have to do two things.
+Then find out what the Client ID is. The Naver Client ID can be found on the Naver App Dashboard from the Naver Developer Console.
 
-First, copy-paste the following to your strings resource file. If you don't have one, just create it.
+Once you find out your Naver Client ID, URL Scheme and Set Package Name  you'll have to do some things.
 
-**\<your project root\>/android/app/src/main/res/values/strings.xml**
+Then simply copy and paste into _ROOT_.
+
+**\<your project root>android/app/src/main/res/values/strings.xml**
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Your App Name here.</string>
-
-    <!-- Replace "000000000000" with your Facebook App ID here. -->
-    <string name="facebook_app_id">000000000000</string>
-
-    <!--
-      Replace "000000000000" with your Facebook App ID here.
-      **NOTE**: The scheme needs to start with `fb` and then your ID.
-    -->
-    <string name="fb_login_protocol_scheme">fb000000000000</string>
+    <string name="client_id">[client_id]</string>
+    <string name="client_secret">[client_secret]</string>
 </resources>
 ```
 
-Then you'll just have to copy-paste the following to your _Android Manifest_:
+**\<your project root>android/app/src/main/AndroidManifest.xml**
 
-**\<package root>/android/src/main/kotlin/com/example/flutter_naver_login/AndroidManifest.xml**
-
-```kotlin
-    private val OAUTH_CLIENT_ID = "OAUTH_CLIENT_ID"
-    private val OAUTH_CLIENT_SECRET = "OAUTH_CLIENT_SECRET"
-    private val OAUTH_CLIENT_NAME = "OAUTH_CLIENT_NAME"
-
+```xml
+ <application
+        android:name="io.flutter.app.FlutterApplication"
+        android:label="flutter_naver_login_example"
+        android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.naver.sdk.clientId"
+            android:value="@string/client_id" />
+        <meta-data
+            android:name="com.naver.sdk.clientSecret"
+            android:value="@string/client_secret" />
+			...
 ```
 
-A sample of a complete AndroidManifest file can be found [here](https://github.com/roughike/flutter_facebook_login/blob/master/example/android/app/src/main/AndroidManifest.xml#L39-L56).
+
+A sample of the file can be found here. [here]().
 
 Done!
 
@@ -69,100 +66,74 @@ This assumes that you've done the _"Register and Configure Your App with Naver"_
 [the Naver Login documentation for iOS site](https://developers.naver.com/docs/login/ios/).
 (**Note**: you can skip "Step 2: Set up Your Development Environment").
 
-After you've done that, find out what your Naver App Client ID is. You can find your Client ID, Client Secret, URL_SCHEME,  in your Naver App's dashboard in the Naver developer.
+After you've done that, find out what your Naver App Client ID is. You can find your Client ID, Client Secret, URL_SCHEME, in your Naver App's dashboard in the Naver developer.
 
+**\<your project root>ios/Runner/Info.plist**
 ```xml
     <key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>naversearchapp</string>
-		<string>naversearchthirdlogin</string>
-	</array>
+   <array>
+      <string>naversearchapp</string>
+      <string>naversearchthirdlogin</string>
+   </array>
 
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>naver.com</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSExceptionRequiresForwardSecrecy</key>
-				<false/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-			<key>naver.net</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSExceptionRequiresForwardSecrecy</key>
-				<false/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-		</dict>
-	</dict>
+	<key>kServiceAppUrlScheme</key>
+	<string>[UrlScheme]</string>
+	<key>kConsumerKey</key>
+	<string>[ConsumerKey]</string>
+	<key>kConsumerSecret</key>
+	<string>[ConsumerSecret]</string>
+	<key>kServiceAppName</key>
+	<string>[ServiceAppName]</string>
 
+
+   <key>NSAppTransportSecurity</key>
+   <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+      <key>NSExceptionDomains</key>
+      <dict>
+         <key>naver.com</key>
+         <dict>
+            <key>NSExceptionAllowsInsecureHTTPLoads</key>
+            <true/>
+            <key>NSExceptionRequiresForwardSecrecy</key>
+            <false/>
+            <key>NSIncludesSubdomains</key>
+            <true/>
+         </dict>
+         <key>naver.net</key>
+         <dict>
+            <key>NSExceptionAllowsInsecureHTTPLoads</key>
+            <true/>
+            <key>NSExceptionRequiresForwardSecrecy</key>
+            <false/>
+            <key>NSIncludesSubdomains</key>
+            <true/>
+         </dict>
+      </dict>
+   </dict>
 ```
-
-
-**\<package root\>ios/Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework/Headers/NaverThirdPartyConstantsForApp.h**
-
-```swift
-
-#define kServiceAppUrlScheme    @"kServiceAppUrlScheme"
-
-#define kConsumerKey            @"kConsumerKey"
-#define kConsumerSecret         @"kConsumerSecret"
-#define kServiceAppName         @"kServiceAppName"
-
-```
-
-A sample of a complete Info.plist file can be found [here](https://github.com/roughike/flutter_facebook_login/blob/master/example/ios/Runner/Info.plist#L49-L70).
+A sample of a complete Info.plist file can be found [here]().
 
 Done!
 
 ## How do I use it?
 
-The library tries to closely match the native Android & iOS login SDK APIs where possible. For complete API documentation, just see the [source code](https://github.com/roughike/flutter_facebook_login/blob/master/lib/flutter_facebook_login.dart). Everything is documented there.
+The library tries to closely match the native Android & iOS login SDK APIs where possible. For complete API documentation, just see the [source code](). Everything is documented there.
 
 Since sample code is worth more than one page of documentation, here are the usual cases covered:
 
-```dart
-import 'package:flutter_naver_login/flutter_naver_login.dart';
+### Getting the Naver acccount of a signed in user
 
+```dart
 NaverLoginResult res = await FlutterNaverLogin.logIn();
-final NaverLoginResult result = await FlutterNaverLogin.logIn();
-switch (result.status) {
-    case KakaoLoginStatus.loggedIn:
-    case KakaoLoginStatus.loggedOut:
-    setState(() {
-        isLogin = res.loginStatus.isLogin;
-        accesToken = res.loginStatus.accesToken;
-        tokenType = res.loginStatus.tokenType;
-    });
-    break;
-    break;
-    case KakaoLoginStatus.error:
-        _updateMessage('This is Naver error message : ${result.errorMessage}');
-    break;
-}
-```
-
-### Getting the Naver profile of a signed in user
-
-```dart
-NaverLoginResult res = await FlutterNaverLogin.getProfile();
-print(res.profileStatus.name);
 setState(() {
-    name = res.profileStatus.name;
+    name = res.account.name;
 });
 ```
 
-The `profile` variable will now contain the following information:
-  
+The `account` variable will now contain the following information:
+
 ```dart
 final String nickname;
 final String id;
@@ -172,4 +143,18 @@ final String gender;
 final String age;
 final String birthday;
 final String profileImage;
+```
+
+### Getting the Naver currentAccessToken of a signed in user
+
+```dart
+import 'package:flutter_naver_login/flutter_naver_login.dart';
+
+NaverLoginResult res = await FlutterNaverLogin.logIn();
+final NaverLoginResult result = await FlutterNaverLogin.logIn();
+NaverAccessToken res = await FlutterNaverLogin.currentAccessToken;
+setState(() {
+   accesToken = res.accessToken;
+   tokenType = res.tokenType;
+});
 ```

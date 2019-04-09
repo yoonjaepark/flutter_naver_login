@@ -18,6 +18,14 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>kServiceAppUrlScheme</key>
+	<string>flutternaverlogin</string>
+	<key>kConsumerKey</key>
+	<string>HPkxqxTD78VrBP1WLsvn</string>
+	<key>kConsumerSecret</key>
+	<string>RrviRRnldR</string>
+	<key>kServiceAppName</key>
+	<string>플루터</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

@@ -396,6 +396,8 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = 9E6A33L48Y;
 				ENABLE_BITCODE = NO;
+				FLUTTER_APPLICATION_PATH = /Users/yoonjaepark/dev/flutter_naver_login_old/example;
+				FLUTTER_TARGET = /Users/yoonjaepark/dev/flutter_naver_login_old/example/lib/main.dart;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -531,6 +533,8 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = 9E6A33L48Y;
 				ENABLE_BITCODE = NO;
+				FLUTTER_APPLICATION_PATH = /Users/yoonjaepark/dev/flutter_naver_login_old/example;
+				FLUTTER_TARGET = /Users/yoonjaepark/dev/flutter_naver_login_old/example/lib/main.dart;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
@@ -560,6 +564,8 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = 9E6A33L48Y;
 				ENABLE_BITCODE = NO;
+				FLUTTER_APPLICATION_PATH = /Users/yoonjaepark/dev/flutter_naver_login_old/example;
+				FLUTTER_TARGET = /Users/yoonjaepark/dev/flutter_naver_login_old/example/lib/main.dart;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",

@@ -1,44 +1,46 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'src/clock.dart';
 
 class FlutterNaverLogin {
   static const MethodChannel _channel =
       const MethodChannel('flutter_naver_login');
 
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
-
   static Future<NaverLoginResult> logIn() async {
     final Map<dynamic, dynamic> res = await _channel.invokeMethod('logIn');
-    print(res);
+   
     return _delayedToResult(
         new NaverLoginResult._(res.cast<String, dynamic>()));
   }
 
   static Future<NaverLoginResult> logOut() async {
     final Map<dynamic, dynamic> res = await _channel.invokeMethod('logOut');
-
+    
     return _delayedToResult(
         new NaverLoginResult._(res.cast<String, dynamic>()));
   }
 
-  static Future<NaverLoginResult> getProfile() async {
-    final Map<dynamic, dynamic> res = await _channel.invokeMethod('getUserMe');
-    print(res);
+  static Future<bool> get isLoggedIn async =>
+      (await currentAccessToken)?.isValid() ?? false;
 
-    return _delayedToResult(
-        new NaverLoginResult._(res.cast<String, dynamic>()));
+  static Future<NaverAccountResult> currentAccount() async {
+    final Map<dynamic, dynamic> res =
+        await _channel.invokeMethod('getCurrentAcount');
+    
+    return _delayedToResult(new NaverAccountResult._(res.cast<String, dynamic>()));
   }
 
-  static Future<NaverLoginResult> getToken() async {
-    final Map<dynamic, dynamic> res = await _channel.invokeMethod('getToken');
-    print(res);
+  static Future<NaverAccessToken> get currentAccessToken async {
+    final Map<dynamic, dynamic> accessToken =
+        await _channel.invokeMethod('getCurrentAccessToken');
+
+    if (accessToken == null) {
+      return null;
+    }
 
     return _delayedToResult(
-        new NaverLoginResult._(res.cast<String, dynamic>()));
+        NaverAccessToken._(accessToken.cast<String, dynamic>()));
   }
 
   static Future<T> _delayedToResult<T>(T result) {
@@ -46,59 +48,47 @@ class FlutterNaverLogin {
   }
 }
 
-enum NaverLoginStatus { loggedIn, loggedOut, getUserMe, getToken, error }
+enum NaverLoginStatus { loggedIn, cancelledByUser, error }
 
 class NaverLoginResult {
   final NaverLoginStatus status;
-  final NaverLoginStatusResult loginStatus;
-  final NaverTokenResult tokenStatus;
-  final NaverProfileResult profileStatus;
+  final NaverAccountResult account;
   final String errorMessage;
+  final NaverAccessToken accessToken;
 
   NaverLoginResult._(Map<String, dynamic> map)
       : status = _parseStatus(map['status']),
+        accessToken = NaverAccessToken._(map),
         errorMessage = map['errorMessage'],
-        tokenStatus = new NaverTokenResult._(map),
-        loginStatus = new NaverLoginStatusResult._(map),
-        profileStatus = new NaverProfileResult._(map);
+        account = new NaverAccountResult._(map);
 
   static NaverLoginStatus _parseStatus(String status) {
     switch (status) {
       case 'loggedIn':
         return NaverLoginStatus.loggedIn;
-      case 'loggedOut':
-        return NaverLoginStatus.loggedOut;
-      case 'getToken':
-        return NaverLoginStatus.getToken;
-      case 'getUserMe':
-        return NaverLoginStatus.getUserMe;
+      case 'cancelledByUser':
+        return NaverLoginStatus.cancelledByUser;
+      case 'error':
+        return NaverLoginStatus.error;
     }
 
     throw new StateError('Invalid status: $status');
   }
 }
 
-class NaverTokenResult {
+class NaverAccessToken {
   final String accessToken;
+  final String expiresAt;
   final String tokenType;
+  bool isValid() => Clock.now().isBefore(DateTime.parse(expiresAt));
 
-  NaverTokenResult._(Map<String, dynamic> map)
+  NaverAccessToken._(Map<String, dynamic> map)
       : accessToken = map['accessToken'],
+        expiresAt = map['expiresAt'],
         tokenType = map['tokenType'];
 }
 
-class NaverLoginStatusResult {
-  final String accessToken;
-  final String tokenType;
-  final bool isLogin;
-
-  NaverLoginStatusResult._(Map<String, dynamic> map)
-      : accessToken = map['accessToken'],
-        tokenType = map['tokenType'],
-        isLogin = map['isLogin'];
-}
-
-class NaverProfileResult {
+class NaverAccountResult {
   final String nickname;
   final String id;
   final String name;
@@ -108,7 +98,7 @@ class NaverProfileResult {
   final String birthday;
   final String profileImage;
 
-  NaverProfileResult._(Map<String, dynamic> map)
+  NaverAccountResult._(Map<String, dynamic> map)
       : nickname = map['nickname'],
         id = map['id'],
         name = map['name'],

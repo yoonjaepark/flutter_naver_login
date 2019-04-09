@@ -29,7 +29,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _platformVersion = 'Unknown';
   bool isLogin = false;
 
   String accesToken;
@@ -45,7 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    initPlatformState();
   }
 
   @override
@@ -118,64 +116,36 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FlutterNaverLogin.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
+  Future<void> buttonLoginPressed() async {
+    NaverLoginResult res = await FlutterNaverLogin.logIn();
     setState(() {
-      _platformVersion = platformVersion;
+      name = res.account.nickname;
+      isLogin = true;
     });
   }
 
-  Future<void> buttonLoginPressed() async {
-    NaverLoginResult res = await FlutterNaverLogin.logIn();
-    if (res.loginStatus.isLogin) {
-      setState(() {
-        isLogin = res.loginStatus.isLogin;
-        accesToken = res.loginStatus.accessToken;
-        tokenType = res.loginStatus.tokenType;
-      });
-    }
-  }
-
   Future<void> buttonTokenPressed() async {
-    NaverLoginResult res = await FlutterNaverLogin.logIn();
-    print(res);
+    NaverAccessToken res = await FlutterNaverLogin.currentAccessToken;
     setState(() {
-      accesToken = res.tokenStatus.accessToken;
-      tokenType = res.tokenStatus.tokenType;
+      accesToken = res.accessToken;
+      tokenType = res.tokenType;
     });
   }
 
   Future<void> buttonLogoutPressed() async {
-    NaverLoginResult res = await FlutterNaverLogin.logOut();
-    if (!res.loginStatus.isLogin) {
-      setState(() {
-        isLogin = res.loginStatus.isLogin;
-        accesToken = res.loginStatus.accessToken;
-        tokenType = res.loginStatus.tokenType;
-      });
-    }
-    print('로그아웃');
+    FlutterNaverLogin.logOut();
+    setState(() {
+      isLogin = false;
+      accesToken = null;
+      tokenType = null;
+      name = null;
+    });
   }
 
   Future<void> buttonGetUserPressed() async {
-    NaverLoginResult res = await FlutterNaverLogin.getProfile();
-    print('유저정보');
-    print(res.profileStatus.name);
+    NaverAccountResult res = await FlutterNaverLogin.currentAccount();
     setState(() {
-      name = res.profileStatus.name;
+      name = res.name;
     });
   }
 }
