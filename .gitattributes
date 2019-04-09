@@ -13,7 +13,7 @@
 *.txt    text
 *.xml    text
 *.yaml   text
-*.kt   text
+*.kt     text
 
 # Make sure that these Windows files always have CRLF line endings in checkout
 *.bat    text eol=crlf
