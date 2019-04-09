@@ -29,7 +29,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _platformVersion = 'Unknown';
   bool isLogin = false;
 
   String accesToken;
@@ -45,7 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    initPlatformState();
   }
 
   @override
@@ -66,7 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 new Text('isLogin: $isLogin\n'),
                 new Text('accesToken: $accesToken\n'),
-                new Text('refreshToken: $refreshToken\n'),
                 new Text('tokenType: $tokenType\n'),
                 new Text('user: $name\n'),
               ],
@@ -95,6 +92,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
             new FlatButton(
                 key: null,
+                onPressed: buttonTokenPressed,
+                child: new Text(
+                  "GetToken",
+                  style: new TextStyle(
+                      fontSize: 12.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: "Roboto"),
+                )),
+            new FlatButton(
+                key: null,
                 onPressed: buttonGetUserPressed,
                 child: new Text(
                   "GetUser",
@@ -108,49 +116,36 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FlutterNaverLogin.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
-
   Future<void> buttonLoginPressed() async {
     NaverLoginResult res = await FlutterNaverLogin.logIn();
     setState(() {
+      name = res.account.nickname;
       isLogin = true;
-      accesToken = res.token.accessToken;
-      refreshToken = res.token.refreshToken;
-      tokenType = res.token.tokenType;
+    });
+  }
+
+  Future<void> buttonTokenPressed() async {
+    NaverAccessToken res = await FlutterNaverLogin.currentAccessToken;
+    setState(() {
+      accesToken = res.accessToken;
+      tokenType = res.tokenType;
     });
   }
 
   Future<void> buttonLogoutPressed() async {
-    NaverLoginResult res = await FlutterNaverLogin.logOut();
-    print('로그아웃');
-    print(res.token);
-    print(res.status);
+    FlutterNaverLogin.logOut();
+    setState(() {
+      isLogin = false;
+      accesToken = null;
+      tokenType = null;
+      name = null;
+    });
   }
 
   Future<void> buttonGetUserPressed() async {
-    NaverLoginResult res = await FlutterNaverLogin.getProfile();
-    print('유저정보');
-    print(res.profile.name);
+    NaverAccountResult res = await FlutterNaverLogin.currentAccount();
     setState(() {
-      name = res.profile.name;
+      name = res.name;
     });
   }
 }
