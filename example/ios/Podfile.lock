@@ -1,7 +1,7 @@
 PODS:
   - Alamofire (5.0.0-beta.6)
   - Flutter (1.0.0)
-  - flutter_naver_login (0.1.0):
+  - flutter_naver_login (0.1.1):
     - Alamofire (~> 5.0.0-beta.5)
     - Flutter
     - naveridlogin-sdk-ios (= 4.0.12)
