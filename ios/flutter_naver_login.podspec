@@ -18,7 +18,6 @@ A new flutter plugin project.
 
   # https://github.com/flutter/flutter/issues/14161
   s.dependency  'Alamofire', '~> 5.0.0-beta.5'
-  s.swift_version = '>= 4.0'
   s.dependency 'naveridlogin-sdk-ios', '4.0.12'
   s.static_framework = true
   s.ios.deployment_target = '10.0'
