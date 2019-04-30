@@ -86,17 +86,27 @@ public class SwiftFlutterNaverLoginPlugin: NSObject, FlutterPlugin, NaverThirdPa
         guard let tokenType = loginConn.tokenType else {return}
         guard let accessToken = loginConn.accessToken else {return}
         var object = [String: Any]()
-        
+        var _res = [String: Any]()
+
         let authorization = "\(tokenType) \(accessToken)"
-        Alamofire.request("https://openapi.naver.com/v1/nid/me", method: .get, parameters: nil, encoding: JSONEncoding.default, headers: ["Authorization" : authorization]).responseJSON { (response) in
-            guard let result = response.result.value as? [String: Any] else {return}
-            object = result["response"] as! [String : Any]
-            guard (object["birthday"] as? String) != nil else {return}
-            guard (object["name"] as? String) != nil else {return}
-            guard (object["email"] as? String) != nil else {return}
-            print(object)
-            object["status"] = "loggedIn"
-            self.naverResult(object)
+        AF.request("https://openapi.naver.com/v1/nid/me", method: .get, parameters: nil, encoding: JSONEncoding.default, headers: ["Authorization" : authorization]).responseJSON { (response) in
+            switch response.result {
+            case .success(let value):
+              
+                
+//                guard let result = response.result.value as? [String: Any] else {return}
+//                object = value["response"] as! [String : Any]
+                object = value as! [String : Any]
+                _res = object["response"] as! [String : Any]
+                guard (_res["birthday"] as? String) != nil else {return}
+                guard (_res["name"] as? String) != nil else {return}
+                guard (_res["email"] as? String) != nil else {return}
+                print(_res)
+                _res["status"] = "loggedIn"
+                self.naverResult(_res)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
         }
     }
     

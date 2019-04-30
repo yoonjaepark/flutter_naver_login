@@ -1,5 +1,8 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v0.0.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v0.1.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pod-v1.6.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/swift-v5-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/naverSDK-v4.0.12-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 
 A Flutter plugin for using the native Naver Login SDKs on Android and iOS.
@@ -61,6 +64,21 @@ A sample of the file can be found here. [here](https://github.com/yoonjaepark/fl
 Done!
 
 ### iOS
+[Cocoapod](https://cocoapods.org/)
+
+You have to do the pod INSTALL. 
+
+**\<your project root>ios/Podfile**
+
+```xml
+target 'Runner' do
+  use_frameworks! # required
+```
+**\<your project root>ios/**
+
+```bash
+pod install
+```
 
 This assumes that you've done the _"Register and Configure Your App with Naver"_ step in the
 [the Naver Login documentation for iOS site](https://developers.naver.com/docs/login/ios/).
