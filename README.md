@@ -1,6 +1,6 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v0.1.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
-[![Build Status](https://img.shields.io/badge/pod-v1.6.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v0.1.2-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pod-v1.5.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/swift-v5-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/naverSDK-v4.0.12-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
@@ -66,7 +66,26 @@ Done!
 ### iOS
 [Cocoapod](https://cocoapods.org/)
 
-You have to do the pod INSTALL. 
+1. Project -> target -> set sgining Developer  
+1. Project -> target -> deployment info -> deployment target - 10.0 
+1. File - > project setting -> build system : legacy build system
+    - You have to do the pod INSTALL. [cocoapod 1.5.0] 
+    
+this pacakge language swift.object c import process
+  - File - > new -> file -> swift file -> create Bridging Header
+
+**\<your project root>ios/Runner/Runner-Bridging-Header.h**
+
+``` swift
+//
+//  Use this file to import your target's public headers that you would like to expose to Swift.
+//
+#import "GeneratedPluginRegistrant.h"
+#import "../Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework/Headers/NaverThirdPartyConstantsForApp.h"
+#import "../Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework/Headers/NaverThirdPartyLoginConnection.h"
+#import "../Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework/Headers/NLoginThirdPartyOAuth20InAppBrowserViewController.h"
+```
+
 
 **\<your project root>ios/Podfile**
 
