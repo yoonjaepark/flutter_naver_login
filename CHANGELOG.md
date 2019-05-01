@@ -11,3 +11,7 @@
 ## 0.1.1
 
 * pod spec change.
+
+## 0.1.2
+
+* ios build issue list add readme.md
