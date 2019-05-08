@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'flutter_naver_login'
-  s.version          = '0.1.2'
+  s.version          = '0.0.1'
   s.summary          = 'A new flutter plugin project.'
   s.description      = <<-DESC
 A new flutter plugin project.
@@ -16,10 +16,8 @@ A new flutter plugin project.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
 
-  # https://github.com/flutter/flutter/issues/14161
-  s.dependency  'Alamofire', '5.0.0-beta.6'
-  s.dependency 'naveridlogin-sdk-ios', '4.0.12'
-  s.static_framework = true
-  s.ios.deployment_target = '10.0'
+  s.dependency 'naveridlogin-sdk-ios', '~> 4.0.12'
+
+  s.ios.deployment_target = '8.0'
 end
 

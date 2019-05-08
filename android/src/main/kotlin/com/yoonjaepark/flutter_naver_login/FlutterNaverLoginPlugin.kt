@@ -1,5 +1,4 @@
 package com.yoonjaepark.flutter_naver_login
-
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -73,7 +72,7 @@ class FlutterNaverLoginPlugin : MethodCallHandler {
             if(bundle != null) {
                 OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
                 OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
-                OAUTH_CLIENT_NAME = mContext.resources.getString(R.string.app_name);
+                OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
 
                 mOAuthLoginInstance.showDevelopersLog(true);
                 mOAuthLoginInstance.init(this.mContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);

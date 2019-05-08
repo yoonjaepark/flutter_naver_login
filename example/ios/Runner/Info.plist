@@ -18,14 +18,6 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>kServiceAppUrlScheme</key>
-	<string>kServiceAppUrlScheme</string>
-	<key>kConsumerKey</key>
-	<string>kConsumerKey</string>
-	<key>kConsumerSecret</key>
-	<string>kConsumerSecret</string>
-	<key>kServiceAppName</key>
-	<string>kServiceAppName</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -98,5 +90,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>kConsumerKey</key>
+	<string>[kConsumerKey]</string>
+	<key>kConsumerSecret</key>
+	<string>[kConsumerSecret]</string>
+	<key>kServiceAppName</key>
+	<string>[kServiceAppName]</string>
+	<key>kServiceAppUrlScheme</key>
+	<string>[kServiceAppUrlScheme]</string>
 </dict>
 </plist>

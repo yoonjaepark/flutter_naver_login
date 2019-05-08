@@ -2,4 +2,5 @@
 <resources>
     <string name="client_id">[client_id]</string>
     <string name="client_secret">[client_secret]</string>
+    <string name="client_name">[client_name]</string>
 </resources>

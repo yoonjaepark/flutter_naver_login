@@ -30,7 +30,6 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
-        main.res.srcDirs += 'src/main/res'
     }
 
     lintOptions {

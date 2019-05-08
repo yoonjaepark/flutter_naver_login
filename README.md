@@ -39,6 +39,7 @@ Then simply copy and paste into _ROOT_.
 <resources>
     <string name="client_id">[client_id]</string>
     <string name="client_secret">[client_secret]</string>
+    <string name="client_name">[client_name]</string>
 </resources>
 ```
 
@@ -55,6 +56,9 @@ Then simply copy and paste into _ROOT_.
         <meta-data
             android:name="com.naver.sdk.clientSecret"
             android:value="@string/client_secret" />
+         <meta-data
+            android:name="com.naver.sdk.clientName"
+            android:value="@string/client_name" />
 			...
 ```
 
@@ -66,33 +70,6 @@ Done!
 ### iOS
 [Cocoapod](https://cocoapods.org/)
 
-1. Project -> target -> set sgining Developer  
-1. Project -> target -> deployment info -> deployment target - 10.0 
-1. File - > project setting -> build system : legacy build system
-    - You have to do the pod INSTALL. [cocoapod 1.5.0] 
-    
-this pacakge language swift.object c import process
-  - File - > new -> file -> swift file -> create Bridging Header
-
-**\<your project root>ios/Runner/Runner-Bridging-Header.h**
-
-``` swift
-//
-//  Use this file to import your target's public headers that you would like to expose to Swift.
-//
-#import "GeneratedPluginRegistrant.h"
-#import "../Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework/Headers/NaverThirdPartyConstantsForApp.h"
-#import "../Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework/Headers/NaverThirdPartyLoginConnection.h"
-#import "../Pods/naveridlogin-sdk-ios/NaverThirdPartyLogin.framework/Headers/NLoginThirdPartyOAuth20InAppBrowserViewController.h"
-```
-
-
-**\<your project root>ios/Podfile**
-
-```xml
-target 'Runner' do
-  use_frameworks! # required
-```
 **\<your project root>ios/**
 
 ```bash
