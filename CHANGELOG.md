@@ -19,3 +19,7 @@
 ## 0.1.3
 
 * ios swift to object-c
+
+## 0.2.0
+
+* ios issue add Readme.md
