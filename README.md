@@ -180,5 +180,5 @@ ld: library not found for -lflutter_naver_login
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
     - build - clean - command: flutter run
 - Showing All Messages
-:-1: Multiple commands produce '/Users/yoonjaepark/dev/my_app/build/ios/Debug-iphonesimulator/Runner.app/Frameworks/Flutter.framework': 
+:Multiple commands produce '/Users/yoonjaepark/dev/my_app/build/ios/Debug-iphonesimulator/Runner.app/Frameworks/Flutter.framework': 
   - file - project settings - build system - legacy build system
