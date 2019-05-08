@@ -23,3 +23,7 @@
 ## 0.2.0
 
 * ios issue add Readme.md
+
+## 0.2.1
+
+* Readme.md
