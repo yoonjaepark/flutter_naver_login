@@ -1,7 +1,7 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v0.1.2-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v0.1.3-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/pod-v1.5.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
-[![Build Status](https://img.shields.io/badge/swift-v5-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/ios-objectc-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/naverSDK-v4.0.12-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 
