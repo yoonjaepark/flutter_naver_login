@@ -27,3 +27,7 @@
 ## 0.2.1
 
 * Readme.md
+
+## 0.3.0
+
+* migrate to AndroidX 
