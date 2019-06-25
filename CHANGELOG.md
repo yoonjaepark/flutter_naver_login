@@ -31,3 +31,7 @@
 ## 0.3.0
 
 * migrate to AndroidX 
+
+## 0.3.1
+
+* Android Login Cancle error fix

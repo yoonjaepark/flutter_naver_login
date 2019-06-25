@@ -130,8 +130,6 @@ class FlutterNaverLoginPlugin : MethodCallHandler {
                 } else {
                     val errorCode = mOAuthLoginInstance.getLastErrorCode(mContext).code
                     val errorDesc = mOAuthLoginInstance.getLastErrorDesc(mContext)
-                    result.success(null)
-//                    Toast.makeText(mContext, "errorCode:$errorCode, errorDesc:$errorDesc", Toast.LENGTH_SHORT).show()
                     result.success(object : HashMap<String, String>() {
                         init {
                             put("status", "error")
