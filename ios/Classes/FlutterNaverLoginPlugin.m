@@ -6,13 +6,16 @@
 - (id)init {
   if ((self = [super init])) {
       _thirdPartyLoginConn = [NaverThirdPartyLoginConnection getSharedInstance];
+      
+      [_thirdPartyLoginConn setIsNaverAppOauthEnable:NO];
+      [_thirdPartyLoginConn setIsInAppOauthEnable:YES];
+
+      
       NSBundle* mainBundle = [NSBundle mainBundle];
       NSString *_kServiceAppUrlScheme = [mainBundle objectForInfoDictionaryKey:@"kServiceAppUrlScheme"];
       NSString *_kConsumerKey = [mainBundle objectForInfoDictionaryKey:@"kConsumerKey"];
       NSString *_kConsumerSecret = [mainBundle objectForInfoDictionaryKey:@"kConsumerSecret"];
       NSString *_kServiceAppName = [mainBundle objectForInfoDictionaryKey:@"kServiceAppName"];
-      // NSLog(@"kServiceAppUrlScheme = %@", _kServiceAppUrlScheme);
-
       //Log the value
       [_thirdPartyLoginConn setConsumerKey:_kConsumerKey ];
       [_thirdPartyLoginConn setConsumerSecret:_kConsumerSecret];
@@ -83,7 +86,7 @@
     NSString *decodingString = [[NSString alloc] initWithData:receivedData encoding:NSUTF8StringEncoding];
     
     if (error) {
-        // NSLog(@"Error happened - %@", [error description]);
+        NSLog(@"Error happened - %@", [error description]);
     } else {
         // NSLog(@"recevied data - %@", decodingString);
         NSData *jsonData = [decodingString dataUsingEncoding:NSUTF8StringEncoding];
@@ -142,7 +145,11 @@
     info[@"status"] = @"error";
     info[@"errorMessage"] = @"NaverApp login fail handler";
     _naverResult(info);     
-    // NSLog(@"Getting auth code from NaverApp success!");
+}
+
+- (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFailAuthorizationWithRecieveType:(THIRDPARTYLOGIN_RECEIVE_TYPE)recieveType
+{
+    NSLog(@"NaverApp login fail handler");
 }
 
 @end
