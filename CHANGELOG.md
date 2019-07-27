@@ -1,6 +1,34 @@
-## 0.0.1
+## 0.3.2
 
-* Initial release.
+* ios Naver App login disable
+
+## 0.3.1
+
+* Android Login Cancle error fix
+
+## 0.3.0
+
+* migrate to AndroidX 
+
+## 0.2.1
+
+* Readme.md
+
+## 0.2.0
+
+* ios issue add Readme.md
+
+## 0.1.3
+
+* ios swift to object-c
+
+## 0.1.2
+
+* ios build issue list add readme.md
+
+## 0.1.1
+
+* pod spec change.
 
 ## 0.1.0
 
@@ -8,30 +36,11 @@
 * readme add for ios cocoapods.
 * ios dependency Alamofire (5.0.0-beta.6) vesion update
 
-## 0.1.1
+## 0.0.1
 
-* pod spec change.
+* Initial release.
 
-## 0.1.2
 
-* ios build issue list add readme.md
 
-## 0.1.3
 
-* ios swift to object-c
 
-## 0.2.0
-
-* ios issue add Readme.md
-
-## 0.2.1
-
-* Readme.md
-
-## 0.3.0
-
-* migrate to AndroidX 
-
-## 0.3.1
-
-* Android Login Cancle error fix
