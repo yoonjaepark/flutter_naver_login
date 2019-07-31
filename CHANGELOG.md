@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Readme.md
+
 ## 0.3.3
 
 * ios Naver App login enable

@@ -1,6 +1,6 @@
 name: flutter_naver_login
 description: A Flutter plugin for using the native Naver Login SDKs on Android and iOS.
-version: 0.3.3
+version: 0.3.4
 author: YoonJaePark <rhkdro@gmail.com>
 homepage: https://github.com/yoonjaepark/flutter_naver_login
 

@@ -1,5 +1,5 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v0.3.3-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v0.3.4-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/pod-v1.6.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/ios-10.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/naverSDK-v4.0.12-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
@@ -129,11 +129,9 @@ After you've done that, find out what your Naver App Client ID is. You can find 
 ```
 A sample of a complete Info.plist file can be found [here](https://github.com/yoonjaepark/flutter_naver_login/blob/master/example/ios/Runner/Info.plist).
 
-Done!
-
-**\<your project root>ios/Runner/ios/Runner/AppDelegate.m**
 
 Add the following code to log in using the Naver app.
+**\<your project root>ios/Runner/ios/Runner/AppDelegate.m**
 
 ```
 // Implemented when iOS 9.0 Less
