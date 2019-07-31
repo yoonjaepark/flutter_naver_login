@@ -7,10 +7,9 @@
   if ((self = [super init])) {
       _thirdPartyLoginConn = [NaverThirdPartyLoginConnection getSharedInstance];
       
-      [_thirdPartyLoginConn setIsNaverAppOauthEnable:NO];
+      [_thirdPartyLoginConn setIsNaverAppOauthEnable:YES];
       [_thirdPartyLoginConn setIsInAppOauthEnable:YES];
-
-      
+     
       NSBundle* mainBundle = [NSBundle mainBundle];
       NSString *_kServiceAppUrlScheme = [mainBundle objectForInfoDictionaryKey:@"kServiceAppUrlScheme"];
       NSString *_kConsumerKey = [mainBundle objectForInfoDictionaryKey:@"kConsumerKey"];
@@ -21,7 +20,7 @@
       [_thirdPartyLoginConn setConsumerSecret:_kConsumerSecret];
       [_thirdPartyLoginConn setAppName:_kServiceAppName];
       [_thirdPartyLoginConn setServiceUrlScheme:_kServiceAppUrlScheme];
-      
+     
       _thirdPartyLoginConn.delegate = self;
   #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
       int version = [[[UIDevice currentDevice] systemVersion] intValue];
@@ -45,22 +44,16 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     _naverResult = result;
   if ([@"logIn" isEqualToString:call.method]) {
-//    NaverThirdPartyLoginConnection *tlogin = [NaverThirdPartyLoginConnection getSharedInstance];
     [_thirdPartyLoginConn requestThirdPartyLogin];
-    // result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
   } else if ([@"logOut" isEqualToString:call.method]) {
-//    NaverThirdPartyLoginConnection *tlogin = [NaverThirdPartyLoginConnection getSharedInstance];
-
     [_thirdPartyLoginConn requestDeleteToken];
   } else if ([@"getCurrentAcount" isEqualToString:call.method]) {
-    // [self getUserInfo:result];
     [self getUserInfo];
   } else if ([@"getCurrentAccessToken" isEqualToString:call.method]) {
  		NSMutableDictionary *info = [NSMutableDictionary new];
 		info[@"status"] = @"getToken";
 		info[@"accessToken"] = _thirdPartyLoginConn.accessToken;
 		info[@"tokenType"] = _thirdPartyLoginConn.tokenType;
-    // NSLog(@"info = %@", info);
 
     _naverResult(info);
   } else {
@@ -88,15 +81,11 @@
     if (error) {
         NSLog(@"Error happened - %@", [error description]);
     } else {
-        // NSLog(@"recevied data - %@", decodingString);
         NSData *jsonData = [decodingString dataUsingEncoding:NSUTF8StringEncoding];
         NSError *e;
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData options:nil error:&e];
-        // NSLog(@"resultcode = %@", [dict objectForKey:@"resultcode"]);
         
-        // NSLog(@"response = %@", [dict objectForKey:@"response"]);
         NSDictionary *res = [dict objectForKey:@"response"];
-        // NSLog(@"name = %@", [res objectForKey:@"name"]);
         NSMutableDictionary *info = [NSMutableDictionary new];
         info[@"status"] = @"loggedIn";
         info[@"email"] = [res objectForKey:@"email"];
@@ -107,6 +96,7 @@
         info[@"name"] = [res objectForKey:@"name"];
         info[@"id"] = [res objectForKey:@"id"];
         info[@"birthday"] = [res objectForKey:@"birthday"];
+        
         _naverResult(info);
     }
 }
@@ -115,13 +105,11 @@
 
 - (void)oauth20ConnectionDidFinishRequestACTokenWithAuthCode {
 //         로그인이 성공했을 경우 호출
-//    printf("oauth20ConnectionDidFinishRequestACTokenWithAuthCode");
     [self getUserInfo];
 }
 
 - (void)oauth20ConnectionDidFinishDeleteToken {
     //         로그아웃 경우 호출
-//    printf("oauth20ConnectionDidFinishDeleteToken");
     NSMutableDictionary *info = [NSMutableDictionary new];
     info[@"status"] = @"cancelledByUser";
     info[@"isLogin"] = false;
@@ -130,21 +118,19 @@
 
 
 - (void)oauth20ConnectionDidOpenInAppBrowserForOAuth:(NSURLRequest *)request {
-    // [self presentWebviewControllerWithRequest:request];
-//    printf("oauth20ConnectionDidOpenInAppBrowserForOAuth");
 }
 
 - (void)oauth20ConnectionDidFinishRequestACTokenWithRefreshToken {
     //         이미 로그인이 되어있는 경우 access 토큰을 업데이트 하는 경우
-//    printf("oauth20ConnectionDidFinishRequestACTokenWithRefreshToken");
     [self getUserInfo];
 }
-- (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFinishAuthorizationWithResult:(THIRDPARTYLOGIN_RECEIVE_TYPE)recieveType
+
+- (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFailWithError:(NSError *)error
 {
     NSMutableDictionary *info = [NSMutableDictionary new];
     info[@"status"] = @"error";
     info[@"errorMessage"] = @"NaverApp login fail handler";
-    _naverResult(info);     
+    _naverResult(info);
 }
 
 - (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFailAuthorizationWithRecieveType:(THIRDPARTYLOGIN_RECEIVE_TYPE)recieveType

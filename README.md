@@ -1,5 +1,5 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v0.3.2-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v0.3.3-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/pod-v1.6.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/ios-10.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/naverSDK-v4.0.12-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
@@ -131,6 +131,23 @@ A sample of a complete Info.plist file can be found [here](https://github.com/yo
 
 Done!
 
+**\<your project root>ios/Runner/ios/Runner/AppDelegate.m**
+
+Add the following code to log in using the Naver app.
+
+```
+// Implemented when iOS 9.0 Less
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+}
+
+// Implemented when iOS 9.0 higher
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
+    return [[NaverThirdPartyLoginConnection getSharedInstance] application:app openURL:url options:options];
+}
+```
+
 ## How do I use it?
 
 The library tries to closely match the native Android & iOS login SDK APIs where possible. For complete API documentation, just see the [source code](). Everything is documented there.
@@ -175,7 +192,6 @@ setState(() {
 
 
 ### ios issue 
-1. Naver App login disable
 1. CocoaPods could not find compatible versions for pod "naveridlogin-sdk-ios" Specs satisfying the `naveridlogin-sdk-ios (~> 4.0.12)` dependency were found, but they required a higher minimum deployment target.
     - runner target - required a higher deployment target 10.0.
 1. d: warning: directory not found for option '-L/project directory'

@@ -1,3 +1,7 @@
+## 0.3.3
+
+* ios Naver App login enable
+
 ## 0.3.2
 
 * ios Naver App login disable

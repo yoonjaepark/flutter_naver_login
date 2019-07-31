@@ -15,7 +15,6 @@ class FlutterNaverLogin {
   }
 
   static Future<NaverLoginResult> logOut() async {
-    print("logOut");
     final Map<dynamic, dynamic> res = await _channel.invokeMethod('logOut');
     
     return _delayedToResult(
