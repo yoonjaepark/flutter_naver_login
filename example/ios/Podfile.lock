@@ -2,8 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_naver_login (0.0.1):
     - Flutter
-    - naveridlogin-sdk-ios (~> 4.0.12)
-  - naveridlogin-sdk-ios (4.0.12)
+    - naveridlogin-sdk-ios (~> 4.1.0)
+  - naveridlogin-sdk-ios (4.1.0)
 
 DEPENDENCIES:
   - Flutter (from `.symlinks/flutter/ios`)
@@ -20,10 +20,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_naver_login/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
-  flutter_naver_login: d5245429e5025b048c81d9eb3e90369fcbdb8066
-  naveridlogin-sdk-ios: f894849d1f3454f8a68a57383ba29bd9f0d0257f
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_naver_login: a6e5b1459494dd0cce25de2446ba603f9435d79a
+  naveridlogin-sdk-ios: eaef9c106bd04f1ec592a9f8418ccb03275ddb02
 
 PODFILE CHECKSUM: aff02bfeed411c636180d6812254b2daeea14d09
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.7.5
