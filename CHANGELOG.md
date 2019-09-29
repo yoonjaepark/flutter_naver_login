@@ -1,3 +1,7 @@
+## 1.0.0
+
+* ios13 pod version update
+
 ## 0.3.4
 
 * Readme.md
