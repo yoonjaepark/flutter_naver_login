@@ -4,36 +4,36 @@
 
 @implementation FlutterNaverLoginPlugin
 - (id)init {
-  if ((self = [super init])) {
-      _thirdPartyLoginConn = [NaverThirdPartyLoginConnection getSharedInstance];
-      
-      [_thirdPartyLoginConn setIsNaverAppOauthEnable:YES];
-      [_thirdPartyLoginConn setIsInAppOauthEnable:YES];
-     
-      NSBundle* mainBundle = [NSBundle mainBundle];
-      NSString *_kServiceAppUrlScheme = [mainBundle objectForInfoDictionaryKey:@"kServiceAppUrlScheme"];
-      NSString *_kConsumerKey = [mainBundle objectForInfoDictionaryKey:@"kConsumerKey"];
-      NSString *_kConsumerSecret = [mainBundle objectForInfoDictionaryKey:@"kConsumerSecret"];
-      NSString *_kServiceAppName = [mainBundle objectForInfoDictionaryKey:@"kServiceAppName"];
-      //Log the value
-      [_thirdPartyLoginConn setConsumerKey:_kConsumerKey ];
-      [_thirdPartyLoginConn setConsumerSecret:_kConsumerSecret];
-      [_thirdPartyLoginConn setAppName:_kServiceAppName];
-      [_thirdPartyLoginConn setServiceUrlScheme:_kServiceAppUrlScheme];
-     
-      _thirdPartyLoginConn.delegate = self;
-  #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-      int version = [[[UIDevice currentDevice] systemVersion] intValue];
-      if (7 <= version) {
-              // self.automaticallyAdjustsScrollViewInsets = NO;
-      }
-  #endif
-      }
-  return self;
+    if ((self = [super init])) {
+        _thirdPartyLoginConn = [NaverThirdPartyLoginConnection getSharedInstance];
+        
+        [_thirdPartyLoginConn setIsNaverAppOauthEnable:YES];
+        [_thirdPartyLoginConn setIsInAppOauthEnable:YES];
+        
+        NSBundle* mainBundle = [NSBundle mainBundle];
+        NSString *_kServiceAppUrlScheme = [mainBundle objectForInfoDictionaryKey:@"kServiceAppUrlScheme"];
+        NSString *_kConsumerKey = [mainBundle objectForInfoDictionaryKey:@"kConsumerKey"];
+        NSString *_kConsumerSecret = [mainBundle objectForInfoDictionaryKey:@"kConsumerSecret"];
+        NSString *_kServiceAppName = [mainBundle objectForInfoDictionaryKey:@"kServiceAppName"];
+        //Log the value
+        [_thirdPartyLoginConn setConsumerKey:_kConsumerKey ];
+        [_thirdPartyLoginConn setConsumerSecret:_kConsumerSecret];
+        [_thirdPartyLoginConn setAppName:_kServiceAppName];
+        [_thirdPartyLoginConn setServiceUrlScheme:_kServiceAppUrlScheme];
+        
+        _thirdPartyLoginConn.delegate = self;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+        int version = [[[UIDevice currentDevice] systemVersion] intValue];
+        if (7 <= version) {
+            // self.automaticallyAdjustsScrollViewInsets = NO;
+        }
+#endif
+    }
+    return self;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  
+    
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:@"flutter_naver_login"
                                      binaryMessenger:[registrar messenger]];
@@ -43,22 +43,22 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     _naverResult = result;
-  if ([@"logIn" isEqualToString:call.method]) {
-    [_thirdPartyLoginConn requestThirdPartyLogin];
-  } else if ([@"logOut" isEqualToString:call.method]) {
-    [_thirdPartyLoginConn requestDeleteToken];
-  } else if ([@"getCurrentAcount" isEqualToString:call.method]) {
-    [self getUserInfo];
-  } else if ([@"getCurrentAccessToken" isEqualToString:call.method]) {
- 		NSMutableDictionary *info = [NSMutableDictionary new];
-		info[@"status"] = @"getToken";
-		info[@"accessToken"] = _thirdPartyLoginConn.accessToken;
-		info[@"tokenType"] = _thirdPartyLoginConn.tokenType;
-
-    _naverResult(info);
-  } else {
-    result(FlutterMethodNotImplemented);
-  }
+    if ([@"logIn" isEqualToString:call.method]) {
+        [_thirdPartyLoginConn requestThirdPartyLogin];
+    } else if ([@"logOut" isEqualToString:call.method]) {
+        [_thirdPartyLoginConn requestDeleteToken];
+    } else if ([@"getCurrentAcount" isEqualToString:call.method]) {
+        [self getUserInfo];
+    } else if ([@"getCurrentAccessToken" isEqualToString:call.method]) {
+        NSMutableDictionary *info = [NSMutableDictionary new];
+        info[@"status"] = @"getToken";
+        info[@"accessToken"] = _thirdPartyLoginConn.accessToken;
+        info[@"tokenType"] = _thirdPartyLoginConn.tokenType;
+        
+        _naverResult(info);
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
 }
 
 -(void) getUserInfo {
@@ -104,7 +104,7 @@
 #pragma mark - OAuth20 deleagate
 
 - (void)oauth20ConnectionDidFinishRequestACTokenWithAuthCode {
-//         로그인이 성공했을 경우 호출
+    //         로그인이 성공했을 경우 호출
     [self getUserInfo];
 }
 
@@ -114,10 +114,6 @@
     info[@"status"] = @"cancelledByUser";
     info[@"isLogin"] = false;
     _naverResult(info);
-}
-
-
-- (void)oauth20ConnectionDidOpenInAppBrowserForOAuth:(NSURLRequest *)request {
 }
 
 - (void)oauth20ConnectionDidFinishRequestACTokenWithRefreshToken {
@@ -133,9 +129,17 @@
     _naverResult(info);
 }
 
+- (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFinishAuthorizationWithResult:(THIRDPARTYLOGIN_RECEIVE_TYPE)recieveType
+{
+    [self getUserInfo];
+}
+
 - (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFailAuthorizationWithRecieveType:(THIRDPARTYLOGIN_RECEIVE_TYPE)recieveType
 {
-    NSLog(@"NaverApp login fail handler");
+    NSMutableDictionary *info = [NSMutableDictionary new];
+    info[@"status"] = @"error";
+    info[@"errorMessage"] = @"NaverApp login fail handler";
+    _naverResult(info);
 }
 
 @end

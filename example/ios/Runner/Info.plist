@@ -24,10 +24,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>flutternaverlogin</string>
+			<string>flutternaverloginexample</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>flutternaverlogin</string>
+				<string>flutternaverloginexample</string>
 			</array>
 		</dict>
 	</array>

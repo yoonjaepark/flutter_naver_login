@@ -1,3 +1,7 @@
+## 1.0.1
+
+* ios13 background error fix
+
 ## 1.0.0
 
 * ios13 pod version update
