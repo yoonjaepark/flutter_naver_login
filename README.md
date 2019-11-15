@@ -1,5 +1,5 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v1.0.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v1.1.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/pod-v1.6.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/ios-10.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/naverSDK-v4.0.12-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
@@ -133,6 +133,7 @@ A sample of a complete Info.plist file can be found [here](https://github.com/yo
 Add the following code to log in using the Naver app.
 **\<your project root>ios/Runner/ios/Runner/AppDelegate.m**
 
+**object-c**
 ```
 // Implemented when iOS 9.0 Less
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
@@ -144,6 +145,13 @@ Add the following code to log in using the Naver app.
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
     return [[NaverThirdPartyLoginConnection getSharedInstance] application:app openURL:url options:options];
 }
+```
+
+**swift**
+```
+ override func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        return NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
+    }
 ```
 
 ## How do I use it?

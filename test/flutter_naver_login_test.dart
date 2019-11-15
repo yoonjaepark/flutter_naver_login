@@ -16,6 +16,5 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await FlutterNaverLogin.platformVersion, '42');
   });
 }

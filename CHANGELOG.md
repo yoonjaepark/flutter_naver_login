@@ -1,3 +1,9 @@
+## 1.1.0
+
+* build.gradle update
+* readme update
+* android logout fix
+
 ## 1.0.1
 
 * ios13 background error fix
