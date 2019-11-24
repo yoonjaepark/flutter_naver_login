@@ -1,3 +1,7 @@
+## 1.1.1
+
+* readme update
+
 ## 1.1.0
 
 * build.gradle update
