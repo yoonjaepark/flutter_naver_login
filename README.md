@@ -84,48 +84,65 @@ After you've done that, find out what your Naver App Client ID is. You can find 
 
 **\<your project root>ios/Runner/Info.plist**
 ```xml
-    <key>LSApplicationQueriesSchemes</key>
-   <array>
-      <string>naversearchapp</string>
-      <string>naversearchthirdlogin</string>
-   </array>
-
-	<key>kServiceAppUrlScheme</key>
-	<string>[UrlScheme]</string>
-	<key>kConsumerKey</key>
-	<string>[ConsumerKey]</string>
-	<key>kConsumerSecret</key>
-	<string>[ConsumerSecret]</string>
-	<key>kServiceAppName</key>
-	<string>[ServiceAppName]</string>
-
-
-   <key>NSAppTransportSecurity</key>
-   <dict>
-      <key>NSAllowsArbitraryLoads</key>
-      <true/>
-      <key>NSExceptionDomains</key>
-      <dict>
-         <key>naver.com</key>
-         <dict>
-            <key>NSExceptionAllowsInsecureHTTPLoads</key>
-            <true/>
-            <key>NSExceptionRequiresForwardSecrecy</key>
-            <false/>
-            <key>NSIncludesSubdomains</key>
-            <true/>
-         </dict>
-         <key>naver.net</key>
-         <dict>
-            <key>NSExceptionAllowsInsecureHTTPLoads</key>
-            <true/>
-            <key>NSExceptionRequiresForwardSecrecy</key>
-            <false/>
-            <key>NSIncludesSubdomains</key>
-            <true/>
-         </dict>
-      </dict>
-   </dict>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+				<!-- other codes -->
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>[UrlScheme]</string>
+                </array>
+            </dict>
+        </array>
+  
+        <key>LSApplicationQueriesSchemes</key>
+        <array>
+            <string>naversearchapp</string>
+            <string>naversearchthirdlogin</string>
+        </array>
+        <key>kServiceAppUrlScheme</key>
+        <string>[UrlScheme]</string>
+        <key>kConsumerKey</key>
+        <string>[ConsumerKey]</string>
+        <key>kConsumerSecret</key>
+        <string>[ConsumerSecret]</string>
+        <key>kServiceAppName</key>
+        <string>[ServiceAppName]</string>
+        
+        <!-- http allows configurations -->
+        <key>NSAppTransportSecurity</key>
+        <dict>
+           <key>NSAllowsArbitraryLoads</key>
+           <true/>
+           <key>NSExceptionDomains</key>
+           <dict>
+              <key>naver.com</key>
+              <dict>
+                 <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                 <true/>
+                 <key>NSExceptionRequiresForwardSecrecy</key>
+                 <false/>
+                 <key>NSIncludesSubdomains</key>
+                 <true/>
+              </dict>
+              <key>naver.net</key>
+              <dict>
+                 <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                 <true/>
+                 <key>NSExceptionRequiresForwardSecrecy</key>
+                 <false/>
+                 <key>NSIncludesSubdomains</key>
+                 <true/>
+              </dict>
+           </dict>
+        </dict>
+    </dict>
+</plist>
 ```
 A sample of a complete Info.plist file can be found [here](https://github.com/yoonjaepark/flutter_naver_login/blob/master/example/ios/Runner/Info.plist).
 
