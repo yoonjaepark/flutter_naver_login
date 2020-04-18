@@ -6,10 +6,10 @@
 - (id)init {
     if ((self = [super init])) {
         _thirdPartyLoginConn = [NaverThirdPartyLoginConnection getSharedInstance];
-        
+
         [_thirdPartyLoginConn setIsNaverAppOauthEnable:YES];
         [_thirdPartyLoginConn setIsInAppOauthEnable:YES];
-        
+
         NSBundle* mainBundle = [NSBundle mainBundle];
         NSString *_kServiceAppUrlScheme = [mainBundle objectForInfoDictionaryKey:@"kServiceAppUrlScheme"];
         NSString *_kConsumerKey = [mainBundle objectForInfoDictionaryKey:@"kConsumerKey"];
@@ -20,7 +20,7 @@
         [_thirdPartyLoginConn setConsumerSecret:_kConsumerSecret];
         [_thirdPartyLoginConn setAppName:_kServiceAppName];
         [_thirdPartyLoginConn setServiceUrlScheme:_kServiceAppUrlScheme];
-        
+
         _thirdPartyLoginConn.delegate = self;
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
         int version = [[[UIDevice currentDevice] systemVersion] intValue];
@@ -33,7 +33,7 @@
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    
+
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:@"flutter_naver_login"
                                      binaryMessenger:[registrar messenger]];
@@ -54,7 +54,7 @@
         info[@"status"] = @"getToken";
         info[@"accessToken"] = _thirdPartyLoginConn.accessToken;
         info[@"tokenType"] = _thirdPartyLoginConn.tokenType;
-        
+
         _naverResult(info);
     } else {
         result(FlutterMethodNotImplemented);
@@ -66,25 +66,25 @@
     //NSString *urlString = @"https://openapi.naver.com/v1/nid/getUserProfile.xml";  //  사용자 프로필 호출
     //json
     NSString *urlString = @"https://openapi.naver.com/v1/nid/me";
-    
+
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
-    
+
     NSString *authValue = [NSString stringWithFormat:@"Bearer %@", _thirdPartyLoginConn.accessToken];
-    
+
     [urlRequest setValue:authValue forHTTPHeaderField:@"Authorization"];
-    
+
     NSHTTPURLResponse *response = nil;
     NSError *error = nil;
     NSData *receivedData = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&response error:&error];
     NSString *decodingString = [[NSString alloc] initWithData:receivedData encoding:NSUTF8StringEncoding];
-    
+
     if (error) {
         NSLog(@"Error happened - %@", [error description]);
     } else {
         NSData *jsonData = [decodingString dataUsingEncoding:NSUTF8StringEncoding];
         NSError *e;
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData options:nil error:&e];
-        
+
         NSDictionary *res = [dict objectForKey:@"response"];
         NSMutableDictionary *info = [NSMutableDictionary new];
         info[@"status"] = @"loggedIn";
@@ -96,7 +96,7 @@
         info[@"name"] = [res objectForKey:@"name"];
         info[@"id"] = [res objectForKey:@"id"];
         info[@"birthday"] = [res objectForKey:@"birthday"];
-        
+
         _naverResult(info);
     }
 }

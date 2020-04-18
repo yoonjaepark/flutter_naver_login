@@ -1,3 +1,7 @@
+## 1.2.0
+
+* flutter 1.12 migration
+
 ## 1.1.1
 
 * readme update
@@ -34,7 +38,7 @@
 
 ## 0.3.0
 
-* migrate to AndroidX 
+* migrate to AndroidX
 
 ## 0.2.1
 
@@ -65,8 +69,3 @@
 ## 0.0.1
 
 * Initial release.
-
-
-
-
-

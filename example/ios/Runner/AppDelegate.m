@@ -1,5 +1,5 @@
-#include "AppDelegate.h"
-#include "GeneratedPluginRegistrant.h"
+#import "AppDelegate.h"
+#import "GeneratedPluginRegistrant.h"
 #import <NaverThirdPartyLogin/NaverThirdPartyLogin.h>
 
 @implementation AppDelegate
@@ -15,6 +15,5 @@
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
     return [[NaverThirdPartyLoginConnection getSharedInstance] application:app openURL:url options:options];
 }
-
 
 @end

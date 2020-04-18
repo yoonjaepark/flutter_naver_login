@@ -5,18 +5,18 @@ import 'src/clock.dart';
 
 class FlutterNaverLogin {
   static const MethodChannel _channel =
-      const MethodChannel('flutter_naver_login');
+  const MethodChannel('flutter_naver_login');
 
   static Future<NaverLoginResult> logIn() async {
     final Map<dynamic, dynamic> res = await _channel.invokeMethod('logIn');
-   
+
     return _delayedToResult(
         new NaverLoginResult._(res.cast<String, dynamic>()));
   }
 
   static Future<NaverLoginResult> logOut() async {
     final Map<dynamic, dynamic> res = await _channel.invokeMethod('logOut');
-    
+
     return _delayedToResult(
         new NaverLoginResult._(res.cast<String, dynamic>()));
   }
@@ -26,14 +26,14 @@ class FlutterNaverLogin {
 
   static Future<NaverAccountResult> currentAccount() async {
     final Map<dynamic, dynamic> res =
-        await _channel.invokeMethod('getCurrentAcount');
-    
+    await _channel.invokeMethod('getCurrentAcount');
+
     return _delayedToResult(new NaverAccountResult._(res.cast<String, dynamic>()));
   }
 
   static Future<NaverAccessToken> get currentAccessToken async {
     final Map<dynamic, dynamic> accessToken =
-        await _channel.invokeMethod('getCurrentAccessToken');
+    await _channel.invokeMethod('getCurrentAccessToken');
 
     if (accessToken == null) {
       return null;

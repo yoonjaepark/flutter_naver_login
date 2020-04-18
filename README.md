@@ -1,5 +1,5 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v1.1.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v1.2.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/pod-v1.6.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/ios-10.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/naverSDK-v4.0.12-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
@@ -99,7 +99,7 @@ After you've done that, find out what your Naver App Client ID is. You can find 
                 </array>
             </dict>
         </array>
-  
+
         <key>LSApplicationQueriesSchemes</key>
         <array>
             <string>naversearchapp</string>
@@ -113,7 +113,7 @@ After you've done that, find out what your Naver App Client ID is. You can find 
         <string>[ConsumerSecret]</string>
         <key>kServiceAppName</key>
         <string>[ServiceAppName]</string>
-        
+
         <!-- http allows configurations -->
         <key>NSAppTransportSecurity</key>
         <dict>
@@ -214,12 +214,12 @@ setState(() {
 ```
 
 
-### ios issue 
+### ios issue
 1. CocoaPods could not find compatible versions for pod "naveridlogin-sdk-ios" Specs satisfying the `naveridlogin-sdk-ios (~> 4.0.12)` dependency were found, but they required a higher minimum deployment target.
     - runner target - required a higher deployment target 10.0.
 1. d: warning: directory not found for option '-L/project directory'
 ld: library not found for -lflutter_naver_login
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
     - build - clean - commandRun: flutter run
-1. Showing All Messages: Multiple commands produce '/Users/yoonjaepark/dev/my_app/build/ios/Debug-iphonesimulator/Runner.app/Frameworks/Flutter.framework': 
+1. Showing All Messages: Multiple commands produce '/Users/yoonjaepark/dev/my_app/build/ios/Debug-iphonesimulator/Runner.app/Frameworks/Flutter.framework':
     - file - project settings - build system - legacy build system
