@@ -148,9 +148,10 @@ A sample of a complete Info.plist file can be found [here](https://github.com/yo
 
 
 Add the following code to log in using the Naver app.
-**\<your project root>ios/Runner/ios/Runner/AppDelegate.m**
 
 **object-c**
+
+**\<your project root>ios/Runner/AppDelegate.m**
 ```
 // Implemented when iOS 9.0 Less
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
@@ -165,6 +166,8 @@ Add the following code to log in using the Naver app.
 ```
 
 **swift**
+
+**\<your project root>ios/Runner/AppDelegate.swift**
 ```
  override func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         return NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
