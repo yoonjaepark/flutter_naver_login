@@ -169,9 +169,11 @@ Add the following code to log in using the Naver app.
 
 **\<your project root>ios/Runner/AppDelegate.swift**
 ```
- override func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        return NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
-    }
+import NaverThirdPartyLogin
+
+override func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    return NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
+}
 ```
 
 ## How do I use it?
