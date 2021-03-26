@@ -74,19 +74,19 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     methodChannel?.setMethodCallHandler(this)
     try {
       e = mContext?.packageName;
+      e?.let {
+        ai = mContext?.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)
 
-      ai = mContext?.packageManager?.getApplicationInfo(e, PackageManager.GET_META_DATA)
+        bundle = ai?.metaData;
 
-      bundle = ai?.metaData;
-
-      if(bundle != null) {
-        OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
-        OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
-        OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
-        mOAuthLoginInstance?.showDevelopersLog(true);
-        mOAuthLoginInstance?.init(mContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
+        if(bundle != null) {
+          OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
+          OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
+          OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
+          mOAuthLoginInstance?.showDevelopersLog(true);
+          mOAuthLoginInstance?.init(mContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
+        }
       }
-
     } catch (e: Exception) {
       e.printStackTrace()
     }
