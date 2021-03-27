@@ -5,7 +5,7 @@ import 'src/clock.dart';
 
 class FlutterNaverLogin {
   static const MethodChannel _channel =
-  const MethodChannel('flutter_naver_login');
+      const MethodChannel('flutter_naver_login');
 
   static Future<NaverLoginResult> logIn() async {
     final Map<dynamic, dynamic> res = await _channel.invokeMethod('logIn');
@@ -21,26 +21,30 @@ class FlutterNaverLogin {
         new NaverLoginResult._(res.cast<String, dynamic>()));
   }
 
-  static Future<bool> get isLoggedIn async =>
-      (await currentAccessToken)?.isValid() ?? false;
+  static Future<bool> get isLoggedIn async {
+    if ((await currentAccessToken).isValid())
+      return true;
+    else
+      return false;
+  }
 
   static Future<NaverAccountResult> currentAccount() async {
     final Map<dynamic, dynamic> res =
-    await _channel.invokeMethod('getCurrentAcount');
+        await _channel.invokeMethod('getCurrentAcount');
 
-    return _delayedToResult(new NaverAccountResult._(res.cast<String, dynamic>()));
+    return _delayedToResult(
+        new NaverAccountResult._(res.cast<String, dynamic>()));
   }
 
   static Future<NaverAccessToken> get currentAccessToken async {
-    final Map<dynamic, dynamic> accessToken =
-    await _channel.invokeMethod('getCurrentAccessToken');
+    final Map<dynamic, dynamic>? accessToken =
+        await _channel.invokeMethod('getCurrentAccessToken');
 
-    if (accessToken == null) {
-      return null;
-    }
-
-    return _delayedToResult(
-        NaverAccessToken._(accessToken.cast<String, dynamic>()));
+    if (accessToken == null)
+      return NaverAccessToken._(noToken);
+    else
+      return _delayedToResult(
+          NaverAccessToken._(accessToken.cast<String, dynamic>()));
   }
 
   static Future<T> _delayedToResult<T>(T result) {
@@ -80,7 +84,11 @@ class NaverAccessToken {
   final String accessToken;
   final String expiresAt;
   final String tokenType;
-  bool isValid() => Clock.now().isBefore(DateTime.parse(expiresAt));
+  bool isValid() {
+    bool timeValid = Clock.now().isBefore(DateTime.parse(expiresAt));
+    bool tokenExist = accessToken != 'no token';
+    return timeValid && tokenExist;
+  }
 
   NaverAccessToken._(Map<String, dynamic> map)
       : accessToken = map['accessToken'],
@@ -108,3 +116,9 @@ class NaverAccountResult {
         birthday = map['birthday'],
         profileImage = map['profile_image'];
 }
+
+Map<String, dynamic> noToken = {
+  'accessToken': 'no token',
+  'expiresAt': 'no token',
+  'tokenType': 'no token',
+};
