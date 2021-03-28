@@ -1,7 +1,6 @@
 name: flutter_naver_login
 description: A Flutter plugin for using the native Naver Login SDKs on Android and iOS.
 version: 1.2.1
-author: YoonJaePark <rhkdro@gmail.com>
 homepage: https://github.com/yoonjaepark/flutter_naver_login
 
 environment:
@@ -26,9 +25,12 @@ flutter:
   # be modified. They are used by the tooling to maintain consistency when
   # adding or updating assets for this project.
   plugin:
-    androidPackage: com.yoonjaepark.flutter_naver_login
-    pluginClass: FlutterNaverLoginPlugin
-
+    platforms:
+      android:
+        package: com.yoonjaepark.flutter_naver_login
+        pluginClass: FlutterNaverLoginPlugin
+      ios:
+        pluginClass: FlutterNaverLoginPlugin
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg
