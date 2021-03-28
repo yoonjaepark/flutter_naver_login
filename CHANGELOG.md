@@ -1,3 +1,7 @@
+## 1.2.1
+
+* flutter 2.0.3 migration, update to null safety
+
 ## 1.2.0
 
 * flutter 1.12 migration
