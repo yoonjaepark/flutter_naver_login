@@ -61,9 +61,9 @@ class NaverLoginResult {
   final NaverAccessToken accessToken;
 
   NaverLoginResult._(Map<String, dynamic> map)
-      : status = _parseStatus(map['status']),
+      : status = _parseStatus(map['status'] ?? ''),
         accessToken = NaverAccessToken._(map),
-        errorMessage = map['errorMessage'],
+        errorMessage = map['errorMessage'] ?? '',
         account = new NaverAccountResult._(map);
 
   static NaverLoginStatus _parseStatus(String status) {
@@ -75,9 +75,12 @@ class NaverLoginResult {
       case 'error':
         return NaverLoginStatus.error;
     }
-
     throw new StateError('Invalid status: $status');
   }
+
+  @override
+  String toString() =>
+      '{ status: $status, account: $account, errorMessage: $errorMessage, accessToken: $accessToken }';
 }
 
 class NaverAccessToken {
@@ -91,9 +94,13 @@ class NaverAccessToken {
   }
 
   NaverAccessToken._(Map<String, dynamic> map)
-      : accessToken = map['accessToken'],
-        expiresAt = map['expiresAt'],
-        tokenType = map['tokenType'];
+      : accessToken = map['accessToken'] ?? '',
+        expiresAt = map['expiresAt'] ?? '',
+        tokenType = map['tokenType'] ?? '';
+
+  @override
+  String toString() =>
+      '{ accessToken: $accessToken, expiresAt: $expiresAt, tokenType: $tokenType }';
 }
 
 class NaverAccountResult {
@@ -107,14 +114,28 @@ class NaverAccountResult {
   final String profileImage;
 
   NaverAccountResult._(Map<String, dynamic> map)
-      : nickname = map['nickname'],
-        id = map['id'],
-        name = map['name'],
-        email = map['email'],
-        gender = map['gender'],
-        age = map['age'],
-        birthday = map['birthday'],
-        profileImage = map['profile_image'];
+      : nickname = map['nickname'] ?? '',
+        id = map['id'] ?? '',
+        name = map['name'] ?? '',
+        email = map['email'] ?? '',
+        gender = map['gender'] ?? '',
+        age = map['age'] ?? '',
+        birthday = map['birthday'] ?? '',
+        profileImage = map['profile_image'] ?? '';
+
+  @override
+  String toString() {
+    return '{ '
+        'nickname: $nickname, '
+        'id: $id, '
+        'name: $name, '
+        'email: $email, '
+        'gender: $gender, '
+        'age: $age, '
+        'birthday: $birthday, '
+        'profileImage: $profileImage'
+        ' }';
+  }
 }
 
 Map<String, dynamic> noToken = {
