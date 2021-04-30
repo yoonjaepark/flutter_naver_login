@@ -1,3 +1,9 @@
+## 1.2.2
+
+* null type Exception
+* android naver sdk 4.2.6 update
+* naverLoginResult.status error code update
+
 ## 1.2.1
 
 * flutter 2.0.3 migration, update to null safety
