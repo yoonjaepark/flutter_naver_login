@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation ('com.naver.nid:naveridlogin-android-sdk:4.2.5')
+    implementation ('com.naver.nid:naveridlogin-android-sdk:4.2.6')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
