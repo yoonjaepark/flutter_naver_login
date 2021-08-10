@@ -17,6 +17,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import org.json.JSONException
 import org.json.JSONObject
@@ -54,11 +55,10 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private var bundle: Bundle? = null
 
   companion object {
-    @JvmStatic
-    fun registerWith(registrar: Registrar) {
-      val instance = FlutterNaverLoginPlugin()
-      instance.registrar = registrar
-      instance.onAttachedToEngine(registrar.context(), registrar.messenger())
+    private var registrar: PluginRegistry.Registrar? = null
+
+    private fun setRegistrar(_registrar: PluginRegistry.Registrar) {
+      registrar = _registrar
     }
   }
 
@@ -129,6 +129,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
           init {
             put("status", "getToken")
             mOAuthLoginInstance?.getAccessToken(mContext)?.let { put("accessToken", it) }
+            mOAuthLoginInstance?.getRefreshToken(mContext)?.let { put("refreshToken", it) }
             put("expiresAt", mOAuthLoginInstance?.getExpiresAt(mContext).toString())
             mOAuthLoginInstance?.getTokenType(mContext)?.let { put("tokenType", it) }
           }

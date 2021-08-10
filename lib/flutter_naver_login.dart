@@ -85,6 +85,7 @@ class NaverLoginResult {
 
 class NaverAccessToken {
   final String accessToken;
+  final String refreshToken;
   final String expiresAt;
   final String tokenType;
   bool isValid() {
@@ -95,12 +96,13 @@ class NaverAccessToken {
 
   NaverAccessToken._(Map<String, dynamic> map)
       : accessToken = map['accessToken'] ?? '',
+        refreshToken = map['refreshToken'] ?? '',
         expiresAt = map['expiresAt'] ?? '',
         tokenType = map['tokenType'] ?? '';
 
   @override
   String toString() =>
-      '{ accessToken: $accessToken, expiresAt: $expiresAt, tokenType: $tokenType }';
+      '{ accessToken: $accessToken, refreshToken: $refreshToken, expiresAt: $expiresAt, tokenType: $tokenType }';
 }
 
 class NaverAccountResult {
@@ -140,6 +142,7 @@ class NaverAccountResult {
 
 Map<String, dynamic> noToken = {
   'accessToken': 'no token',
+  'refreshToken': 'no refreshToken',
   'expiresAt': 'no token',
   'tokenType': 'no token',
 };
