@@ -26,6 +26,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.ExecutionException
+import android.util.Log
 
 /** FlutterNaverLoginPlugin */
 class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -55,10 +56,11 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private var bundle: Bundle? = null
 
   companion object {
-    private var registrar: PluginRegistry.Registrar? = null
-
-    private fun setRegistrar(_registrar: PluginRegistry.Registrar) {
-      registrar = _registrar
+    @JvmStatic
+    fun registerWith(registrar: Registrar) {
+      val instance = FlutterNaverLoginPlugin()
+      instance.registrar = registrar
+      instance.onAttachedToEngine(registrar.context(), registrar.messenger())
     }
   }
 
@@ -156,7 +158,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     try {
       val res = task.execute(accessToken).get()
       val obj = JSONObject(res)
-      var resultProfile = jsonToMap(obj.getString("response"))
+      var resultProfile = jsonObjectToMap(obj.getJSONObject("response"))
       resultProfile["status"] = "loggedIn"
       result.success(resultProfile)
     } catch (e: InterruptedException) {
@@ -258,9 +260,14 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   @Throws(JSONException::class)
   fun jsonToMap(t: String): HashMap<String, String> {
-
-    val map = HashMap<String, String>()
     val jObject = JSONObject(t)
+    var map = jsonObjectToMap(jObject)
+    return map
+  }
+
+  @Throws(JSONException::class)
+  fun jsonObjectToMap(jObject: JSONObject): HashMap<String, String> {
+    val map = HashMap<String, String>()
     val keys = jObject.keys()
 
     while (keys.hasNext()) {
