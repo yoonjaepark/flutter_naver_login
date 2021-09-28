@@ -17,6 +17,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import org.json.JSONException
 import org.json.JSONObject
@@ -25,6 +26,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.ExecutionException
+import android.util.Log
 
 /** FlutterNaverLoginPlugin */
 class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -129,6 +131,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
           init {
             put("status", "getToken")
             mOAuthLoginInstance?.getAccessToken(mContext)?.let { put("accessToken", it) }
+            mOAuthLoginInstance?.getRefreshToken(mContext)?.let { put("refreshToken", it) }
             put("expiresAt", mOAuthLoginInstance?.getExpiresAt(mContext).toString())
             mOAuthLoginInstance?.getTokenType(mContext)?.let { put("tokenType", it) }
           }
@@ -155,7 +158,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     try {
       val res = task.execute(accessToken).get()
       val obj = JSONObject(res)
-      var resultProfile = jsonToMap(obj.getString("response"))
+      var resultProfile = jsonObjectToMap(obj.getJSONObject("response"))
       resultProfile["status"] = "loggedIn"
       result.success(resultProfile)
     } catch (e: InterruptedException) {
@@ -257,9 +260,14 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   @Throws(JSONException::class)
   fun jsonToMap(t: String): HashMap<String, String> {
-
-    val map = HashMap<String, String>()
     val jObject = JSONObject(t)
+    var map = jsonObjectToMap(jObject)
+    return map
+  }
+
+  @Throws(JSONException::class)
+  fun jsonObjectToMap(jObject: JSONObject): HashMap<String, String> {
+    val map = HashMap<String, String>()
     val keys = jObject.keys()
 
     while (keys.hasNext()) {

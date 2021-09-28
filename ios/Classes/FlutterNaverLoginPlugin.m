@@ -53,6 +53,7 @@
         NSMutableDictionary *info = [NSMutableDictionary new];
         info[@"status"] = @"getToken";
         info[@"accessToken"] = _thirdPartyLoginConn.accessToken;
+        info[@"refreshToken"] = _thirdPartyLoginConn.refreshToken;
         info[@"tokenType"] = _thirdPartyLoginConn.tokenType;
 
         _naverResult(info);
