@@ -64,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 new Text('isLogin: $isLogin\n'),
                 new Text('accesToken: $accesToken\n'),
+                new Text('refreshToken: $refreshToken\n'),
                 new Text('tokenType: $tokenType\n'),
                 new Text('user: $name\n'),
               ],
@@ -127,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> buttonTokenPressed() async {
     NaverAccessToken res = await FlutterNaverLogin.currentAccessToken;
     setState(() {
+      refreshToken = res.refreshToken;
       accesToken = res.accessToken;
       tokenType = res.tokenType;
     });

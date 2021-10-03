@@ -1,3 +1,7 @@
+## 1.2.3
+* refreshToken
+* example ios build error fix
+
 ## 1.2.2
 
 * null type Exception
