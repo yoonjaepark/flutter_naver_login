@@ -105,13 +105,13 @@ After you've done that, find out what your Naver App Client ID is. You can find 
             <string>naversearchapp</string>
             <string>naversearchthirdlogin</string>
         </array>
-        <key>kServiceAppUrlScheme</key>
+        <key>naverServiceAppUrlScheme</key>
         <string>[UrlScheme]</string>
-        <key>kConsumerKey</key>
+        <key>naverConsumerKey</key>
         <string>[ConsumerKey]</string>
-        <key>kConsumerSecret</key>
+        <key>naverConsumerSecret</key>
         <string>[ConsumerSecret]</string>
-        <key>kServiceAppName</key>
+        <key>naverServiceAppName</key>
         <string>[ServiceAppName]</string>
 
         <!-- http allows configurations -->
