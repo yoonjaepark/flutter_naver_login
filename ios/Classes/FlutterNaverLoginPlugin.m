@@ -11,15 +11,15 @@
         [_thirdPartyLoginConn setIsInAppOauthEnable:YES];
 
         NSBundle* mainBundle = [NSBundle mainBundle];
-        NSString *_kServiceAppUrlScheme = [mainBundle objectForInfoDictionaryKey:@"kServiceAppUrlScheme"];
-        NSString *_kConsumerKey = [mainBundle objectForInfoDictionaryKey:@"kConsumerKey"];
-        NSString *_kConsumerSecret = [mainBundle objectForInfoDictionaryKey:@"kConsumerSecret"];
-        NSString *_kServiceAppName = [mainBundle objectForInfoDictionaryKey:@"kServiceAppName"];
+        NSString *_naverServiceAppUrlScheme = [mainBundle objectForInfoDictionaryKey:@"naverServiceAppUrlScheme"];
+        NSString *_naverConsumerKey = [mainBundle objectForInfoDictionaryKey:@"naverConsumerKey"];
+        NSString *_naverConsumerSecret = [mainBundle objectForInfoDictionaryKey:@"naverConsumerSecret"];
+        NSString *_naverServiceAppName = [mainBundle objectForInfoDictionaryKey:@"naverServiceAppName"];
         //Log the value
-        [_thirdPartyLoginConn setConsumerKey:_kConsumerKey ];
-        [_thirdPartyLoginConn setConsumerSecret:_kConsumerSecret];
-        [_thirdPartyLoginConn setAppName:_kServiceAppName];
-        [_thirdPartyLoginConn setServiceUrlScheme:_kServiceAppUrlScheme];
+        [_thirdPartyLoginConn setConsumerKey:_naverConsumerKey ];
+        [_thirdPartyLoginConn setConsumerSecret:_naverConsumerSecret];
+        [_thirdPartyLoginConn setAppName:_naverServiceAppName];
+        [_thirdPartyLoginConn setServiceUrlScheme:_naverServiceAppUrlScheme];
 
         _thirdPartyLoginConn.delegate = self;
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000

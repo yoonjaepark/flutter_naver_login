@@ -86,13 +86,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>kConsumerKey</key>
-	<string>[kConsumerKey]</string>
-	<key>kConsumerSecret</key>
-	<string>[kConsumerSecret]</string>
-	<key>kServiceAppName</key>
-	<string>[kServiceAppName]</string>
-	<key>kServiceAppUrlScheme</key>
-	<string>[kServiceAppUrlScheme]</string>
+	<key>naverConsumerKey</key>
+	<string>[ConsumerKey]</string>
+	<key>naverConsumerSecret</key>
+	<string>[ConsumerSecret]</string>
+	<key>naverServiceAppName</key>
+	<string>[ServiceAppName]</string>
+	<key>naverServiceAppUrlScheme</key>
+	<string>[UrlScheme]</string>
 </dict>
 </plist>
