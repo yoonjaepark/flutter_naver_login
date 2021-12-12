@@ -92,6 +92,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontFamily: "Roboto"),
                 )),
             new FlatButton(
+            key: null,
+            onPressed: buttonLogoutAndDeleteTokenPressed,
+            child: new Text(
+              "LogOutAndDeleteToken",
+              style: new TextStyle(
+                  fontSize: 12.0,
+                  color: Colors.black,
+                  fontWeight: FontWeight.normal,
+                  fontFamily: "Roboto"),
+            )),
+            new FlatButton(
                 key: null,
                 onPressed: buttonTokenPressed,
                 child: new Text(
@@ -135,7 +146,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> buttonLogoutPressed() async {
-    FlutterNaverLogin.logOut();
+    NaverLoginResult res = await FlutterNaverLogin.logOut();
+    setState(() {
+      isLogin = false;
+      accesToken = null;
+      tokenType = null;
+      name = null;
+    });
+  }
+
+  Future<void> buttonLogoutAndDeleteTokenPressed() async {
+    NaverLoginResult res = await FlutterNaverLogin.logOutAndDeleteToken();
     setState(() {
       isLogin = false;
       accesToken = null;
