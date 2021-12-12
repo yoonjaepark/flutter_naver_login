@@ -21,6 +21,13 @@ class FlutterNaverLogin {
         new NaverLoginResult._(res.cast<String, dynamic>()));
   }
 
+  static Future<NaverLoginResult> logOutAndDeleteToken() async {
+    final Map<dynamic, dynamic> res = await _channel.invokeMethod('logoutAndDeleteToken');
+
+    return _delayedToResult(
+        new NaverLoginResult._(res.cast<String, dynamic>()));
+  }
+
   static Future<bool> get isLoggedIn async {
     if ((await currentAccessToken).isValid())
       return true;

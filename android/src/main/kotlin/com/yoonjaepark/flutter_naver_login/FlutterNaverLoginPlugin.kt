@@ -34,6 +34,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   private val METHOD_LOG_IN = "logIn"
   private val METHOD_LOG_OUT = "logOut"
+  private val METHOD_LOG_OUT_DELETE_TOKEN = "logoutAndDeleteToken"
   private val METHOD_GET_ACCOUNT = "getCurrentAcount"
 
   private val METHOD_GET_TOKEN = "getCurrentAccessToken"
@@ -126,6 +127,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     when (call.method) {
       METHOD_LOG_IN -> this.login(result)
       METHOD_LOG_OUT -> this.logout(result)
+      METHOD_LOG_OUT_DELETE_TOKEN -> this.logoutAndDeleteToken(result)
       METHOD_GET_TOKEN -> {
         result.success(object : HashMap<String, String>() {
           init {
@@ -187,10 +189,20 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         }
       }
     }
-    mOAuthLoginInstance?.startOauthLoginActivity(this.getActivity(), mOAuthLoginHandler)
+    mOAuthLoginInstance?.startOauthLoginActivity(this.getActivity(), mOAuthLoginHandler);
   }
 
   fun logout(result: Result) {
+    mOAuthLoginInstance?.logout(mContext);
+    result.success(object : HashMap<String, Any>() {
+      init {
+        put("status", "cancelledByUser")
+        put("isLogin", false)
+      }
+    })
+  }
+
+  fun logoutAndDeleteToken(result: Result) {
     var isSuccessDeleteToken = DeleteTokenTask().execute().get();
 
     if (isSuccessDeleteToken) {
@@ -216,7 +228,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   private inner class DeleteTokenTask : AsyncTask<Void, Void, Boolean>() {
     override fun doInBackground(vararg arg: Void): Boolean? {
-      val isSuccessDeleteToken = mOAuthLoginInstance?.logoutAndDeleteToken(mContext)
+      val isSuccessDeleteToken = mOAuthLoginInstance?.logoutAndDeleteToken(mContext);
 
       return isSuccessDeleteToken
     }
