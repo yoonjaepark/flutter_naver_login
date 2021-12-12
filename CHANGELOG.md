@@ -1,3 +1,8 @@
+## 1.2.4
+* Added logOutAndDeleteToken method instead of logout
+* ios prefix k to naver
+* remove ios http allow info
+
 ## 1.2.3
 * refreshToken
 * example ios build error fix
