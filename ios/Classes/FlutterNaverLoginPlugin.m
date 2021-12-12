@@ -45,7 +45,10 @@
     _naverResult = result;
     if ([@"logIn" isEqualToString:call.method]) {
         [_thirdPartyLoginConn requestThirdPartyLogin];
-    } else if ([@"logOut" isEqualToString:call.method]) {
+    }  else if ([@"logOut" isEqualToString:call.method]) {
+        [_thirdPartyLoginConn resetToken];
+        [self logout];
+    } else if ([@"logoutAndDeleteToken" isEqualToString:call.method]) {
         [_thirdPartyLoginConn requestDeleteToken];
     } else if ([@"getCurrentAcount" isEqualToString:call.method]) {
         [self getUserInfo];
@@ -60,6 +63,13 @@
     } else {
         result(FlutterMethodNotImplemented);
     }
+}
+
+-(void) logout {
+    NSMutableDictionary *info = [NSMutableDictionary new];
+    info[@"status"] = @"cancelledByUser";
+    info[@"isLogin"] = false;
+    _naverResult(info);
 }
 
 -(void) getUserInfo {
@@ -124,10 +134,7 @@
 
 - (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFailWithError:(NSError *)error
 {
-    NSMutableDictionary *info = [NSMutableDictionary new];
-    info[@"status"] = @"error";
-    info[@"errorMessage"] = @"NaverApp login fail handler";
-    _naverResult(info);
+    [self logout];
 }
 
 - (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFinishAuthorizationWithResult:(THIRDPARTYLOGIN_RECEIVE_TYPE)recieveType
