@@ -1,3 +1,10 @@
+## 1.3.1
+* minor bugfix
+
+## 1.3.0
+* naver login sdk 5.0.1 Update
+* example update
+
 ## 1.2.4
 * Added logOutAndDeleteToken method instead of logout
 * ios prefix k to naver
