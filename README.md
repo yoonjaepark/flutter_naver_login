@@ -123,8 +123,6 @@ After you've done that, find out what your Naver App Client ID is. You can find 
            <dict>
               <key>naver.com</key>
               <dict>
-                 <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                 <true/>
                  <key>NSExceptionRequiresForwardSecrecy</key>
                  <false/>
                  <key>NSIncludesSubdomains</key>
@@ -132,8 +130,6 @@ After you've done that, find out what your Naver App Client ID is. You can find 
               </dict>
               <key>naver.net</key>
               <dict>
-                 <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                 <true/>
                  <key>NSExceptionRequiresForwardSecrecy</key>
                  <false/>
                  <key>NSIncludesSubdomains</key>
