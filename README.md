@@ -168,7 +168,16 @@ Add the following code to log in using the Naver app.
 import NaverThirdPartyLogin
 
 override func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-    return NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
+    var applicationResult = false
+    if (!applicationResult) {
+       applicationResult = NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
+    }
+    // if you use other application url process, please add code here.
+    
+    if (!applicationResult) {
+       applicationResult = super.application(app, open: url, options: options)
+    }
+    return applicationResult
 }
 ```
 
