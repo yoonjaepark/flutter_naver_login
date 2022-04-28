@@ -54,6 +54,15 @@ class FlutterNaverLogin {
           NaverAccessToken._(accessToken.cast<String, dynamic>()));
   }
 
+  static Future<NaverAccessToken> refreshAccessTokenWithRefreshToken() async {
+    final accessToken = await currentAccessToken;
+    if (accessToken.refreshToken.isNotEmpty ||
+        accessToken.refreshToken != 'no token') {
+      await _channel.invokeMethod('refreshAccessTokenWithRefreshToken');
+    }
+    return (await currentAccessToken);
+  }
+
   static Future<T> _delayedToResult<T>(T result) {
     return new Future.delayed(const Duration(milliseconds: 100), () => result);
   }
@@ -96,8 +105,9 @@ class NaverAccessToken {
   final String expiresAt;
   final String tokenType;
   bool isValid() {
+    if (expiresAt.isEmpty || expiresAt == 'no token') return false;
     bool timeValid = Clock.now().isBefore(DateTime.parse(expiresAt));
-    bool tokenExist = accessToken != 'no token';
+    bool tokenExist = accessToken.isNotEmpty && accessToken != 'no token';
     return timeValid && tokenExist;
   }
 

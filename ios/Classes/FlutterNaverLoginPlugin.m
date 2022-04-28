@@ -64,6 +64,8 @@
         info[@"expiresAt"] = [NSString stringWithFormat:@"%.0f", floor(expiresAt)];
 
         _naverResult(info);
+    } else if ([@"refreshAccessTokenWithRefreshToken" isEqualToString:call.method]) {
+        [_thirdPartyLoginConn requestAccessTokenWithRefreshToken];
     } else {
         result(FlutterMethodNotImplemented);
     }
