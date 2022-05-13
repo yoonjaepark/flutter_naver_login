@@ -1,4 +1,7 @@
 ## 1.5.0
+* Add User Information (mobile, birthyear, mobileE164)
+
+## 1.5.0
 * refreshAccessTokenWithRefreshToken method
 * add ios expiresAt
 

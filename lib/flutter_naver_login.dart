@@ -130,7 +130,10 @@ class NaverAccountResult {
   final String gender;
   final String age;
   final String birthday;
+  final String birthyear;
   final String profileImage;
+  final String mobile;
+  final String mobileE164;
 
   NaverAccountResult._(Map<String, dynamic> map)
       : nickname = map['nickname'] ?? '',
@@ -140,7 +143,10 @@ class NaverAccountResult {
         gender = map['gender'] ?? '',
         age = map['age'] ?? '',
         birthday = map['birthday'] ?? '',
-        profileImage = map['profile_image'] ?? '';
+        birthyear = map['birthyear'] ?? '',
+        profileImage = map['profile_image'] ?? '',
+        mobile = map['mobile'] ?? '',
+        mobileE164 = map['mobileE164'] ?? '';
 
   @override
   String toString() {
@@ -152,7 +158,10 @@ class NaverAccountResult {
         'gender: $gender, '
         'age: $age, '
         'birthday: $birthday, '
-        'profileImage: $profileImage'
+        'birthyear: $birthyear, '
+        'profileImage: $profileImage, '
+        'mobile: $mobile, '
+        'mobileE164: $mobileE164'
         ' }';
   }
 }
