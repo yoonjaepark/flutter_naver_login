@@ -113,6 +113,9 @@
         info[@"name"] = [res objectForKey:@"name"];
         info[@"id"] = [res objectForKey:@"id"];
         info[@"birthday"] = [res objectForKey:@"birthday"];
+        info[@"birthyear"] = [res objectForKey:@"birthyear"];
+        info[@"mobile"] = [res objectForKey:@"mobile"];
+        info[@"mobileE164"] = [res objectForKey:@"mobile_e164"];
 
         _naverResult(info);
     }
