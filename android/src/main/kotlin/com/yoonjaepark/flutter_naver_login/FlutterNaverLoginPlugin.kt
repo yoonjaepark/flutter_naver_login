@@ -39,6 +39,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private val METHOD_GET_ACCOUNT = "getCurrentAcount"
 
   private val METHOD_GET_TOKEN = "getCurrentAccessToken"
+  private val METHOD_REFRESH_ACCESS_TOKEN_WITH_REFRESH_TOKEN = "refreshAccessTokenWithRefreshToken"
 
   /**
    * 네이버 개발자 등록한 client 정보를 넣어준다.
@@ -139,6 +140,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         })
       }
       METHOD_GET_ACCOUNT -> this.currentAccount(result)
+      METHOD_REFRESH_ACCESS_TOKEN_WITH_REFRESH_TOKEN -> this.refreshAccessTokenWithRefreshToken(result)
       else -> result.notImplemented()
     }
   }
@@ -231,6 +233,28 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     NidOAuthLogin().callDeleteTokenApi(this.getActivity()!!, mOAuthLoginHandler)
+  }
+
+  fun refreshAccessTokenWithRefreshToken(result: Result) {
+    val mOAuthLoginHnadler = object : OAuthLoginCallback {
+      override fun onSuccess() {
+        result.success(true)
+      }
+      override fun onFailure(httpStatus: Int, message: String) {
+        val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+        val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
+        result.success(object : HashMap<String, String>() {
+          init {
+            put("status", "error")
+            put("errorMessage", "errorCode:$errorCode, errorDesc:$errorDescription")
+          }
+        })
+      }
+      override fun onError(errorCode: Int, message: String) {
+        onFailure(errorCode, message)
+      }
+    }
+    NidOAuthLogin().callRefreshAccessTokenApi(this.getActivity()!!, mOAuthLoginHnadler)
   }
 
   internal inner class ProfileTask : AsyncTask<String, Void, String>() {

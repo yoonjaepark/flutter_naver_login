@@ -53,13 +53,19 @@
     } else if ([@"getCurrentAcount" isEqualToString:call.method]) {
         [self getUserInfo];
     } else if ([@"getCurrentAccessToken" isEqualToString:call.method]) {
+
+        NSTimeInterval expiresAt = [_thirdPartyLoginConn.accessTokenExpireDate timeIntervalSince1970];
+        
         NSMutableDictionary *info = [NSMutableDictionary new];
         info[@"status"] = @"getToken";
         info[@"accessToken"] = _thirdPartyLoginConn.accessToken;
         info[@"refreshToken"] = _thirdPartyLoginConn.refreshToken;
         info[@"tokenType"] = _thirdPartyLoginConn.tokenType;
+        info[@"expiresAt"] = [NSString stringWithFormat:@"%.0f", floor(expiresAt)];
 
         _naverResult(info);
+    } else if ([@"refreshAccessTokenWithRefreshToken" isEqualToString:call.method]) {
+        [_thirdPartyLoginConn requestAccessTokenWithRefreshToken];
     } else {
         result(FlutterMethodNotImplemented);
     }
