@@ -1,3 +1,10 @@
+## 1.5.0
+* refreshAccessTokenWithRefreshToken method
+* add ios expiresAt
+
+## 1.4.0
+* ios guide reademe update
+
 ## 1.3.1
 * minor bugfix
 
