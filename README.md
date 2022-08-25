@@ -237,13 +237,12 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
     - file - project settings - build system - legacy build system
 
 ### xcode issue
-** Check Your Xcode version **
-When FlutterNaverLogin.logIn() doesn't return anything. if your Naver Social Login works in Android and ios(Naver app is not installed).
+**\<your project root>ios/Runner/AppDelegate.swift**
+1. When FlutterNaverLogin.logIn() doesn't return anything. if your Naver Social Login works in Android and ios(Naver app is not installed).
 Especially if you already face this error with modifing "AppDelegate.swift". Then you should check xcode version. 
 ```Swift Compiler Error (Xcode): 'UIApplicationOpenURLOptionsKey' has been renamed to 'UIApplication.OpenURLOptionsKey'```
 
 xcode: 13.4.1<=, flutter: 3.0.5<=, Dart: 2.17.6<=
-**\<your project root>ios/Runner/AppDelegate.swift**
 ```
 import NaverThirdPartyLogin
 
