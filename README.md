@@ -162,31 +162,11 @@ Add the following code to log in using the Naver app.
 ```
 
 **swift**
-
 **\<your project root>ios/Runner/AppDelegate.swift**
 ```
 import NaverThirdPartyLogin
 
 override func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-    var applicationResult = false
-    if (!applicationResult) {
-       applicationResult = NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
-    }
-    // if you use other application url process, please add code here.
-    
-    if (!applicationResult) {
-       applicationResult = super.application(app, open: url, options: options)
-    }
-    return applicationResult
-}
-```
-
-flutter: 3.0.5<=, Dart: 2.17.6<=
-**\<your project root>ios/Runner/AppDelegate.swift**
-```
-import NaverThirdPartyLogin
-
-override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     var applicationResult = false
     if (!applicationResult) {
        applicationResult = NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
@@ -255,3 +235,28 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
     - build - clean - commandRun: flutter run
 1. Showing All Messages: Multiple commands produce '/Users/yoonjaepark/dev/my_app/build/ios/Debug-iphonesimulator/Runner.app/Frameworks/Flutter.framework':
     - file - project settings - build system - legacy build system
+
+### xcode issue
+** Check Your Xcode version **
+When FlutterNaverLogin.logIn() doesn't return anything. if your Naver Social Login works in Android and ios(Naver app is not installed).
+Especially if you already face this error with modifing "AppDelegate.swift". Then you should check xcode version. 
+```Swift Compiler Error (Xcode): 'UIApplicationOpenURLOptionsKey' has been renamed to 'UIApplication.OpenURLOptionsKey'```
+
+xcode: 13.4.1<=, flutter: 3.0.5<=, Dart: 2.17.6<=
+**\<your project root>ios/Runner/AppDelegate.swift**
+```
+import NaverThirdPartyLogin
+
+override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    var applicationResult = false
+    if (!applicationResult) {
+       applicationResult = NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
+    }
+    // if you use other application url process, please add code here.
+    
+    if (!applicationResult) {
+       applicationResult = super.application(app, open: url, options: options)
+    }
+    return applicationResult
+}
+```
