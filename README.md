@@ -181,6 +181,25 @@ override func application(_ app: UIApplication, open url: URL, options: [UIAppli
 }
 ```
 
+flutter: 3.0.5<=, Dart: 2.17.6<=
+**\<your project root>ios/Runner/AppDelegate.swift**
+```
+import NaverThirdPartyLogin
+
+override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    var applicationResult = false
+    if (!applicationResult) {
+       applicationResult = NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
+    }
+    // if you use other application url process, please add code here.
+    
+    if (!applicationResult) {
+       applicationResult = super.application(app, open: url, options: options)
+    }
+    return applicationResult
+}
+```
+
 ## How do I use it?
 
 The library tries to closely match the native Android & iOS login SDK APIs where possible. For complete API documentation, just see the [source code](). Everything is documented there.
