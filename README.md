@@ -181,6 +181,27 @@ override func application(_ app: UIApplication, open url: URL, options: [UIAppli
 }
 ```
 
+> ** if you use xcode version is over 10 **
+1. When FlutterNaverLogin.logIn() doesn't return anything. if your Naver Social Login works in Android and ios(Naver app is not installed).
+Especially if you already face this error with modifing "AppDelegate.swift". Then you should check xcode version. 
+```Swift Compiler Error (Xcode): 'UIApplicationOpenURLOptionsKey' has been renamed to 'UIApplication.OpenURLOptionsKey'```
+```
+import NaverThirdPartyLogin
+
+override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    var applicationResult = false
+    if (!applicationResult) {
+       applicationResult = NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
+    }
+    // if you use other application url process, please add code here.
+    
+    if (!applicationResult) {
+       applicationResult = super.application(app, open: url, options: options)
+    }
+    return applicationResult
+}
+```
+
 ## How do I use it?
 
 The library tries to closely match the native Android & iOS login SDK APIs where possible. For complete API documentation, just see the [source code](). Everything is documented there.
