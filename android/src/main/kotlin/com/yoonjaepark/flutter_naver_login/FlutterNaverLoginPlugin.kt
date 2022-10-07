@@ -11,10 +11,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -55,7 +55,9 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   private var channel: MethodChannel? = null
 
-  private lateinit var context: Context
+  // Must used this activity instead of context (flutterPluginBinding.applicationContext) to avoid AppCompat issue
+  private var activity: Activity? = null
+
   private lateinit var launcher: ActivityResultLauncher<Intent>
 
   // pendingResult in login function
@@ -66,13 +68,11 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_naver_login")
     channel?.setMethodCallHandler(this);
 
-    context = flutterPluginBinding.applicationContext
-
     NaverIdLoginSDK.showDevelopersLog(true)
 
     try {
-      context?.packageName?.let {
-        val bundle = context?.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
+      flutterPluginBinding.applicationContext?.packageName?.let {
+        val bundle = flutterPluginBinding.applicationContext?.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
 
 
         if(bundle != null) {
@@ -80,7 +80,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
           OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
           OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
 
-          NaverIdLoginSDK.initialize(context, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
+          NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
         }
       }
     } catch (e: Exception) {
@@ -110,8 +110,9 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
   }
 
-  override fun onAttachedToActivity(binding: ActivityPluginBinding) {  
-    this.launcher = (binding.activity as FragmentActivity).registerForActivityResult<Intent, ActivityResult>(ActivityResultContracts.StartActivityForResult()) {
+  override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+    this.activity = binding.activity
+    this.launcher = (binding.activity as FlutterFragmentActivity).registerForActivityResult<Intent, ActivityResult>(ActivityResultContracts.StartActivityForResult()) {
       result: ActivityResult ->
 
       if(pendingResult != null) {
@@ -143,6 +144,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   override fun onDetachedFromActivity() {
+    this.activity = null
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -208,7 +210,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       }
     }
 
-    NaverIdLoginSDK.authenticate(context, launcher, mOAuthLoginHandler);
+    NaverIdLoginSDK.authenticate(this.activity!!, launcher, mOAuthLoginHandler);
   }
 
   fun logout(result: Result) {
@@ -248,7 +250,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       }
     }
 
-    NidOAuthLogin().callDeleteTokenApi(context, mOAuthLoginHandler)
+    NidOAuthLogin().callDeleteTokenApi(this.activity!!, mOAuthLoginHandler)
   }
 
   fun refreshAccessTokenWithRefreshToken(result: Result) {
@@ -271,7 +273,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       }
     }
 
-    NidOAuthLogin().callRefreshAccessTokenApi(context, mOAuthLoginHnadler)
+    NidOAuthLogin().callRefreshAccessTokenApi(this.activity!!, mOAuthLoginHnadler)
   }
 
   internal inner class ProfileTask : AsyncTask<String, Void, String>() {
