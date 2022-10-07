@@ -2,7 +2,7 @@
 [![Build Status](https://img.shields.io/badge/pub-v1.6.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/pod-v1.6.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/ios-10.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
-[![Build Status](https://img.shields.io/badge/naverSDK-v4.0.12-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/naverSDK-v5.2.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 
 A Flutter plugin for using the native Naver Login SDKs on Android and iOS.
@@ -64,6 +64,14 @@ Then simply copy and paste into _ROOT_.
 
 
 A sample of the file can be found here. [here](https://github.com/yoonjaepark/flutter_naver_login/blob/master/example/android/app/src/main/AndroidManifest.xml).
+
+It is also necessary to uses `FlutterFragmentActivity` instead of `FlutterActivity` since uses of naver sdk 5.2.0.
+
+```kotlin
+import io.flutter.embedding.android.FlutterFragmentActivity
+
+class MainActivity: FlutterFragmentActivity()
+```
 
 Done!
 
