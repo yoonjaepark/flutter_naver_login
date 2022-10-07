@@ -40,6 +40,6 @@ android {
 }
 
 dependencies {
-    implementation "com.navercorp.nid:oauth:5.1.1" // jdk 11
+    implementation "com.navercorp.nid:oauth:5.2.0" // jdk 11
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
