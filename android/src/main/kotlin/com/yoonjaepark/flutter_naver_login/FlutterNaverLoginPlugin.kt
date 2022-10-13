@@ -1,14 +1,20 @@
 package com.yoonjaepark.flutter_naver_login
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.AsyncTask
 import android.os.Bundle
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -51,6 +57,11 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   // Must used this activity instead of context (flutterPluginBinding.applicationContext) to avoid AppCompat issue
   private var activity: Activity? = null
+  private lateinit var launcher: ActivityResultLauncher<Intent>
+
+  // pendingResult in login function
+  // used to call flutter result in launcher
+  private var pendingResult: MethodChannel.Result? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_naver_login")
@@ -81,7 +92,6 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     channel = null
   }
 
-
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
   // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
   // plugin registration via this function while apps migrate to use the new Android APIs
@@ -101,6 +111,27 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     this.activity = binding.activity
+    this.launcher = (binding.activity as FlutterFragmentActivity).registerForActivityResult<Intent, ActivityResult>(ActivityResultContracts.StartActivityForResult()) {
+      result: ActivityResult ->
+
+      if(pendingResult != null) {
+        if (result.resultCode == Activity.RESULT_OK) {
+          currentAccount(pendingResult!!)
+        } else if (result.resultCode == Activity.RESULT_CANCELED) {
+            val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+            val errorDesc = NaverIdLoginSDK.getLastErrorDescription()
+            pendingResult!!.success(object : HashMap<String, String>() {
+              init {
+                put("status", "error")
+                put("errorMessage", "errorCode:$errorCode, errorDesc:$errorDesc")
+              }
+            })
+        } else {
+          pendingResult!!.success(null)
+        }
+      }
+      pendingResult = null
+    }
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
@@ -112,7 +143,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   override fun onDetachedFromActivity() {
-    activity = null
+    this.activity = null
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -157,6 +188,8 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   private fun login(result: Result) {
+    pendingResult = result
+
     val mOAuthLoginHandler = object : OAuthLoginCallback {
       override fun onSuccess() {
         currentAccount(result)
@@ -176,7 +209,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       }
     }
 
-    NaverIdLoginSDK.authenticate(this.activity!!, mOAuthLoginHandler);
+    NaverIdLoginSDK.authenticate(this.activity!!, launcher, mOAuthLoginHandler);
   }
 
   fun logout(result: Result) {
