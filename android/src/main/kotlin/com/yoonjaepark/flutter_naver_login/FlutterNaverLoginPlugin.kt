@@ -57,7 +57,6 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   // Must used this activity instead of context (flutterPluginBinding.applicationContext) to avoid AppCompat issue
   private var activity: Activity? = null
-
   private lateinit var launcher: ActivityResultLauncher<Intent>
 
   // pendingResult in login function
