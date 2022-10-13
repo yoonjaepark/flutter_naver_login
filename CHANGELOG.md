@@ -1,3 +1,7 @@
+## 1.7.0
+* naver sdk 5.2.0
+* android kotlinX dependencies 
+
 ## 1.6.0
 * Add User Information (mobile, birthyear, mobileE164)
 

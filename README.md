@@ -1,5 +1,5 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v1.6.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v1.7.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/pod-v1.6.1-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/ios-10.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/naverSDK-v5.2.0-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
