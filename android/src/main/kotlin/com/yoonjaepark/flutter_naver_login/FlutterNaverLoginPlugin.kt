@@ -64,15 +64,11 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private var pendingResult: MethodChannel.Result? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_naver_login")
-    channel?.setMethodCallHandler(this);
-
     NaverIdLoginSDK.showDevelopersLog(true)
 
     try {
       flutterPluginBinding.applicationContext?.packageName?.let {
         val bundle = flutterPluginBinding.applicationContext?.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
-
 
         if(bundle != null) {
           OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
@@ -85,6 +81,9 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     } catch (e: Exception) {
       e.printStackTrace()
     }
+
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_naver_login")
+    channel?.setMethodCallHandler(this);
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
