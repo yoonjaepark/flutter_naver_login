@@ -56,8 +56,7 @@ class FlutterNaverLogin {
 
   static Future<NaverAccessToken> refreshAccessTokenWithRefreshToken() async {
     final accessToken = await currentAccessToken;
-    if (accessToken.refreshToken.isNotEmpty ||
-        accessToken.refreshToken != 'no token') {
+    if (accessToken.refreshToken.isNotEmpty && accessToken.refreshToken != 'no token') {
       await _channel.invokeMethod('refreshAccessTokenWithRefreshToken');
     }
     return (await currentAccessToken);
