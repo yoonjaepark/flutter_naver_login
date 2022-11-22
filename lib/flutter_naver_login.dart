@@ -103,9 +103,10 @@ class NaverAccessToken {
   final String refreshToken;
   final String expiresAt;
   final String tokenType;
+
   bool isValid() {
     if (expiresAt.isEmpty || expiresAt == 'no token') return false;
-    bool timeValid = Clock.now().isBefore(DateTime.parse(expiresAt));
+    bool timeValid = Clock.now().isBefore(DateTime.fromMillisecondsSinceEpoch(int.parse(expiresAt) * 1000));
     bool tokenExist = accessToken.isNotEmpty && accessToken != 'no token';
     return timeValid && tokenExist;
   }
