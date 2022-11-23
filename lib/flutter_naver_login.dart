@@ -4,8 +4,21 @@ import 'package:flutter/services.dart';
 import 'src/clock.dart';
 
 class FlutterNaverLogin {
-  static const MethodChannel _channel =
-      const MethodChannel('flutter_naver_login');
+  static const MethodChannel _channel = const MethodChannel('flutter_naver_login');
+
+  static Future<void> init({
+    required String clientId,
+    required String clientName,
+    required String clientSecret,
+  }) async {
+    final arguments = {
+      'clientId': clientId,
+      'clientName': clientName,
+      'clientSecret': clientSecret,
+    };
+
+    await _channel.invokeMethod("init", arguments);
+  }
 
   static Future<NaverLoginResult> logIn() async {
     final Map<dynamic, dynamic> res = await _channel.invokeMethod('logIn');

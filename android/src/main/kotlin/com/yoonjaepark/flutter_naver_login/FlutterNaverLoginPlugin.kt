@@ -50,9 +50,9 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   /**
    * 네이버 개발자 등록한 client 정보를 넣어준다.
    */
-  private var OAUTH_CLIENT_ID = "OAUTH_CLIENT_ID"
-  private var OAUTH_CLIENT_SECRET = "OAUTH_CLIENT_SECRET"
-  private var OAUTH_CLIENT_NAME = "OAUTH_CLIENT_NAME"
+  // private var OAUTH_CLIENT_ID = "OAUTH_CLIENT_ID"
+  // private var OAUTH_CLIENT_SECRET = "OAUTH_CLIENT_SECRET"
+  // private var OAUTH_CLIENT_NAME = "OAUTH_CLIENT_NAME"
 
   private var channel: MethodChannel? = null
 
@@ -134,7 +134,13 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when (call.method) {
-      METHOD_INIT -> this.init(result)
+      METHOD_INIT -> {
+        @Suppress("UNCHECKED_CAST") val args = call.arguments as Map<String, String?>
+        val clientId = args["clientId"] as String
+        val clientName = args["clientName"] as String
+        var clientSecret = args["clientSecret"] as String
+        this.init(result, clientId, clientName, clientSecret)
+      }
       METHOD_LOG_IN -> this.login(result)
       METHOD_LOG_OUT -> this.logout(result)
       METHOD_LOG_OUT_DELETE_TOKEN -> this.logoutAndDeleteToken(result)
@@ -174,22 +180,22 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
   }
 
-  private fun init(result: Result) {
+  private fun init(result: Result, clientId: String, clientName: String, clientSecret: String) {
     try {
       val packageName = applicationContext.packageName;
       val bundle = applicationContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData;
 
       NaverIdLoginSDK.showDevelopersLog(true)
 
-      OAUTH_CLIENT_ID = bundle.getString("com.naver.sdk.clientId").toString();
-      OAUTH_CLIENT_SECRET = bundle.getString("com.naver.sdk.clientSecret").toString();
-      OAUTH_CLIENT_NAME = bundle.getString("com.naver.sdk.clientName").toString();
+      // OAUTH_CLIENT_ID = bundle.getString("com.naver.sdk.clientId").toString();
+      // OAUTH_CLIENT_SECRET = bundle.getString("com.naver.sdk.clientSecret").toString();
+      // OAUTH_CLIENT_NAME = bundle.getString("com.naver.sdk.clientName").toString();
 
-      println("- clientId: " + OAUTH_CLIENT_ID);
-      println("- clientName: " + OAUTH_CLIENT_NAME);
-      println("- clientSecret: " + OAUTH_CLIENT_SECRET);
+      println("- clientId: " + clientId);
+      println("- clientName: " + clientName);
+      println("- clientSecret: " + clientSecret);
 
-      NaverIdLoginSDK.initialize(applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
+      NaverIdLoginSDK.initialize(applicationContext, clientId, clientName, clientSecret);
 
       result.success()
     } catch (e: Exception) {

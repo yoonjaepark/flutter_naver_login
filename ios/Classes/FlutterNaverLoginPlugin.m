@@ -45,6 +45,8 @@
     _naverResult = result;
     if ([@"logIn" isEqualToString:call.method]) {
         [_thirdPartyLoginConn requestThirdPartyLogin];
+    } else if ([@"init" isEqualToString:call.method]) {
+        [self initSdk]
     }  else if ([@"logOut" isEqualToString:call.method]) {
         [_thirdPartyLoginConn resetToken];
         [self logout];
@@ -69,6 +71,10 @@
     } else {
         result(FlutterMethodNotImplemented);
     }
+}
+
+-(void) initSdk {
+    // do nothing
 }
 
 -(void) logout {
