@@ -182,9 +182,6 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   private fun init(result: Result, clientId: String, clientName: String, clientSecret: String) {
     try {
-      val packageName = applicationContext.packageName;
-      val bundle = applicationContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData;
-
       NaverIdLoginSDK.showDevelopersLog(true)
 
       // OAUTH_CLIENT_ID = bundle.getString("com.naver.sdk.clientId").toString();
@@ -200,7 +197,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       result.success()
     } catch (e: Exception) {
       e.printStackTrace()
-      result.error(e.javaClass.simpleName, e.localizedMessage, e)
+      result.error("Error", "NaverIdLoginSDK.initialize failed", null)
     }
   }
 
