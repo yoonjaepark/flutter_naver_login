@@ -191,15 +191,15 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       println("- clientName: " + clientName);
       println("- clientSecret: " + clientSecret);
 
-
-      deleteCurrentEncryptedPreferences()
       NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName);
       result.success(true)
 
     } catch (e: Exception) {
       e.printStackTrace()
-      deleteCurrentEncryptedPreferences()
+
       try {
+        deleteCurrentEncryptedPreferences()
+        print('- try again sdk init')
         NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName)
         result.success(true)
       } catch (e: Exception) {
@@ -215,7 +215,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
     if (Build.VERSION.SDK_INT >= AndroidVer.API_24_NOUGAT) {
       try {
-        println("- try clear old oauth login prefs");
+        println("- try clear old oauth login prefs")
         applicationContext.deleteSharedPreferences(oldOauthLoginPrefName)
       } catch (e: Exception) {
         //
@@ -223,7 +223,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     try {
-      println("- try clear shared oauth login prefs");
+      println("- try clear shared oauth login prefs")
       val preferences = applicationContext.getSharedPreferences(oauthLoginPrefNamePerApp, Context.MODE_PRIVATE)
       val edit = preferences.edit()
       edit.clear()
