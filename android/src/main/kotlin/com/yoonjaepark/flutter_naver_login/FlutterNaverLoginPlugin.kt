@@ -200,7 +200,8 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       println("OAUTH_CLIENT_SECRET: " + OAUTH_CLIENT_SECRET);
       println("OAUTH_CLIENT_NAME: " + OAUTH_CLIENT_NAME);
 
-      NaverIdLoginSDK.initialize(applicationContext, clientId, clientName, clientSecret);
+      // NaverIdLoginSDK.initialize(applicationContext, clientId, clientName, clientSecret);
+      NaverIdLoginSDK.initialize(this.activity!!, clientId, clientName, clientSecret);
       result.success(true)
 
     } catch (e: Exception) {
@@ -329,7 +330,6 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onPostExecute(s: String) {
-
     }
   }
 
