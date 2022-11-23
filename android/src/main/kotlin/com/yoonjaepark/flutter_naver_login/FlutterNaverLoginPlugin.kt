@@ -213,14 +213,24 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     val oauthLoginPrefNamePerApp = "NaverOAuthLoginEncryptedPreferenceData"
     val oldOauthLoginPrefName  = "NaverOAuthLoginPreferenceData"
 
-    val preferences = applicationContext.getSharedPreferences(oauthLoginPrefNamePerApp, Context.MODE_PRIVATE)
     if (Build.VERSION.SDK_INT >= AndroidVer.API_24_NOUGAT) {
-      applicationContext.deleteSharedPreferences(oldOauthLoginPrefName)
+      try {
+        println("- try clear old oauth login prefs");
+        applicationContext.deleteSharedPreferences(oldOauthLoginPrefName)
+      } catch (e: Exception) {
+        //
+      }
     }
 
-    val edit = preferences.edit()
-    edit.clear()
-    edit.commit()
+    try {
+      println("- try clear shared oauth login prefs");
+      val preferences = applicationContext.getSharedPreferences(oauthLoginPrefNamePerApp, Context.MODE_PRIVATE)
+      val edit = preferences.edit()
+      edit.clear()
+      edit.commit()
+    } catch (e: Exception) {
+      //
+    }
   }
 
   private fun login(result: Result) {
