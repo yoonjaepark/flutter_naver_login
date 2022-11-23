@@ -194,7 +194,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
     } catch (e: Exception) {
       e.printStackTrace()
-      result.error("Error", "NaverIdLoginSDK.initialize failed", null)
+      result.error(e.localizedMessage, "NaverIdLoginSDK.initialize failed. message: " + e.message, null)
     }
   }
 
