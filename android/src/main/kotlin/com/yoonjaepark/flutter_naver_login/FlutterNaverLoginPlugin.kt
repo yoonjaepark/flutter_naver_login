@@ -199,7 +199,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
       try {
         deleteCurrentEncryptedPreferences()
-        print('- try again sdk init')
+        println("- try again sdk init")
         NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName)
         result.success(true)
       } catch (e: Exception) {
