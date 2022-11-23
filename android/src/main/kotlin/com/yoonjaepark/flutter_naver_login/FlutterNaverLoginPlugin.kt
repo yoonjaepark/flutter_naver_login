@@ -38,6 +38,7 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   /** Plugin registration.  */
 
+  private val METHOD_INIT = "init"
   private val METHOD_LOG_IN = "logIn"
   private val METHOD_LOG_OUT = "logOut"
   private val METHOD_LOG_OUT_DELETE_TOKEN = "logoutAndDeleteToken"
@@ -58,35 +59,21 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   // Must used this activity instead of context (flutterPluginBinding.applicationContext) to avoid AppCompat issue
   private var activity: Activity? = null
   private lateinit var launcher: ActivityResultLauncher<Intent>
+  private var _applicationContext: Context? = null
+  private val applicationContext get() = _applicationContext!!
 
   // pendingResult in login function
   // used to call flutter result in launcher
   private var pendingResult: MethodChannel.Result? = null
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    NaverIdLoginSDK.showDevelopersLog(true)
-
-    try {
-      flutterPluginBinding.applicationContext?.packageName?.let {
-        val bundle = flutterPluginBinding.applicationContext?.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
-
-        if(bundle != null) {
-          OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
-          OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
-          OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
-
-          NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
-        }
-      }
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-
+    _applicationContext = flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_naver_login")
     channel?.setMethodCallHandler(this);
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    _applicationContext = null
     channel?.setMethodCallHandler(null)
     channel = null
   }
@@ -147,6 +134,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when (call.method) {
+      METHOD_INIT -> this.init(result)
       METHOD_LOG_IN -> this.login(result)
       METHOD_LOG_OUT -> this.logout(result)
       METHOD_LOG_OUT_DELETE_TOKEN -> this.logoutAndDeleteToken(result)
@@ -183,6 +171,30 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       e.printStackTrace()
     } catch (e: JSONException) {
       e.printStackTrace()
+    }
+  }
+
+  private fun init(result: Result) {
+    try {
+      val packageName = applicationContext.packageName;
+      val bundle = applicationContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData;
+
+      NaverIdLoginSDK.showDevelopersLog(true)
+
+      OAUTH_CLIENT_ID = bundle.getString("com.naver.sdk.clientId").toString();
+      OAUTH_CLIENT_SECRET = bundle.getString("com.naver.sdk.clientSecret").toString();
+      OAUTH_CLIENT_NAME = bundle.getString("com.naver.sdk.clientName").toString();
+
+      println("- clientId: " + OAUTH_CLIENT_ID);
+      println("- clientName: " + OAUTH_CLIENT_NAME);
+      println("- clientSecret: " + OAUTH_CLIENT_SECRET);
+
+      NaverIdLoginSDK.initialize(applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
+
+      result.success()
+    } catch (e: Exception) {
+      e.printStackTrace()
+      result.error(e.javaClass.simpleName, e.localizedMessage, e)
     }
   }
 
