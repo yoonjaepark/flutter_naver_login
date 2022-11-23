@@ -183,18 +183,26 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private fun initSdk(result: Result, clientId: String, clientName: String, clientSecret: String) {
     try {
       NaverIdLoginSDK.showDevelopersLog(true)
+      val packageName = applicationContext.packageName;
+      val bundle = applicationContext.packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData;
 
-      // OAUTH_CLIENT_ID = bundle.getString("com.naver.sdk.clientId").toString();
-      // OAUTH_CLIENT_SECRET = bundle.getString("com.naver.sdk.clientSecret").toString();
-      // OAUTH_CLIENT_NAME = bundle.getString("com.naver.sdk.clientName").toString();
+      OAUTH_CLIENT_ID = bundle.getString("com.naver.sdk.clientId").toString();
+      OAUTH_CLIENT_SECRET = bundle.getString("com.naver.sdk.clientSecret").toString();
+      OAUTH_CLIENT_NAME = bundle.getString("com.naver.sdk.clientName").toString();
 
       println("Init SDK");
       println("- clientId: " + clientId);
       println("- clientName: " + clientName);
       println("- clientSecret: " + clientSecret);
 
+      println("==========================");
+      println("OAUTH_CLIENT_ID: " + OAUTH_CLIENT_ID);
+      println("OAUTH_CLIENT_SECRET: " + OAUTH_CLIENT_SECRET);
+      println("OAUTH_CLIENT_NAME: " + OAUTH_CLIENT_NAME);
+
       NaverIdLoginSDK.initialize(applicationContext, clientId, clientName, clientSecret);
       result.success(true)
+
     } catch (e: Exception) {
       e.printStackTrace()
       result.error("Error", "NaverIdLoginSDK.initialize failed", null)
