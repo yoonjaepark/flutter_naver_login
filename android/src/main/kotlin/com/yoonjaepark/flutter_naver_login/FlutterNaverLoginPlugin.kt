@@ -193,8 +193,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       println("- clientSecret: " + clientSecret);
 
       NaverIdLoginSDK.initialize(applicationContext, clientId, clientName, clientSecret);
-
-      result.success()
+      result.success(true)
     } catch (e: Exception) {
       e.printStackTrace()
       result.error("Error", "NaverIdLoginSDK.initialize failed", null)
