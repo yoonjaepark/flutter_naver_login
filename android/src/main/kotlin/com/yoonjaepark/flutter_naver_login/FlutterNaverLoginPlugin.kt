@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -33,6 +34,7 @@ import android.util.Log
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
+import com.navercorp.nid.util.AndroidVer
 
 /** FlutterNaverLoginPlugin */
 class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -194,9 +196,29 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
     } catch (e: Exception) {
       e.printStackTrace()
-      result.error(e.javaClass.simpleName, "NaverIdLoginSDK.initialize failed. message: " + e.localizedMessage, null)
-
+      deleteCurrentEncryptedPreferences()
+      try {
+        NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName)
+        result.success(true)
+      } catch (e: Exception) {
+        e.printStackTrace()
+        result.error(e.javaClass.simpleName, "NaverIdLoginSDK.initialize failed. message: " + e.localizedMessage, null)
+      }
     }
+  }
+  // https://github.com/naver/naveridlogin-sdk-android/pull/63/files
+  private fun deleteCurrentEncryptedPreferences() {
+    val oauthLoginPrefNamePerApp = "NaverOAuthLoginEncryptedPreferenceData"
+    val oldOauthLoginPrefName  = "NaverOAuthLoginPreferenceData"
+
+    val preferences = applicationContext.getSharedPreferences(oauthLoginPrefNamePerApp, Context.MODE_PRIVATE)
+    if (Build.VERSION.SDK_INT >= AndroidVer.API_24_NOUGAT) {
+      applicationContext.deleteSharedPreferences(oldOauthLoginPrefName)
+    }
+
+    val edit = preferences.edit()
+    edit.clear()
+    edit.commit()
   }
 
   private fun login(result: Result) {
