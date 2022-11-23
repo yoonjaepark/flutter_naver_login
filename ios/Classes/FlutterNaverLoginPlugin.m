@@ -45,7 +45,7 @@
     _naverResult = result;
     if ([@"logIn" isEqualToString:call.method]) {
         [_thirdPartyLoginConn requestThirdPartyLogin];
-    } else if ([@"init" isEqualToString:call.method]) {
+    } else if ([@"initSdk" isEqualToString:call.method]) {
         [self initSdk]
     }  else if ([@"logOut" isEqualToString:call.method]) {
         [_thirdPartyLoginConn resetToken];

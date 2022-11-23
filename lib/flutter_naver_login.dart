@@ -6,7 +6,7 @@ import 'src/clock.dart';
 class FlutterNaverLogin {
   static const MethodChannel _channel = const MethodChannel('flutter_naver_login');
 
-  static Future<void> init({
+  static Future<void> initSdk({
     required String clientId,
     required String clientName,
     required String clientSecret,
@@ -17,7 +17,7 @@ class FlutterNaverLogin {
       'clientSecret': clientSecret,
     };
 
-    await _channel.invokeMethod("init", arguments);
+    await _channel.invokeMethod("initSdk", arguments);
   }
 
   static Future<NaverLoginResult> logIn() async {
