@@ -191,6 +191,8 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       println("- clientName: " + clientName);
       println("- clientSecret: " + clientSecret);
 
+
+      deleteCurrentEncryptedPreferences()
       NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName);
       result.success(true)
 
