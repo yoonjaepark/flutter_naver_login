@@ -75,7 +75,7 @@
 
 -(void) initSdk {
     // do nothing
-    _naverResult(true);
+    _naverResult(@YES);
 }
 
 -(void) logout {
