@@ -46,7 +46,7 @@
     if ([@"logIn" isEqualToString:call.method]) {
         [_thirdPartyLoginConn requestThirdPartyLogin];
     } else if ([@"initSdk" isEqualToString:call.method]) {
-        [self initSdk]
+        [self initSdk];
     }  else if ([@"logOut" isEqualToString:call.method]) {
         [_thirdPartyLoginConn resetToken];
         [self logout];
@@ -75,6 +75,7 @@
 
 -(void) initSdk {
     // do nothing
+    _naverResult(true);
 }
 
 -(void) logout {
