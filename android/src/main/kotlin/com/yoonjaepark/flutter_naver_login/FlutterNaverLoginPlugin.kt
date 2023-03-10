@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -33,6 +34,7 @@ import android.util.Log
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
+import com.navercorp.nid.util.AndroidVer
 
 /** FlutterNaverLoginPlugin */
 class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -63,6 +65,30 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   // used to call flutter result in launcher
   private var pendingResult: MethodChannel.Result? = null
 
+  private fun deleteCurrentEncryptedPreferences(applicationContext: Context) {
+    val oauthLoginPrefNamePerApp = "NaverOAuthLoginEncryptedPreferenceData"
+    val oldOauthLoginPrefName  = "NaverOAuthLoginPreferenceData"
+
+    if (Build.VERSION.SDK_INT >= AndroidVer.API_24_NOUGAT) {
+      try {
+        println("- try clear old oauth login prefs")
+        applicationContext.deleteSharedPreferences(oldOauthLoginPrefName)
+      } catch (e: Exception) {
+        //
+      }
+    }
+
+    try {
+      println("- try clear shared oauth login prefs")
+      val preferences = applicationContext.getSharedPreferences(oauthLoginPrefNamePerApp, Context.MODE_PRIVATE)
+      val edit = preferences.edit()
+      edit.clear()
+      edit.commit()
+    } catch (e: Exception) {
+      //
+    }
+  }
+
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_naver_login")
     channel?.setMethodCallHandler(this);
@@ -73,13 +99,20 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       flutterPluginBinding.applicationContext?.packageName?.let {
         val bundle = flutterPluginBinding.applicationContext?.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
 
-
         if(bundle != null) {
           OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
           OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
           OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
-
-          NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
+          try {
+            NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
+          } catch (e: Exception) {
+            try {
+              deleteCurrentEncryptedPreferences(flutterPluginBinding.applicationContext)
+              NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);  
+            } catch (e: Exception) {
+              e.printStackTrace()
+            }
+          }
         }
       }
     } catch (e: Exception) {
@@ -209,7 +242,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       }
     }
 
-    NaverIdLoginSDK.authenticate(this.activity!!, launcher, mOAuthLoginHandler);
+    NaverIdLoginSDK.authenticate(this.activity!!, mOAuthLoginHandler);
   }
 
   fun logout(result: Result) {
