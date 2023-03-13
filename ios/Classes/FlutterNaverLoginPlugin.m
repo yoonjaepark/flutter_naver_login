@@ -131,11 +131,13 @@
 #pragma mark - OAuth20 deleagate
 
 - (void)oauth20ConnectionDidFinishRequestACTokenWithAuthCode {
+    NSLog(@"oauth20ConnectionDidFinishRequestACTokenWithAuthCode");
     //         로그인이 성공했을 경우 호출
     [self getUserInfo];
 }
 
 - (void)oauth20ConnectionDidFinishDeleteToken {
+    NSLog(@"oauth20ConnectionDidFinishDeleteToken");
     //         로그아웃 경우 호출
     NSMutableDictionary *info = [NSMutableDictionary new];
     info[@"status"] = @"cancelledByUser";
@@ -144,22 +146,27 @@
 }
 
 - (void)oauth20ConnectionDidFinishRequestACTokenWithRefreshToken {
+    NSLog(@"oauth20ConnectionDidFinishRequestACTokenWithRefreshToken");
     //         이미 로그인이 되어있는 경우 access 토큰을 업데이트 하는 경우
     [self getUserInfo];
 }
 
 - (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFailWithError:(NSError *)error
 {
+    NSLog(@"oauth20Connection:didFailWithError - error: $@", error);
     [self logout];
 }
 
 - (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFinishAuthorizationWithResult:(THIRDPARTYLOGIN_RECEIVE_TYPE)recieveType
 {
+    NSLog(@"oauth20Connection:didFinishAuthorizationWithResult - recieveType: %d", recieveType);
     [self getUserInfo];
 }
 
 - (void)oauth20Connection:(NaverThirdPartyLoginConnection *)oauthConnection didFailAuthorizationWithRecieveType:(THIRDPARTYLOGIN_RECEIVE_TYPE)recieveType
 {
+    NSLog(@"oauth20Connection:didFailAuthorizationWithReceiveType - recieveType: %d", recieveType);
+
     NSMutableDictionary *info = [NSMutableDictionary new];
     info[@"status"] = @"error";
     info[@"errorMessage"] = @"NaverApp login fail handler";
