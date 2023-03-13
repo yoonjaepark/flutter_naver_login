@@ -42,6 +42,8 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSLog(@"handleMethodCall: %@", call.method);
+
     _naverResult = result;
     if ([@"logIn" isEqualToString:call.method]) {
         [_thirdPartyLoginConn requestThirdPartyLogin];
@@ -57,7 +59,7 @@
     } else if ([@"getCurrentAccessToken" isEqualToString:call.method]) {
 
         NSTimeInterval expiresAt = [_thirdPartyLoginConn.accessTokenExpireDate timeIntervalSince1970];
-        
+
         NSMutableDictionary *info = [NSMutableDictionary new];
         info[@"status"] = @"getToken";
         info[@"accessToken"] = _thirdPartyLoginConn.accessToken;
@@ -74,6 +76,7 @@
 }
 
 -(void) initSdk {
+    NSLog(@"initSdk");
     // do nothing
     _naverResult(@YES);
 }
