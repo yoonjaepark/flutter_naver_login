@@ -254,8 +254,9 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         onFailure(errorCode, message)
       }
     }
-
-    NaverIdLoginSDK.authenticate(this.activity!!, launcher, mOAuthLoginHandler);
+    // 5.2.0 -> 5.4.0 로 버전업 되면서 아래와 같이 변경되었습니다.
+    NaverIdLoginSDK.authenticate(this.activity!!, launcher)
+    // NaverIdLoginSDK.authenticate(this.activity!!, launcher, mOAuthLoginHandler);
   }
 
   fun logout(result: Result) {
