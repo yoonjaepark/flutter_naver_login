@@ -1,3 +1,7 @@
+## 1.8.0
+* naver sdk 5.4.0
+* fix issues
+
 ## 1.7.0
 * naver sdk 5.2.0
 * android kotlinX dependencies 

@@ -68,10 +68,60 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   // used to call flutter result in launcher
   private var pendingResult: MethodChannel.Result? = null
 
+  private fun deleteCurrentEncryptedPreferences(applicationContext: Context) {
+    val oauthLoginPrefNamePerApp = "NaverOAuthLoginEncryptedPreferenceData"
+    val oldOauthLoginPrefName  = "NaverOAuthLoginPreferenceData"
+
+    if (Build.VERSION.SDK_INT >= AndroidVer.API_24_NOUGAT) {
+      try {
+        println("- try clear old oauth login prefs")
+        applicationContext.deleteSharedPreferences(oldOauthLoginPrefName)
+      } catch (e: Exception) {
+        //
+      }
+    }
+
+    try {
+      println("- try clear shared oauth login prefs")
+      val preferences = applicationContext.getSharedPreferences(oauthLoginPrefNamePerApp, Context.MODE_PRIVATE)
+      val edit = preferences.edit()
+      edit.clear()
+      edit.commit()
+    } catch (e: Exception) {
+      //
+    }
+  }
+
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     _applicationContext = flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_naver_login")
     channel?.setMethodCallHandler(this);
+
+    NaverIdLoginSDK.showDevelopersLog(true)
+
+    try {
+      flutterPluginBinding.applicationContext?.packageName?.let {
+        val bundle = flutterPluginBinding.applicationContext?.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
+
+        if(bundle != null) {
+          OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
+          OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
+          OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
+          try {
+            NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
+          } catch (e: Exception) {
+            try {
+              deleteCurrentEncryptedPreferences(flutterPluginBinding.applicationContext)
+              NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);  
+            } catch (e: Exception) {
+              e.printStackTrace()
+            }
+          }
+        }
+      }
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -254,9 +304,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         onFailure(errorCode, message)
       }
     }
-    // 5.2.0 -> 5.4.0 로 버전업 되면서 아래와 같이 변경되었습니다.
-    NaverIdLoginSDK.authenticate(this.activity!!, launcher)
-    // NaverIdLoginSDK.authenticate(this.activity!!, launcher, mOAuthLoginHandler);
+    NaverIdLoginSDK.authenticate(this.activity!!, mOAuthLoginHandler);
   }
 
   fun logout(result: Result) {
