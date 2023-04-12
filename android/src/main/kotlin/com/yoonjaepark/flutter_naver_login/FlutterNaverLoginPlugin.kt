@@ -214,13 +214,24 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   fun logout(result: Result) {
-    NaverIdLoginSDK.logout()
-    result.success(object : HashMap<String, Any>() {
-      init {
-        put("status", "cancelledByUser")
-        put("isLogin", false)
-      }
-    })
+    try {
+        NaverIdLoginSDK.logout()
+    } catch (e: Exception) {
+        /**
+        Firebase Crasylytics 에서 아래와 같은 에러가 발생
+
+        ArrayDecoders.decodeUnknownField
+        com.google.crypto.tink.shaded.protobuf.c0 - Protocol message contained an invalid tag (zero).
+         */
+        e.printStackTrace()
+    } finally {
+        result.success(object : HashMap<String, Any>() {
+            init {
+                put("status", "cancelledByUser")
+                put("isLogin", false)
+            }
+        })
+    }
   }
 
   fun logoutAndDeleteToken(result: Result) {
