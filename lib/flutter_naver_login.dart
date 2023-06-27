@@ -4,8 +4,23 @@ import 'package:flutter/services.dart';
 import 'src/clock.dart';
 
 class FlutterNaverLogin {
-  static const MethodChannel _channel =
-      const MethodChannel('flutter_naver_login');
+  static const MethodChannel _channel = const MethodChannel('flutter_naver_login');
+
+  static Future<bool?> initSdk({
+    required String clientId,
+    required String clientName,
+    required String clientSecret,
+  }) async {
+    final arguments = {
+      'clientId': clientId,
+      'clientName': clientName,
+      'clientSecret': clientSecret,
+    };
+
+    print('[FlutterNaverLogin] initSdk');
+
+    return await _channel.invokeMethod<bool>("initSdk", arguments);
+  }
 
   static Future<NaverLoginResult> logIn() async {
     final Map<dynamic, dynamic> res = await _channel.invokeMethod('logIn');
@@ -22,7 +37,8 @@ class FlutterNaverLogin {
   }
 
   static Future<NaverLoginResult> logOutAndDeleteToken() async {
-    final Map<dynamic, dynamic> res = await _channel.invokeMethod('logoutAndDeleteToken');
+    final Map<dynamic, dynamic> res =
+        await _channel.invokeMethod('logoutAndDeleteToken');
 
     return _delayedToResult(
         new NaverLoginResult._(res.cast<String, dynamic>()));
@@ -56,8 +72,7 @@ class FlutterNaverLogin {
 
   static Future<NaverAccessToken> refreshAccessTokenWithRefreshToken() async {
     final accessToken = await currentAccessToken;
-    if (accessToken.refreshToken.isNotEmpty ||
-        accessToken.refreshToken != 'no token') {
+    if (accessToken.refreshToken.isNotEmpty && accessToken.refreshToken != 'no token') {
       await _channel.invokeMethod('refreshAccessTokenWithRefreshToken');
     }
     return (await currentAccessToken);
@@ -104,9 +119,11 @@ class NaverAccessToken {
   final String refreshToken;
   final String expiresAt;
   final String tokenType;
+
   bool isValid() {
     if (expiresAt.isEmpty || expiresAt == 'no token') return false;
-    bool timeValid = Clock.now().isBefore(DateTime.parse(expiresAt));
+    bool timeValid = Clock.now().isBefore(
+        DateTime.fromMillisecondsSinceEpoch(int.parse(expiresAt) * 1000));
     bool tokenExist = accessToken.isNotEmpty && accessToken != 'no token';
     return timeValid && tokenExist;
   }
