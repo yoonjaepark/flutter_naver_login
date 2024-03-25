@@ -1,6 +1,6 @@
 ## 1.9.0
 * update naver sdk 5.9.0
-* support pro-guard
+* support proguard
 * add workaround android device back button on FlutterFragmentActivity (flutter/#117061)[https://github.com/flutter/flutter/issues/117061]
 * remove naver sdk aar file, and get it from maven
 
