@@ -88,7 +88,7 @@ import io.flutter.embedding.engine.FlutterShellArgs
 class MainActivity: FlutterFragmentActivity() {
     private val TAG = "FlutterFragmentActivity"
 
-    // This is same as FlutterFragmentActivity.createFlutterFragment(), but only difference is shouldAutomaticallyHandleOnBackPressed(Build.VERSION.SDK_INT >= 33).
+    // This is same as FlutterFragmentActivity.createFlutterFragment(), but only difference is shouldAutomaticallyHandleOnBackPressed(Build.VERSION.SDK_INT >= 33) added.
     // See the https://github.com/flutter/flutter/issues/117061
     override fun createFlutterFragment(): FlutterFragment {
         val backgroundMode = backgroundMode
