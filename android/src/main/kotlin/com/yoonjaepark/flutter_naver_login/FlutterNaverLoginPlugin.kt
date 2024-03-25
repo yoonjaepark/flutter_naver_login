@@ -3,11 +3,9 @@ package com.yoonjaepark.flutter_naver_login
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.AsyncTask
 import android.os.Build
-import android.os.Bundle
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,12 +14,10 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.embedding.android.FlutterFragmentActivity
-import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import org.json.JSONException
 import org.json.JSONObject
@@ -92,7 +88,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
   }
 
-  override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+  override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     _applicationContext = flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_naver_login")
     channel?.setMethodCallHandler(this);
@@ -100,13 +96,13 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     NaverIdLoginSDK.showDevelopersLog(true)
 
     try {
-      flutterPluginBinding.applicationContext?.packageName?.let {
-        val bundle = flutterPluginBinding.applicationContext?.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
+      flutterPluginBinding.applicationContext.packageName?.let {
+        val bundle = flutterPluginBinding.applicationContext.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
 
         if(bundle != null) {
-          var OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
-          var OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
-          var OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
+          val OAUTH_CLIENT_ID = bundle.getString("com.naver.sdk.clientId").toString();
+          val OAUTH_CLIENT_SECRET = bundle.getString("com.naver.sdk.clientSecret").toString();
+          val OAUTH_CLIENT_NAME = bundle.getString("com.naver.sdk.clientName").toString();
           try {
             NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
           } catch (e: Exception) {
@@ -124,7 +120,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
   }
 
-  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+  override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     _applicationContext = null
     channel?.setMethodCallHandler(null)
     channel = null
@@ -184,13 +180,13 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     this.activity = null
   }
 
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+  override fun onMethodCall(call: MethodCall, result: Result) {
     when (call.method) {
       METHOD_INIT_SDK -> {
         @Suppress("UNCHECKED_CAST") val args = call.arguments as Map<String, String?>
         val clientId = args["clientId"] as String
         val clientName = args["clientName"] as String
-        var clientSecret = args["clientSecret"] as String
+        val clientSecret = args["clientSecret"] as String
         this.initSdk(result, clientId, clientName, clientSecret)
       }
       METHOD_LOG_IN -> this.login(result)
@@ -220,7 +216,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     try {
       val res = task.execute(accessToken).get()
       val obj = JSONObject(res)
-      var resultProfile = jsonObjectToMap(obj.getJSONObject("response"))
+      val resultProfile = jsonObjectToMap(obj.getJSONObject("response"))
       resultProfile["status"] = "loggedIn"
       result.success(resultProfile)
     } catch (e: InterruptedException) {
@@ -236,10 +232,10 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     try {
       NaverIdLoginSDK.showDevelopersLog(true)
 
-      println("Init SDK");
-      println("- clientId: " + clientId);
-      println("- clientName: " + clientName);
-      println("- clientSecret: " + clientSecret);
+      println("Init SDK")
+      println("- clientId: $clientId")
+      println("- clientName: $clientName")
+      println("- clientSecret: $clientSecret")
 
       NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName);
       result.success(true)
@@ -307,7 +303,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     NaverIdLoginSDK.authenticate(this.activity!!, mOAuthLoginHandler);
   }
 
-  fun logout(result: Result) {
+  private fun logout(result: Result) {
     NaverIdLoginSDK.logout()
     result.success(object : HashMap<String, Any>() {
       init {
@@ -317,7 +313,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     })
   }
 
-  fun logoutAndDeleteToken(result: Result) {
+  private fun logoutAndDeleteToken(result: Result) {
     val mOAuthLoginHandler = object : OAuthLoginCallback {
       override fun onSuccess() {
         result.success(object : HashMap<String, Any>() {
@@ -344,10 +340,10 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       }
     }
 
-    NidOAuthLogin().callDeleteTokenApi(this.activity!!, mOAuthLoginHandler)
+    NidOAuthLogin().callDeleteTokenApi(mOAuthLoginHandler)
   }
 
-  fun refreshAccessTokenWithRefreshToken(result: Result) {
+  private fun refreshAccessTokenWithRefreshToken(result: Result) {
     val mOAuthLoginHnadler = object : OAuthLoginCallback {
       override fun onSuccess() {
         result.success(true)
@@ -367,7 +363,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       }
     }
 
-    NidOAuthLogin().callRefreshAccessTokenApi(this.activity!!, mOAuthLoginHnadler)
+    NidOAuthLogin().callRefreshAccessTokenApi(mOAuthLoginHnadler)
   }
 
   internal inner class ProfileTask : AsyncTask<String, Void, String>() {
@@ -408,8 +404,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   @Throws(JSONException::class)
   fun jsonToMap(t: String): HashMap<String, String> {
     val jObject = JSONObject(t)
-    var map = jsonObjectToMap(jObject)
-    return map
+    return jsonObjectToMap(jObject)
   }
 
   @Throws(JSONException::class)
