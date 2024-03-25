@@ -49,3 +49,4 @@
 # https://github.com/naver/naveridlogin-sdk-android/issues/34
 -keep public class com.navercorp.nid.** { *; }
 -keep public class com.nhn.android.naverlogin.** { *; }
+-keep class j$.util.** { *; }
