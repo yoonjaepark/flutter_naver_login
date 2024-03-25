@@ -104,9 +104,9 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         val bundle = flutterPluginBinding.applicationContext?.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
 
         if(bundle != null) {
-          OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
-          OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
-          OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
+          var OAUTH_CLIENT_ID = bundle?.getString("com.naver.sdk.clientId").toString();
+          var OAUTH_CLIENT_SECRET = bundle?.getString("com.naver.sdk.clientSecret").toString();
+          var OAUTH_CLIENT_NAME = bundle?.getString("com.naver.sdk.clientName").toString();
           try {
             NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
           } catch (e: Exception) {
