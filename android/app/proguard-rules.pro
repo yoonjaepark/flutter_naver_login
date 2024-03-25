@@ -45,3 +45,8 @@
 # kept. Suspend functions are wrapped in continuations where the type argument
 # is used.
 -keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
+
+# https://github.com/naver/naveridlogin-sdk-android/issues/34
+-keep public class com.navercorp.nid.** { *; }
+-keep public class com.nhn.android.naverlogin.** { *; }
+-keep class j$.util.** { *; }

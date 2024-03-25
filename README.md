@@ -246,36 +246,7 @@ Proguard Support
 # https://github.com/naver/naveridlogin-sdk-android/issues/34
 -keep public class com.navercorp.nid.** { *; }
 -keep public class com.nhn.android.naverlogin.** { *; }
--keepclassmembers class j$.util.concurrent.ConcurrentHashMap$TreeBin {
-  int lockState;
-}
--keepclassmembers class j$.util.concurrent.ConcurrentHashMap {
-  int sizeCtl;
-  int transferIndex;
-  long baseCount;
-  int cellsBusy;
-}
--keepclassmembers class j$.util.concurrent.ConcurrentHashMap$CounterCell {
-  long value;
-}
--keepclassmembers class j$.util.IntSummaryStatistics {
-  long count;
-  long sum;
-  int min;
-  int max;
-}
--keepclassmembers class j$.util.LongSummaryStatistics {
-  long count;
-  long sum;
-  long min;
-  long max;
-}
--keepclassmembers class j$.util.DoubleSummaryStatistics {
-  long count;
-  double sum;
-  double min;
-  double max;
-}
+-keep class j$.util.** { *; }
 ```
 
 Done!
