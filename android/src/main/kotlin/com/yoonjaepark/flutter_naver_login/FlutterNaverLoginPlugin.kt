@@ -9,7 +9,6 @@ import android.os.Build
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -26,7 +25,6 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.ExecutionException
-import android.util.Log
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
@@ -62,7 +60,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   // pendingResult in login function
   // used to call flutter result in launcher
-  private var pendingResult: MethodChannel.Result? = null
+  private var pendingResult: Result? = null
 
   private fun deleteCurrentEncryptedPreferences(applicationContext: Context) {
     val oauthLoginPrefNamePerApp = "NaverOAuthLoginEncryptedPreferenceData"
@@ -91,7 +89,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     _applicationContext = flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_naver_login")
-    channel?.setMethodCallHandler(this);
+    channel?.setMethodCallHandler(this)
 
     NaverIdLoginSDK.showDevelopersLog(true)
 
@@ -100,15 +98,15 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         val bundle = flutterPluginBinding.applicationContext.packageManager?.getApplicationInfo(it, PackageManager.GET_META_DATA)?.metaData
 
         if(bundle != null) {
-          val OAUTH_CLIENT_ID = bundle.getString("com.naver.sdk.clientId").toString();
-          val OAUTH_CLIENT_SECRET = bundle.getString("com.naver.sdk.clientSecret").toString();
-          val OAUTH_CLIENT_NAME = bundle.getString("com.naver.sdk.clientName").toString();
+          val OAUTH_CLIENT_ID = bundle.getString("com.naver.sdk.clientId").toString()
+          val OAUTH_CLIENT_SECRET = bundle.getString("com.naver.sdk.clientSecret").toString()
+          val OAUTH_CLIENT_NAME = bundle.getString("com.naver.sdk.clientName").toString()
           try {
-            NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);
+            NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME)
           } catch (e: Exception) {
             try {
               deleteCurrentEncryptedPreferences(flutterPluginBinding.applicationContext)
-              NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME);  
+              NaverIdLoginSDK.initialize(flutterPluginBinding.applicationContext, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, OAUTH_CLIENT_NAME)
             } catch (e: Exception) {
               e.printStackTrace()
             }
@@ -237,7 +235,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       println("- clientName: $clientName")
       println("- clientSecret: $clientSecret")
 
-      NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName);
+      NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName)
       result.success(true)
 
     } catch (e: Exception) {
@@ -300,7 +298,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         onFailure(errorCode, message)
       }
     }
-    NaverIdLoginSDK.authenticate(this.activity!!, mOAuthLoginHandler);
+    NaverIdLoginSDK.authenticate(this.activity!!, mOAuthLoginHandler)
   }
 
   private fun logout(result: Result) {
@@ -367,7 +365,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   internal inner class ProfileTask : AsyncTask<String, Void, String>() {
-    var result: String = "";
+    private var result: String = ""
     override fun doInBackground(vararg arg: String): String {
       val token = arg[0]// 네이버 로그인 접근 토큰;
       val header = "Bearer $token" // Bearer 다음에 공백 추가
