@@ -344,7 +344,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       }
     }
 
-    NidOAuthLogin().callDeleteTokenApi(this.activity!!, mOAuthLoginHandler)
+    NidOAuthLogin().callDeleteTokenApi(mOAuthLoginHandler)
   }
 
   fun refreshAccessTokenWithRefreshToken(result: Result) {
@@ -367,7 +367,7 @@ class FlutterNaverLoginPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       }
     }
 
-    NidOAuthLogin().callRefreshAccessTokenApi(this.activity!!, mOAuthLoginHnadler)
+    NidOAuthLogin().callRefreshAccessTokenApi(mOAuthLoginHnadler)
   }
 
   internal inner class ProfileTask : AsyncTask<String, Void, String>() {
