@@ -27,14 +27,14 @@ apply plugin: 'kotlin-android'
 android {
     namespace 'com.yoonjaepark.flutter_naver_login'
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
+    // compileOptions {
+    //     sourceCompatibility JavaVersion.VERSION_11
+    //     targetCompatibility JavaVersion.VERSION_11
+    // }
 
-    kotlin {
-        jvmToolchain(11)
-    }
+    // kotlin {
+    //     jvmToolchain(11)
+    // }
 
     defaultConfig {
         compileSdk 34

@@ -5,7 +5,6 @@
 * Upgrade naver android sdk to 5.10.0
   * (Changelog)[https://github.com/naver/naveridlogin-sdk-android/releases]
   * Update target sdk version to 34
-  * Set jvm version to (11)[https://github.com/naver/naveridlogin-sdk-android/blob/5206a10784bd2fddd88c0d1f7cd289d043a63d1b/Nid-OAuth/build.gradle.kts#L33-L39] for compatibility
 
 ## 1.8.0
 * naver sdk 5.4.0
