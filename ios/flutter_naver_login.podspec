@@ -17,7 +17,7 @@ A new flutter plugin project.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
 
-  s.dependency 'naveridlogin-sdk-ios', '~> 4.1.0'
+  s.dependency 'naveridlogin-sdk-ios', '~> 4.2.3'
   s.ios.deployment_target = '8.0'
 
   s.platform = :ios, '8.0'

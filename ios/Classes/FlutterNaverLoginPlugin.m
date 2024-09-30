@@ -54,7 +54,7 @@
         [self logout];
     } else if ([@"logoutAndDeleteToken" isEqualToString:call.method]) {
         [_thirdPartyLoginConn requestDeleteToken];
-    } else if ([@"getCurrentAcount" isEqualToString:call.method]) {
+    } else if ([@"getCurrentAccount" isEqualToString:call.method]) {
         [self getUserInfo];
     } else if ([@"getCurrentAccessToken" isEqualToString:call.method]) {
 

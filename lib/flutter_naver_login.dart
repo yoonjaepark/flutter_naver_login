@@ -4,7 +4,8 @@ import 'package:flutter/services.dart';
 import 'src/clock.dart';
 
 class FlutterNaverLogin {
-  static const MethodChannel _channel = const MethodChannel('flutter_naver_login');
+  static const MethodChannel _channel =
+      const MethodChannel('flutter_naver_login');
 
   static Future<bool?> initSdk({
     required String clientId,
@@ -53,7 +54,7 @@ class FlutterNaverLogin {
 
   static Future<NaverAccountResult> currentAccount() async {
     final Map<dynamic, dynamic> res =
-        await _channel.invokeMethod('getCurrentAcount');
+        await _channel.invokeMethod('getCurrentAccount');
 
     return _delayedToResult(
         new NaverAccountResult._(res.cast<String, dynamic>()));
@@ -72,7 +73,8 @@ class FlutterNaverLogin {
 
   static Future<NaverAccessToken> refreshAccessTokenWithRefreshToken() async {
     final accessToken = await currentAccessToken;
-    if (accessToken.refreshToken.isNotEmpty && accessToken.refreshToken != 'no token') {
+    if (accessToken.refreshToken.isNotEmpty &&
+        accessToken.refreshToken != 'no token') {
       await _channel.invokeMethod('refreshAccessTokenWithRefreshToken');
     }
     return (await currentAccessToken);
