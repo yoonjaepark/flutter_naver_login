@@ -80,6 +80,7 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
                     oAuthClientSecret = bundle.getString("com.naver.sdk.clientSecret").toString()
                     oAuthClientName = bundle.getString("com.naver.sdk.clientName").toString()
                     try {
+                        // FIXME: should method call initSdk
                         NaverIdLoginSDK.initialize(
                             flutterPluginBinding.applicationContext,
                             oAuthClientId,
@@ -140,7 +141,7 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
                     when (result.resultCode) {
                         Activity.RESULT_OK -> {
                             mainScope.launch {
-                                currentAccount(
+                                getCurrentAccount(
                                     pendingResult!!
                                 )
                             }
@@ -194,21 +195,11 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
             FlutterPluginMethod.LogIn -> this.login(result)
             FlutterPluginMethod.LogOut -> this.logout(result)
             FlutterPluginMethod.LogOutAndDeleteToken -> this.logoutAndDeleteToken(result)
-            FlutterPluginMethod.GetToken -> {
-                result.success(object : HashMap<String, String>() {
-                    init {
-                        put("status", "getToken")
-                        NaverIdLoginSDK.getAccessToken()?.let { put("accessToken", it) }
-                        NaverIdLoginSDK.getRefreshToken()?.let { put("refreshToken", it) }
-                        put("expiresAt", NaverIdLoginSDK.getExpiresAt().toString())
-                        NaverIdLoginSDK.getTokenType()?.let { put("tokenType", it) }
-                    }
-                })
-            }
+            FlutterPluginMethod.GetCurrentAccessToken -> this.getCurrentAccessToken(result)
 
             FlutterPluginMethod.GetCurrentAccount -> {
                 mainScope.launch {
-                    val account = currentAccount(result)
+                    val account = getCurrentAccount(result)
                     result.success(account)
                 }
             }
@@ -218,24 +209,6 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
             )
 
             else -> result.notImplemented()
-        }
-    }
-
-    suspend fun currentAccount(result: Result) {
-        val accessToken = NaverIdLoginSDK.getAccessToken()
-
-        try {
-            val res = fetchProfile(accessToken ?: "")
-            val obj = JSONObject(res)
-            val resultProfile = jsonObjectToMap(obj.getJSONObject("response"))
-            resultProfile["status"] = "loggedIn"
-            result.success(resultProfile)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        } catch (e: ExecutionException) {
-            e.printStackTrace()
-        } catch (e: JSONException) {
-            e.printStackTrace()
         }
     }
 
@@ -272,6 +245,24 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
                     null
                 )
             }
+        }
+    }
+
+    suspend fun getCurrentAccount(result: Result) {
+        val accessToken = NaverIdLoginSDK.getAccessToken()
+
+        try {
+            val res = getUserInfo(accessToken ?: "")
+            val obj = JSONObject(res)
+            val resultProfile = jsonObjectToMap(obj.getJSONObject("response"))
+            resultProfile["status"] = "loggedIn"
+            result.success(resultProfile)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        } catch (e: ExecutionException) {
+            e.printStackTrace()
+        } catch (e: JSONException) {
+            e.printStackTrace()
         }
     }
 
@@ -336,7 +327,7 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
         val mOAuthLoginHandler = object : OAuthLoginCallback {
             override fun onSuccess() {
                 mainScope.launch {
-                    val account = currentAccount(result)
+                    val account = getCurrentAccount(result)
                     result.success(account)
                 }
             }
@@ -401,6 +392,18 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
         NidOAuthLogin().callDeleteTokenApi(mOAuthLoginHandler)
     }
 
+    private fun getCurrentAccessToken(result: Result) {
+        val info = HashMap<String, String>().apply {
+            put("status", "getToken")
+            NaverIdLoginSDK.getAccessToken()?.let { put("accessToken", it) }
+            NaverIdLoginSDK.getRefreshToken()?.let { put("refreshToken", it) }
+            put("expiresAt", NaverIdLoginSDK.getExpiresAt().toString())
+            NaverIdLoginSDK.getTokenType()?.let { put("tokenType", it) }
+        }
+
+        result.success(info)
+    }
+
     private fun refreshAccessTokenWithRefreshToken(result: Result) {
         val mOAuthLoginHandler = object : OAuthLoginCallback {
             override fun onSuccess() {
@@ -426,7 +429,7 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
         NidOAuthLogin().callRefreshAccessTokenApi(mOAuthLoginHandler)
     }
 
-    private suspend fun fetchProfile(token: String): String = withContext(Dispatchers.IO) {
+    private suspend fun getUserInfo(token: String): String = withContext(Dispatchers.IO) {
         val header = "Bearer $token"
         try {
             val apiURL = "https://openapi.naver.com/v1/nid/me"

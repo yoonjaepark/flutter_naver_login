@@ -6,7 +6,7 @@ sealed class FlutterPluginMethod(val methodName: String) {
     data object LogOut : FlutterPluginMethod("logOut")
     data object LogOutAndDeleteToken : FlutterPluginMethod("logoutAndDeleteToken")
     data object GetCurrentAccount : FlutterPluginMethod("getCurrentAccount")
-    data object GetToken : FlutterPluginMethod("getCurrentAccessToken")
+    data object GetCurrentAccessToken : FlutterPluginMethod("getCurrentAccessToken")
     data object RefreshAccessTokenWithRefreshToken :
         FlutterPluginMethod("refreshAccessTokenWithRefreshToken")
 
@@ -18,7 +18,7 @@ sealed class FlutterPluginMethod(val methodName: String) {
                 LogOut.methodName -> LogOut
                 LogOutAndDeleteToken.methodName -> LogOutAndDeleteToken
                 GetCurrentAccount.methodName -> GetCurrentAccount
-                GetToken.methodName -> GetToken
+                GetCurrentAccessToken.methodName -> GetCurrentAccessToken
                 RefreshAccessTokenWithRefreshToken.methodName -> RefreshAccessTokenWithRefreshToken
                 else -> null
             }
