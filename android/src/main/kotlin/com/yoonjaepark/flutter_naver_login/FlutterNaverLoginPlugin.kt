@@ -42,6 +42,10 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
     private var oAuthClientSecret = "OAUTH_CLIENT_SECRET"
     private var oAuthClientName = "OAUTH_CLIENT_NAME"
 
+    /// The MethodChannel that will the communication between Flutter and native Android
+    ///
+    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
+    /// when the Flutter Engine is detached from the Activity
     private var channel: MethodChannel? = null
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
@@ -55,33 +59,6 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
     // pendingResult in login function
     // used to call flutter result in launcher
     private var pendingResult: Result? = null
-
-    private fun deleteCurrentEncryptedPreferences(applicationContext: Context) {
-        val oauthLoginPrefNamePerApp = "NaverOAuthLoginEncryptedPreferenceData"
-        val oldOauthLoginPrefName = "NaverOAuthLoginPreferenceData"
-
-        if (Build.VERSION.SDK_INT >= AndroidVer.API_24_NOUGAT) {
-            try {
-                println("- try clear old oauth login prefs")
-                applicationContext.deleteSharedPreferences(oldOauthLoginPrefName)
-            } catch (e: Exception) {
-                //
-            }
-        }
-
-        try {
-            println("- try clear shared oauth login prefs")
-            val preferences = applicationContext.getSharedPreferences(
-                oauthLoginPrefNamePerApp,
-                Context.MODE_PRIVATE
-            )
-            val edit = preferences.edit()
-            edit.clear()
-            edit.apply()
-        } catch (e: Exception) {
-            //
-        }
-    }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         _applicationContext = flutterPluginBinding.applicationContext
@@ -295,6 +272,33 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
                     null
                 )
             }
+        }
+    }
+
+    private fun deleteCurrentEncryptedPreferences(applicationContext: Context) {
+        val oauthLoginPrefNamePerApp = "NaverOAuthLoginEncryptedPreferenceData"
+        val oldOauthLoginPrefName = "NaverOAuthLoginPreferenceData"
+
+        if (Build.VERSION.SDK_INT >= AndroidVer.API_24_NOUGAT) {
+            try {
+                println("- try clear old oauth login prefs")
+                applicationContext.deleteSharedPreferences(oldOauthLoginPrefName)
+            } catch (e: Exception) {
+                //
+            }
+        }
+
+        try {
+            println("- try clear shared oauth login prefs")
+            val preferences = applicationContext.getSharedPreferences(
+                oauthLoginPrefNamePerApp,
+                Context.MODE_PRIVATE
+            )
+            val edit = preferences.edit()
+            edit.clear()
+            edit.apply()
+        } catch (e: Exception) {
+            //
         }
     }
 

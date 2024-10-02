@@ -1,4 +1,5 @@
 ## 1.9.0
+* Upgrade flutter plugin template to latest
 * Upgrade naver ios sdk to 4.2.3
   * (Changelog)[https://github.com/naver/naveridlogin-sdk-ios/releases]
   * Fix (Xcode 16 error)[https://developers.naver.com/forum/posts/36188]

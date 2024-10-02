@@ -1,23 +1,29 @@
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:flutter_naver_login/flutter_naver_login_platform_interface.dart';
+import 'package:flutter_naver_login/flutter_naver_login_method_channel.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+class MockFlutterNaverLoginPlatform
+    with MockPlatformInterfaceMixin
+    implements FlutterNaverLoginPlatform {
+
+  @override
+  Future<String?> getPlatformVersion() => Future.value('42');
+}
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+  final FlutterNaverLoginPlatform initialPlatform = FlutterNaverLoginPlatform.instance;
 
-  const MethodChannel channel = MethodChannel('flutter_naver_login');
-
-  setUp(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      return '42';
-    });
+  test('$MethodChannelFlutterNaverLogin is the default instance', () {
+    expect(initialPlatform, isInstanceOf<MethodChannelFlutterNaverLogin>());
   });
 
-  tearDown(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, null);
-  });
+  test('getPlatformVersion', () async {
+    FlutterNaverLogin flutterNaverLoginPlugin = FlutterNaverLogin();
+    MockFlutterNaverLoginPlatform fakePlatform = MockFlutterNaverLoginPlatform();
+    FlutterNaverLoginPlatform.instance = fakePlatform;
 
-  test('getPlatformVersion', () async {});
+    expect(await flutterNaverLoginPlugin.getPlatformVersion(), '42');
+  });
 }
