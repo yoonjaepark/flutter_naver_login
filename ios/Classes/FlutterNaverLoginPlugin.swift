@@ -5,90 +5,96 @@ import UIKit
 
 @objc
 public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
-                                      NaverThirdPartyLoginConnectionDelegate
+    NaverThirdPartyLoginConnectionDelegate
 {
     private var loginConn: NaverThirdPartyLoginConnection?
     private var pendingResult: FlutterResult?
     private var didInitialized: Bool = false
-    private var loginInProgress: Bool = false
-    private var isReturningFromNaverApp: Bool = false
-    
+    private var didEnteredBg: Bool = false
+    private var loginState: LoginState = .idle
+
     // MARK: -
-    
+
     override public init() {
         super.init()
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(appDidEnterBackground),
-                                               name: UIApplication.didEnterBackgroundNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(appWillEnterForeground),
-                                               name: UIApplication.willEnterForegroundNotification,
-                                               object: nil)
-        
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil)
+
         // FIXME: should method call initSdk
         initSdk()
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-    
+
     @objc private func appDidEnterBackground() {
-        print("didEnterBg - loginInProgress: \(loginInProgress), \(isReturningFromNaverApp)");
-        if loginInProgress {
-            isReturningFromNaverApp = true
+        print("didEnterBg - loginState: \(loginState)")
+        if case .inProgress = loginState {
+            didEnteredBg = true
         }
     }
-    
+
     @objc private func appWillEnterForeground() {
-        print("willEnterFg - loginInProgress: \(loginInProgress), \(isReturningFromNaverApp)");
-        if loginInProgress && isReturningFromNaverApp {
-            let info: [String: Any] = [
-                "status": "cancelledByUser",
-                "isLogin": false
-            ]
-            DispatchQueue.main.async {
-                self.pendingResult?(info)
-                self.pendingResult = nil
-            }
-            loginInProgress = false
-            isReturningFromNaverApp = false
-        }
-    }
-    
+        print("willEnterFg - loginState: \(loginState), isReturningFromNaverApp: \(didEnteredBg)")
+            if case .inProgress = loginState, didEnteredBg {
+                // Add delay for delegate method call
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                    guard let self = self else { return }
+                    if case .inProgress = self.loginState, self.didEnteredBg {
+                        let info: [String: Any] = [
+                            "status": "cancelledByUser",
+                            "isLogin": false
+                        ]
+                        self.pendingResult?(info)
+                        self.pendingResult = nil
+                        // 상태 초기화
+                        self.loginState = .idle
+                        self.didEnteredBg = false
+                    }
+                }
+            }    }
+
     // MARK: - Flutter Plugin Registration
-    
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(
             name: "flutter_naver_login", binaryMessenger: registrar.messenger())
         let instance = FlutterNaverLoginPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-    
+
     // MARK: - Handle Method Calls from Flutter
-    
+
     public func handle(
         _ call: FlutterMethodCall, result: @escaping FlutterResult
     ) {
         print("Received method call: \(call.method)")
-        
+
         if pendingResult != nil {
             let errorInfo: [String: String] = [
                 "status": "error",
-                "errorMessage": "Another request is in progress. Please wait.",
+                "errorMessage": "Another request is in progress. Please wait",
             ]
             result(errorInfo)
             return
         }
         self.pendingResult = result
-        
+
         guard didInitialized else {
             let errorInfo: [String: String] = [
                 "status": "error",
                 "errorMessage":
-                    "NaverLoginPlugin is not properly configured. Please check your Info.plist.",
+                    "NaverLoginPlugin is not initialized",
             ]
             DispatchQueue.main.async {
                 self.pendingResult?(errorInfo)
@@ -96,42 +102,42 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             }
             return
         }
-        
+
         let flutterMethod = FlutterPluginMethod(methodName: call.method)
         print(call.method)
-        
+
         switch flutterMethod {
         case .initSdk:
             initSdk()
-            
+
         case .logIn:
             login()
-            
+
         case .logOut:
             logout()
-            
+
         case .logoutAndDeleteToken:
             logoutAndDeleteToken()
-            
+
         case .getCurrentAccount:
             getCurrentAccount()
-            
+
         case .getCurrentAccessToken:
             getCurrentAccessToken()
-            
+
         case .refreshAccessTokenWithRefreshToken:
             refreshAccessTokenWithRefreshToken()
-            
+
         case .unknown:
             result(FlutterMethodNotImplemented)
             self.pendingResult = nil
         }
     }
-    
+
     // MARK: -
-    
+
     private func initSdk() {
-        if (didInitialized) {
+        if didInitialized {
             DispatchQueue.main.async {
                 self.pendingResult?(true)
                 self.pendingResult = nil
@@ -147,12 +153,12 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             return
         }
         self.loginConn = sharedConn
-        
+
         self.loginConn?.isNaverAppOauthEnable = true
         self.loginConn?.isInAppOauthEnable = true
-        
+
         let mainBundle = Bundle.main
-        
+
         guard
             let naverServiceAppUrlScheme = mainBundle.object(
                 forInfoDictionaryKey: "naverServiceAppUrlScheme") as? String,
@@ -168,7 +174,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             }
             return
         }
-        
+
         guard
             let naverConsumerKey = mainBundle.object(
                 forInfoDictionaryKey: "naverConsumerKey") as? String,
@@ -182,7 +188,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             }
             return
         }
-        
+
         guard
             let naverConsumerSecret = mainBundle.object(
                 forInfoDictionaryKey: "naverConsumerSecret") as? String,
@@ -196,7 +202,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             }
             return
         }
-        
+
         guard
             let naverServiceAppName = mainBundle.object(
                 forInfoDictionaryKey: "naverServiceAppName") as? String,
@@ -210,27 +216,27 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             }
             return
         }
-        
+
         self.loginConn?.consumerKey = naverConsumerKey
         self.loginConn?.consumerSecret = naverConsumerSecret
         self.loginConn?.appName = naverServiceAppName
         self.loginConn?.serviceUrlScheme = naverServiceAppUrlScheme
         self.loginConn?.delegate = self
         self.didInitialized = true
-        
+
         //.       FIXME: should method call initSdk
         //        DispatchQueue.main.async {
         //            self.pendingResult?(true)
         //            self.pendingResult = nil
         //        }
     }
-    
+
     private func login() {
-        loginInProgress = true
-        isReturningFromNaverApp = false
+        loginState = .inProgress
+        didEnteredBg = false
         loginConn!.requestThirdPartyLogin()
     }
-    
+
     private func logout() {
         loginConn?.resetToken()
         let info: [String: String] = [
@@ -242,7 +248,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             self.pendingResult = nil
         }
     }
-    
+
     private func logoutAndDeleteToken() {
         loginConn?.requestDeleteToken()
         let info: [String: String] = [
@@ -254,7 +260,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             self.pendingResult = nil
         }
     }
-    
+
     private func getCurrentAccount() {
         getUserInfo { result in
             switch result {
@@ -276,21 +282,21 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             }
         }
     }
-    
+
     private func getUserInfo(
         completion: @escaping (Result<[String: String], Error>) -> Void
     ) {
         let urlString = "https://openapi.naver.com/v1/nid/me"
-        
+
         guard let url = URL(string: urlString) else {
             completion(
                 .failure(
                     NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
             return
         }
-        
+
         var urlRequest = URLRequest(url: url)
-        
+
         guard let accessToken = loginConn?.accessToken else {
             completion(
                 .failure(
@@ -298,20 +304,20 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
                 ))
             return
         }
-        
+
         let authValue = "Bearer \(accessToken)"
         urlRequest.setValue(authValue, forHTTPHeaderField: "Authorization")
-        
+
         let task = URLSession.shared.dataTask(with: urlRequest) {
             [weak self] data, response, error in
             guard self != nil else { return }
-            
+
             if let error = error {
                 print("Error occurred: \(error.localizedDescription)")
                 completion(.failure(error))
                 return
             }
-            
+
             guard let data = data else {
                 print("No data received")
                 completion(
@@ -319,27 +325,27 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
                         NSError(domain: "No Data", code: 204, userInfo: nil)))
                 return
             }
-            
+
             do {
                 if let dict = try JSONSerialization.jsonObject(
                     with: data, options: []) as? [String: Any],
-                   let res = dict["response"] as? [String: Any]
+                    let res = dict["response"] as? [String: Any]
                 {
-                    
+
                     var info: [String: String] = ["status": "loggedIn"]
-                    
+
                     let userFields = [
                         "email", "gender", "age", "profile_image", "nickname",
                         "name", "id", "birthday", "birthyear", "mobile",
                         "mobile_e164",
                     ]
-                    
+
                     for field in userFields {
                         if let value = res[field] as? String {
                             info[field] = value
                         }
                     }
-                    
+
                     completion(.success(info))
                 } else {
                     print("Invalid JSON structure")
@@ -354,18 +360,18 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
                 completion(.failure(jsonError))
             }
         }
-        
+
         task.resume()
     }
-    
+
     private func getCurrentAccessToken() {
         let accessToken = loginConn?.accessToken ?? ""
         let refreshToken = loginConn?.refreshToken ?? ""
         let tokenType = loginConn?.tokenType ?? ""
         let expiresAt =
-        loginConn?.accessTokenExpireDate?.timeIntervalSince1970 ?? 0
+            loginConn?.accessTokenExpireDate?.timeIntervalSince1970 ?? 0
         let expiresAtString = String(format: "%.0f", floor(expiresAt))
-        
+
         let info: [String: String] = [
             "status": "getToken",
             "accessToken": accessToken,
@@ -373,24 +379,24 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             "tokenType": tokenType,
             "expiresAt": expiresAtString,
         ]
-        
+
         DispatchQueue.main.async {
             self.pendingResult?(info)
             self.pendingResult = nil
         }
     }
-    
+
     private func refreshAccessTokenWithRefreshToken() {
         loginConn?.requestAccessTokenWithRefreshToken()
     }
-    
+
     // MARK: - NaverThirdPartyLoginConnectionDelegate Methods
-    
+
     public func oauth20ConnectionDidFinishRequestACTokenWithAuthCode() {
         print("oauth20ConnectionDidFinishRequestACTokenWithAuthCode")
         getCurrentAccount()
     }
-    
+
     public func oauth20ConnectionDidFinishDeleteToken() {
         print("oauth20ConnectionDidFinishDeleteToken")
         let info: [String: String] = [
@@ -402,13 +408,13 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             self.pendingResult = nil
         }
     }
-    
+
     public func oauth20ConnectionDidFinishRequestACTokenWithRefreshToken() {
         print("oauth20ConnectionDidFinishRequestACTokenWithRefreshToken")
         getCurrentAccount()
-        loginInProgress = false
+        loginState = .didCompleted
     }
-    
+
     public func oauth20Connection(
         _ oauthConnection: NaverThirdPartyLoginConnection,
         didFailWithError error: Error
@@ -421,41 +427,46 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             "status": "error",
             "errorMessage": error.localizedDescription,
         ]
-        
+
         DispatchQueue.main.async {
             self.pendingResult?(errorInfo)
             self.pendingResult = nil
         }
-        loginInProgress = false
+        loginState = .didCompleted
     }
-    
-    // Optional Methods
-    
+
     public func oauth20Connection(
         _ oauthConnection: NaverThirdPartyLoginConnection,
         didFinishAuthorizationWithResult receiveType:
-        THIRDPARTYLOGIN_RECEIVE_TYPE
+            THIRDPARTYLOGIN_RECEIVE_TYPE
     ) {
         print(
             "oauth20Connection:didFinishAuthorizationWithResult - receiveType: \(receiveType)"
         )
-        getCurrentAccount()
-        loginInProgress = false
+        switch receiveType {
+        case SUCCESS:
+            print("SUCCESS login")
+            loginState = .inProgress
+        default:
+            print("FAILED login. But callbacked from didFinishAuthorizationWithResult")
+            loginState = .didCompleted
+        }
     }
-    
+
     public func oauth20Connection(
         _ oauthConnection: NaverThirdPartyLoginConnection,
         didFailAuthorizationWithReceive receiveType:
-        THIRDPARTYLOGIN_RECEIVE_TYPE
+            THIRDPARTYLOGIN_RECEIVE_TYPE
     ) {
         print(
             "oauth20Connection:didFailAuthorizationWithReceiveType - receiveType: \(receiveType.rawValue)"
         )
-        
-        let errorMessage: String
+
+        let errorMessage: String?
         switch receiveType {
         case SUCCESS:
-            errorMessage = "SUCCESS"
+            print ("SUCCESS. But callbacked from didFailAuthorizationWithReceive")
+            errorMessage = nil
         case PARAMETERNOTSET:
             errorMessage = "PARAMETERNOTSET"
         case CANCELBYUSER:
@@ -482,6 +493,11 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             errorMessage = "UNKNOWN"
         }
         
+        guard let errorMessage else {
+            loginState = .inProgress
+            return
+        }
+
         let info: [String: String] = [
             "status": "error",
             "errorMessage": errorMessage,
@@ -490,6 +506,6 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             self.pendingResult?(info)
             self.pendingResult = nil
         }
-        loginInProgress = false
+        loginState = .didCompleted
     }
 }
