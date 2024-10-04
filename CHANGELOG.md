@@ -1,6 +1,6 @@
 ## 2.0.0
 * Upgrade flutter plugin template to latest
-  * Add iOS PiivacyInfo.xcprivacy
+  * Add iOS PrivacyInfo.xcprivacy
   * Migrate to Swift
   * Support Xcode 16
   * Update min iOS version to 12 which is [Flutter supported minimum iOS version](https://docs.flutter.dev/deployment/ios#review-xcode-project-settings)
