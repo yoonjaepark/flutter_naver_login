@@ -45,24 +45,27 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
     }
 
     @objc private func appWillEnterForeground() {
-        print("willEnterFg - loginState: \(loginState), isReturningFromNaverApp: \(didEnteredBg)")
-            if case .inProgress = loginState, didEnteredBg {
-                // Add delay for delegate method call
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-                    guard let self = self else { return }
-                    if case .inProgress = self.loginState, self.didEnteredBg {
-                        let info: [String: Any] = [
-                            "status": "cancelledByUser",
-                            "isLogin": false
-                        ]
-                        self.pendingResult?(info)
-                        self.pendingResult = nil
-                        // 상태 초기화
-                        self.loginState = .idle
-                        self.didEnteredBg = false
-                    }
+        print(
+            "willEnterFg - loginState: \(loginState), isReturningFromNaverApp: \(didEnteredBg)"
+        )
+        if case .inProgress = loginState, didEnteredBg {
+            // Add delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                [weak self] in
+                guard let self = self else { return }
+                if case .inProgress = self.loginState, self.didEnteredBg {
+                    let info: [String: Any] = [
+                        "status": "cancelledByUser",
+                        "isLogin": false,
+                    ]
+                    self.pendingResult?(info)
+                    self.pendingResult = nil
+                    self.loginState = .idle
+                    self.didEnteredBg = false
                 }
-            }    }
+            }
+        }
+    }
 
     // MARK: - Flutter Plugin Registration
 
@@ -412,7 +415,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
     public func oauth20ConnectionDidFinishRequestACTokenWithRefreshToken() {
         print("oauth20ConnectionDidFinishRequestACTokenWithRefreshToken")
         getCurrentAccount()
-        loginState = .didCompleted
+        loginState = .idle
     }
 
     public func oauth20Connection(
@@ -432,7 +435,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             self.pendingResult?(errorInfo)
             self.pendingResult = nil
         }
-        loginState = .didCompleted
+        loginState = .idle
     }
 
     public func oauth20Connection(
@@ -448,8 +451,10 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             print("SUCCESS login")
             loginState = .inProgress
         default:
-            print("FAILED login. But callbacked from didFinishAuthorizationWithResult")
-            loginState = .didCompleted
+            print(
+                "FAILED login. But callbacked from didFinishAuthorizationWithResult"
+            )
+            loginState = .idle
         }
     }
 
@@ -465,7 +470,8 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
         let errorMessage: String?
         switch receiveType {
         case SUCCESS:
-            print ("SUCCESS. But callbacked from didFailAuthorizationWithReceive")
+            print(
+                "SUCCESS. But callbacked from didFailAuthorizationWithReceive")
             errorMessage = nil
         case PARAMETERNOTSET:
             errorMessage = "PARAMETERNOTSET"
@@ -492,7 +498,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
         default:
             errorMessage = "UNKNOWN"
         }
-        
+
         guard let errorMessage else {
             loginState = .inProgress
             return
@@ -506,6 +512,6 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             self.pendingResult?(info)
             self.pendingResult = nil
         }
-        loginState = .didCompleted
+        loginState = .idle
     }
 }
