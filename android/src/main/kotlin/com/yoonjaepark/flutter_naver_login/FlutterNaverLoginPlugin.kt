@@ -199,8 +199,7 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
 
             FlutterPluginMethod.GetCurrentAccount -> {
                 mainScope.launch {
-                    val account = getCurrentAccount(result)
-                    result.success(account)
+                    getCurrentAccount(result)
                 }
             }
 
@@ -327,8 +326,7 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
         val mOAuthLoginHandler = object : OAuthLoginCallback {
             override fun onSuccess() {
                 mainScope.launch {
-                    val account = getCurrentAccount(result)
-                    result.success(account)
+                    getCurrentAccount(result)
                 }
             }
 

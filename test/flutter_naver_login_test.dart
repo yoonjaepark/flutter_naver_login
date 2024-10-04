@@ -7,9 +7,6 @@ class MockFlutterNaverLoginPlatform
     with MockPlatformInterfaceMixin
     implements FlutterNaverLoginPlatform {
   @override
-  Future<String?> getPlatformVersion() => Future.value('42');
-
-  @override
   Future<void> initSdk(
       {required String clientId,
       required String clientName,
@@ -61,7 +58,5 @@ void main() {
     MockFlutterNaverLoginPlatform fakePlatform =
         MockFlutterNaverLoginPlatform();
     FlutterNaverLoginPlatform.instance = fakePlatform;
-
-    expect(await fakePlatform.getPlatformVersion(), '42');
   });
 }
