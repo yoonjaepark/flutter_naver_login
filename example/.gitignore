@@ -44,3 +44,6 @@ app.*.map.json
 
 # custom
 .env
+
+flutter_naver_login.iml
+pubspec.lock
