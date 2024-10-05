@@ -1,9 +1,22 @@
+## 2.0.0
+* Upgrade flutter plugin template to latest
+  * Add iOS PrivacyInfo.xcprivacy
+  * Migrate to Swift
+  * Support Xcode 16
+  * Update min iOS version to 12 which is [Flutter supported minimum iOS version](https://docs.flutter.dev/deployment/ios#review-xcode-project-settings)
+* Upgrade naver ios sdk to 4.2.3
+  * [Changelog](https://github.com/naver/naveridlogin-sdk-ios/releases)
+  * Fix [Xcode 16 error](https://developers.naver.com/forum/posts/36188)
+* Upgrade naver android sdk to 5.10.0
+  * [Changelog](https://github.com/naver/naveridlogin-sdk-android/releases)
+  * Update target sdk version to 34
+
 ## 1.9.0
 * update naver sdk 5.9.0
 * remove naver sdk aar file, and get it from maven
 * support proguard
-* add workaround android device back button on FlutterFragmentActivity (flutter/#117061)[https://github.com/flutter/flutter/issues/117061]
-* migrate example to (AGP declarative plugins block)[https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply]
+* add workaround android device back button on FlutterFragmentActivity [flutter/#117061](https://github.com/flutter/flutter/issues/117061)
+* migrate example to [AGP declarative plugins block](https://docs.flutter.dev/release/breaking-changes/flutter-gradle-plugin-apply)
 
 ## 1.8.0
 * naver sdk 5.4.0

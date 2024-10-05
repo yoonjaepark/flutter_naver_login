@@ -6,9 +6,11 @@ import 'package:flutter_naver_login/flutter_naver_login.dart';
 final GlobalKey<ScaffoldMessengerState> snackbarKey =
     GlobalKey<ScaffoldMessengerState>();
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
         canvasColor: const Color(0xFFfafafa),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               fontSize: 12.0,
               color: Colors.black,
               fontWeight: FontWeight.normal,
@@ -35,9 +37,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({super.key});
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -56,6 +58,16 @@ class _MyHomePageState extends State<MyHomePage> {
         content: Text(error.toString()),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    // FlutterNaverLogin.initSdk(
+    //   clientId: 'YOUR_CLIENT_ID',
+    //   clientName: 'YOUR_CLIENT_NAME',
+    //   clientSecret: 'YOUR_CLIENT_SECRET',
+    // );
+    super.initState();
   }
 
   @override
@@ -106,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> buttonLoginPressed() async {
     try {
-      final NaverLoginResult res = await FlutterNaverLogin.logIn();
+      final res = await FlutterNaverLogin.logIn();
       setState(() {
         name = res.account.nickname;
         isLogin = true;
