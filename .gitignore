@@ -30,3 +30,4 @@ build/
 
 flutter_naver_login.iml
 pubspec.lock
+.vscode
