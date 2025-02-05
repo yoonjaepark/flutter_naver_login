@@ -130,7 +130,6 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
         }
     }
 
-
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         this.activity = binding.activity
         this.launcher =
