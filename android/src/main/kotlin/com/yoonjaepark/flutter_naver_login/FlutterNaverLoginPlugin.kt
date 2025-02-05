@@ -130,6 +130,146 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
         }
     }
 
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        this.activity = binding.activity
+        this.launcher =
+            (binding.activity as FlutterFragmentActivity).registerForActivityResult<Intent, ActivityResult>(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result: ActivityResult ->
+
+                if (pendingResult != null) {
+                    when (result.resultCode) {
+                        Activity.RESULT_OK -> {
+                            mainScope.launch {
+                                getCurrentAccount(
+                                    pendingResult!!
+                                )
+                            }
+                        }
+
+                        Activity.RESULT_CANCELED -> {
+                            val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+                            val errorDesc = NaverIdLoginSDK.getLastErrorDescription()
+                            pendingResult!!.success(object : HashMap<String, String>() {
+                                init {
+                                    put("status", "error")
+                                    put(
+                                        "errorMessage",
+                                        "errorCode:$errorCode, errorDesc:$errorDesc"
+                                    )
+                                }
+                            })
+                        }
+
+                        else -> {
+                            pendingResult!!.success(null)
+                        }
+                    }
+                }
+                pendingResult = null
+            }
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        onAttachedToActivity(binding)
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        onDetachedFromActivity()
+    }
+
+    override fun onDetachedFromActivity() {
+        this.activity = null
+    }
+
+    override fun onMethodCall(call: MethodCall, result: Result) {
+        when (FlutterPluginMethod.fromMethodName(call.method)) {
+            FlutterPluginMethod.InitSdk -> {
+                @Suppress("UNCHECKED_CAST") val args = call.arguments as Map<String, String?>
+                val clientId = args["clientId"] as String
+                val clientName = args["clientName"] as String
+                val clientSecret = args["clientSecret"] as String
+                this.initSdk(result, clientId, clientName, clientSecret)
+            }
+
+            FlutterPluginMethod.LogIn -> this.login(result)
+            FlutterPluginMethod.LogOut -> this.logout(result)
+            FlutterPluginMethod.LogOutAndDeleteToken -> this.logoutAndDeleteToken(result)
+            FlutterPluginMethod.GetCurrentAccessToken -> this.getCurrentAccessToken(result)
+
+            FlutterPluginMethod.GetCurrentAccount -> {
+                mainScope.launch {
+                    getCurrentAccount(result)
+                }
+            }
+
+            FlutterPluginMethod.RefreshAccessTokenWithRefreshToken -> this.refreshAccessTokenWithRefreshToken(
+                result
+            )
+
+            else -> result.notImplemented()
+        }
+    }
+
+    private fun initSdk(
+        result: Result,
+        clientId: String,
+        clientName: String,
+        clientSecret: String
+    ) {
+        try {
+            NaverIdLoginSDK.showDevelopersLog(true)
+
+            println("Init SDK")
+            println("- clientId: $clientId")
+            println("- clientName: $clientName")
+            println("- clientSecret: $clientSecret")
+
+            NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName)
+            result.success(true)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            try {
+                deleteCurrentEncryptedPreferences()
+                println("- try again sdk init")
+                NaverIdLoginSDK.initialize(applicationContext, clientId, clientSecret, clientName)
+                result.success(true)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                result.error(
+                    e.javaClass.simpleName,
+                    "NaverIdLoginSDK.initialize failed. message: " + e.localizedMessage,
+                    null
+                )
+            }
+        }
+    }
+
+    suspend fun getCurrentAccount(result: Result) {
+        val accessToken = NaverIdLoginSDK.getAccessToken()
+
+        try {
+            val res = getUserInfo(accessToken ?: "")
+            val obj = JSONObject(res)
+            val resultProfile = jsonObjectToMap(obj.getJSONObject("response"))
+            resultProfile["status"] = "loggedIn"
+            result.success(resultProfile)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        } catch (e: ExecutionException) {
+            e.printStackTrace()
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun deleteCurrentEncryptedPreferences(applicationContext: Context) {
+        val oauthLoginPrefNamePerApp = "NaverOAuthLoginEncryptedPreferenceData"
+        val oldOauthLoginPrefName = "NaverOAuthLoginPreferenceData"
+
         if (Build.VERSION.SDK_INT >= AndroidVer.API_24_NOUGAT) {
             try {
                 println("- try clear old oauth login prefs")
