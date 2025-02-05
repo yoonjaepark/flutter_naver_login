@@ -1,3 +1,7 @@
+## 2.0.1
+* Fix login error report twice to flutter in Android
+  * Failure delivering result ResultInfo to activity : java.lang.IllegalStateException: Reply already submitted
+
 ## 2.0.0
 * Upgrade flutter plugin template to latest
   * Add iOS PrivacyInfo.xcprivacy
