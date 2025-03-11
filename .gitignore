@@ -30,3 +30,6 @@ build/
 
 flutter_naver_login.iml
 pubspec.lock
+
+# FVM Version Cache
+.fvm/
