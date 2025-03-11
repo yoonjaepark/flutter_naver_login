@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/valkdokk/fvm/versions/3.29.0/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/valkdokk/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/valkdokk/Documents/GitHub/flutter_naver_login/example/android/app/.cxx/Debug/293a706n/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/valkdokk/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/valkdokk/Documents/GitHub/flutter_naver_login/example/android/app/.cxx/Debug/293a706n/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
