@@ -20,7 +20,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
+// import io.flutter.plugin.common.PluginRegistry.Registrar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -122,6 +122,9 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
     // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
     // depending on the user's project. onAttachedToEngine or registerWith must both be defined
     // in the same class.
+    /*
+    Flutter 3.29 및 그 이상의 버전에서는  Registrar 를 사용할 수 없다.
+    * 참고: https://medium.com/@bmerdogan/flutter-3-29-deprecates-pluginregistry-registrar-migration-guide-0f206232b768
     companion object {
         @JvmStatic
         fun registerWith(registrar: Registrar) {
@@ -129,6 +132,7 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
             channel.setMethodCallHandler(FlutterNaverLoginPlugin())
         }
     }
+    */
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         this.activity = binding.activity
