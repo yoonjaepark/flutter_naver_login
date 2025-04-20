@@ -81,6 +81,9 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
     public func handle(
         _ call: FlutterMethodCall, result: @escaping FlutterResult
     ) {
+        let flutterMethod = FlutterPluginMethod(methodName: call.method)
+        print(call.method)
+
         print("Received method call: \(call.method)")
 
         if pendingResult != nil {
@@ -92,6 +95,12 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             return
         }
         self.pendingResult = result
+        
+        // init sdk have to not guarded by didInitialized
+        if (flutterMethod == .initSdk) {
+            initSdk(call.arguments as? Dictionary<String, Any>)
+            return
+        }
 
         guard didInitialized else {
             let errorInfo: [String: String] = [
@@ -106,12 +115,9 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             return
         }
 
-        let flutterMethod = FlutterPluginMethod(methodName: call.method)
-        print(call.method)
-
         switch flutterMethod {
         case .initSdk:
-            initSdk()
+            initSdk(call.arguments as? Dictionary<String, Any>)
 
         case .logIn:
             login()
@@ -139,7 +145,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
 
     // MARK: -
 
-    private func initSdk() {
+    private func initSdk(_ args: Dictionary<String, Any>? = nil) {
         if didInitialized {
             DispatchQueue.main.async {
                 self.pendingResult?(true)
@@ -180,7 +186,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
 
         guard
             let naverConsumerKey = mainBundle.object(
-                forInfoDictionaryKey: "naverConsumerKey") as? String,
+                forInfoDictionaryKey: "naverConsumerKey") as? String ?? (args?["clientId"] as? String),
             !naverConsumerKey.isEmpty
         else {
             print("Error: Missing or empty 'naverConsumerKey' in Info.plist")
@@ -194,7 +200,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
 
         guard
             let naverConsumerSecret = mainBundle.object(
-                forInfoDictionaryKey: "naverConsumerSecret") as? String,
+                forInfoDictionaryKey: "naverConsumerSecret") as? String ?? (args?["clientSecret"] as? String),
             !naverConsumerSecret.isEmpty
         else {
             print("Error: Missing or empty 'naverConsumerSecret' in Info.plist")
@@ -208,7 +214,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
 
         guard
             let naverServiceAppName = mainBundle.object(
-                forInfoDictionaryKey: "naverServiceAppName") as? String,
+                forInfoDictionaryKey: "naverServiceAppName") as? String ?? (args?["clientName"] as? String),
             !naverServiceAppName.isEmpty
         else {
             print("Error: Missing or empty 'naverServiceAppName' in Info.plist")
@@ -227,11 +233,12 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
         self.loginConn?.delegate = self
         self.didInitialized = true
 
-        //.       FIXME: should method call initSdk
-        //        DispatchQueue.main.async {
-        //            self.pendingResult?(true)
-        //            self.pendingResult = nil
-        //        }
+        if (args != nil) {
+            DispatchQueue.main.async {
+                self.pendingResult?(true)
+                self.pendingResult = nil
+            }
+        }
     }
 
     private func login() {
