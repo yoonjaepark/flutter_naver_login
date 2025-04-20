@@ -321,6 +321,8 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
                         put("errorMessage", "errorCode:$errorCode, errorDesc:$errorDesc")
                     }
                 })
+                // Already handled result. We don't need this at the ActivityResult as pending status
+                pendingResult = null
             }
 
             override fun onError(errorCode: Int, message: String) {
