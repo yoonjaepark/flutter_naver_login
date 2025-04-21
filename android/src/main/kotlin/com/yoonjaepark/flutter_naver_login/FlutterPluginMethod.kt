@@ -9,6 +9,7 @@ sealed class FlutterPluginMethod(val methodName: String) {
     data object GetCurrentAccessToken : FlutterPluginMethod("getCurrentAccessToken")
     data object RefreshAccessTokenWithRefreshToken :
         FlutterPluginMethod("refreshAccessTokenWithRefreshToken")
+    data object GetPlatformVersion : FlutterPluginMethod("getPlatformVersion")
 
     companion object {
         fun fromMethodName(name: String?): FlutterPluginMethod? {
@@ -20,6 +21,7 @@ sealed class FlutterPluginMethod(val methodName: String) {
                 GetCurrentAccount.methodName -> GetCurrentAccount
                 GetCurrentAccessToken.methodName -> GetCurrentAccessToken
                 RefreshAccessTokenWithRefreshToken.methodName -> RefreshAccessTokenWithRefreshToken
+                GetPlatformVersion.methodName -> GetPlatformVersion
                 else -> null
             }
         }

@@ -189,6 +189,10 @@ class FlutterNaverLoginPlugin : FlutterPlugin, MethodCallHandler, ActivityAware 
                 result
             )
 
+            FlutterPluginMethod.GetPlatformVersion -> {
+                result.success("Android " + android.os.Build.VERSION.RELEASE)
+            }
+
             else -> result.notImplemented()
         }
     }
