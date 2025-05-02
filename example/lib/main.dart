@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:flutter_naver_login/interface/types/naver_login_result.dart';
+import 'package:flutter_naver_login/interface/types/naver_login_status.dart';
 
 final GlobalKey<ScaffoldMessengerState> snackbarKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -44,7 +46,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool isLogin = false;
-  String? accesToken;
+  String? accessToken;
   String? expiresAt;
   String? tokenType;
   String? name;
@@ -53,20 +55,12 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Show [error] content in a ScaffoldMessenger snackbar
   void _showSnackError(String error) {
     snackbarKey.currentState?.showSnackBar(
-      SnackBar(
-        backgroundColor: Colors.red,
-        content: Text(error.toString()),
-      ),
+      SnackBar(backgroundColor: Colors.red, content: Text(error.toString())),
     );
   }
 
   @override
   void initState() {
-    // FlutterNaverLogin.initSdk(
-    //   clientId: 'YOUR_CLIENT_ID',
-    //   clientName: 'YOUR_CLIENT_NAME',
-    //   clientSecret: 'YOUR_CLIENT_SECRET',
-    // );
     super.initState();
   }
 
@@ -85,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Column(
             children: [
               Text('isLogin: $isLogin\n'),
-              Text('accesToken: $accesToken\n'),
+              Text('accessToken: $accessToken\n'),
               Text('refreshToken: $refreshToken\n'),
               Text('tokenType: $tokenType\n'),
               Text('user: $name\n'),
@@ -110,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ElevatedButton(
             onPressed: buttonGetUserPressed,
             child: const Text("GetUser"),
-          )
+          ),
         ],
       ),
     );
@@ -118,10 +112,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> buttonLoginPressed() async {
     try {
-      final res = await FlutterNaverLogin.logIn();
+      final NaverLoginResult res = await FlutterNaverLogin.logIn();
       setState(() {
-        name = res.account.nickname;
-        isLogin = true;
+        name = res.account?.nickname;
+        accessToken = res.accessToken?.accessToken;
+        refreshToken = res.accessToken?.refreshToken;
+        tokenType = res.accessToken?.tokenType;
+        expiresAt = res.accessToken?.expiresAt;
+        isLogin = res.status == NaverLoginStatus.loggedIn;
       });
     } catch (error) {
       _showSnackError(error.toString());
@@ -130,11 +128,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> buttonTokenPressed() async {
     try {
-      final NaverAccessToken res = await FlutterNaverLogin.currentAccessToken;
+      final NaverLoginResult res =
+          await FlutterNaverLogin.getCurrentAccessToken();
       setState(() {
-        refreshToken = res.refreshToken;
-        accesToken = res.accessToken;
-        tokenType = res.tokenType;
+        refreshToken = res.accessToken?.refreshToken;
+        accessToken = res.accessToken?.accessToken;
+        tokenType = res.accessToken?.tokenType;
+        expiresAt = res.accessToken?.expiresAt;
+        isLogin = res.status == NaverLoginStatus.loggedIn;
       });
     } catch (error) {
       _showSnackError(error.toString());
@@ -143,13 +144,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> buttonLogoutPressed() async {
     try {
-      await FlutterNaverLogin.logOut();
-      setState(() {
-        isLogin = false;
-        accesToken = null;
-        tokenType = null;
-        name = null;
-      });
+      final NaverLoginResult res = await FlutterNaverLogin.logOut();
+      if (res.status == NaverLoginStatus.loggedOut) {
+        setState(() {
+          isLogin = false;
+          accessToken = null;
+          refreshToken = null;
+          tokenType = null;
+          expiresAt = null;
+          name = null;
+        });
+      }
     } catch (error) {
       _showSnackError(error.toString());
     }
@@ -157,13 +162,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> buttonLogoutAndDeleteTokenPressed() async {
     try {
-      await FlutterNaverLogin.logOutAndDeleteToken();
-      setState(() {
-        isLogin = false;
-        accesToken = null;
-        tokenType = null;
-        name = null;
-      });
+      final NaverLoginResult res =
+          await FlutterNaverLogin.logOutAndDeleteToken();
+      if (res.status == NaverLoginStatus.loggedOut) {
+        setState(() {
+          isLogin = false;
+          accessToken = null;
+          refreshToken = null;
+          tokenType = null;
+          expiresAt = null;
+          name = null;
+        });
+      }
     } catch (error) {
       _showSnackError(error.toString());
     }
@@ -171,8 +181,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> buttonGetUserPressed() async {
     try {
-      final NaverAccountResult res = await FlutterNaverLogin.currentAccount();
-      setState(() => name = res.name);
+      final NaverLoginResult res = await FlutterNaverLogin.getCurrentAccount();
+      setState(() => name = res.account?.name);
     } catch (error) {
       _showSnackError(error.toString());
     }
