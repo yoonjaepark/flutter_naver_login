@@ -1,3 +1,22 @@
+## 2.1.0
+* Complete README.md structure overhaul
+  * Clear separation of Installation, Platform Setup, Usage, and Troubleshooting sections
+  * Added Korean documentation (README.ko.md)
+* Version information updates
+  * Updated links to official sites (pub.dev, cocoapods.org)
+  * Updated Naver SDK versions (Android: v5.10.0, iOS: v5.0.0)
+* Android setup enhancements
+  * Added taskAffinity configuration guide
+  * Detailed MainActivity setup instructions
+* API documentation improvements
+  * Added detailed descriptions for all major types (NaverLoginResult, NaverToken, etc.)
+  * Enhanced API usage examples (login, token management, account info)
+  * Added error handling examples
+* Added troubleshooting guides for iOS/Android build issues
+  * CocoaPods version error solutions
+  * Build system error solutions
+  * Proguard configuration guide
+
 ## 2.0.1
 * Fix login error report twice to flutter in Android
   * Failure delivering result ResultInfo to activity : java.lang.IllegalStateException: Reply already submitted

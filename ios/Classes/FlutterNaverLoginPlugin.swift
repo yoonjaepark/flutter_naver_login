@@ -1,23 +1,79 @@
 import Flutter
-import NaverThirdPartyLogin
+import NidThirdPartyLogin
+import NidCore
 import SafariServices
 import UIKit
 
-@objc
-public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
-    NaverThirdPartyLoginConnectionDelegate
-{
-    private var loginConn: NaverThirdPartyLoginConnection?
-    private var pendingResult: FlutterResult?
-    private var didInitialized: Bool = false
-    private var didEnteredBg: Bool = false
-    private var loginState: LoginState = .idle
+/// 네이버 로그인 상태를 나타내는 열거형
+private enum NaverLoginState {
+    case idle
+    case inProgress
+    case cancelled
+}
 
-    // MARK: -
+/// 네이버 로그인 상태를 나타내는 열거형
+public enum NaverLoginStatus: String {
+    case loggedIn = "loggedIn"
+    case loggedOut = "loggedOut"
+    case error = "error"
+}
+
+/// Flutter 플러그인 메서드를 나타내는 열거형
+private enum NaverLoginPluginMethod {
+    case initSdk
+    case logIn
+    case logOut
+    case logoutAndDeleteToken
+    case getCurrentAccount
+    case getCurrentAccessToken
+    case refreshAccessTokenWithRefreshToken
+    case isLoggedIn
+    case unknown
+    
+    init(methodName: String) {
+        switch methodName {
+        case "initSdk":
+            self = .initSdk
+        case "logIn":
+            self = .logIn
+        case "logOut":
+            self = .logOut
+        case "logoutAndDeleteToken":
+            self = .logoutAndDeleteToken
+        case "getCurrentAccount":
+            self = .getCurrentAccount
+        case "getCurrentAccessToken":
+            self = .getCurrentAccessToken
+        case "refreshAccessTokenWithRefreshToken":
+            self = .refreshAccessTokenWithRefreshToken
+        case "isLoggedIn":
+            self = .isLoggedIn
+        default:
+            self = .unknown
+        }
+    }
+}
+
+/// 네이버 로그인 플러그인의 메인 클래스
+@objc
+public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
+    private var pendingResult: FlutterResult?
+    private var loginState: NaverLoginState = .idle
+
+    // MARK: - Lifecycle
 
     override public init() {
         super.init()
+        setupNotifications()
+    }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    // MARK: - Private Methods
+
+    private func setupNotifications() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appDidEnterBackground),
@@ -28,497 +84,298 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin,
             selector: #selector(appWillEnterForeground),
             name: UIApplication.willEnterForegroundNotification,
             object: nil)
-
-        // FIXME: should method call initSdk
-        initSdk()
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 
     @objc private func appDidEnterBackground() {
-        print("didEnterBg - loginState: \(loginState)")
         if case .inProgress = loginState {
-            didEnteredBg = true
+            loginState = .cancelled
         }
     }
 
     @objc private func appWillEnterForeground() {
-        print(
-            "willEnterFg - loginState: \(loginState), isReturningFromNaverApp: \(didEnteredBg)"
-        )
-        if case .inProgress = loginState, didEnteredBg {
-            // Add delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                [weak self] in
-                guard let self = self else { return }
-                if case .inProgress = self.loginState, self.didEnteredBg {
-                    let info: [String: Any] = [
-                        "status": "cancelledByUser",
-                        "isLogin": false,
-                    ]
-                    self.pendingResult?(info)
-                    self.pendingResult = nil
-                    self.loginState = .idle
-                    self.didEnteredBg = false
-                }
-            }
+        if case .cancelled = loginState {
+            sendError(message: "Login cancelled by user")
+            loginState = .idle
         }
     }
 
     // MARK: - Flutter Plugin Registration
 
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(
-            name: "flutter_naver_login", binaryMessenger: registrar.messenger())
         let instance = FlutterNaverLoginPlugin()
+        
+        // Info.plist에서 네이버 로그인 설정 값 읽기
+        let infoDictionary = Bundle.main.infoDictionary
+        
+        guard let clientId = infoDictionary?["NidClientID"] as? String,
+              let clientSecret = infoDictionary?["NidClientSecret"] as? String,
+              let appName = infoDictionary?["NidAppName"] as? String,
+              let urlScheme = infoDictionary?["NidUrlScheme"] as? String else {
+            print("Error: Required Naver Login configuration not found in Info.plist")
+            return
+        }
+        
+        // SDK 초기화
+        NidOAuth.shared.initialize()
+        
+        // 기본 로그인 동작 설정 (웹뷰)
+        NidOAuth.shared.setLoginBehavior(.inAppBrowser)
+        
+        let channel = FlutterMethodChannel(
+            name: "flutter_naver_login",
+            binaryMessenger: registrar.messenger())
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
-    // MARK: - Handle Method Calls from Flutter
+    // MARK: - Handle Method Calls
 
-    public func handle(
-        _ call: FlutterMethodCall, result: @escaping FlutterResult
-    ) {
-        let flutterMethod = FlutterPluginMethod(methodName: call.method)
-        print(call.method)
-
-        print("Received method call: \(call.method)")
-
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if pendingResult != nil {
-            let errorInfo: [String: String] = [
-                "status": "error",
-                "errorMessage": "Another request is in progress. Please wait",
-            ]
-            result(errorInfo)
+            sendError(message: "Another request is in progress. Please wait", result: result)
             return
         }
         self.pendingResult = result
-        
-        // init sdk have to not guarded by didInitialized
-        if (flutterMethod == .initSdk) {
-            initSdk(call.arguments as? Dictionary<String, Any>)
-            return
-        }
-
-        guard didInitialized else {
-            let errorInfo: [String: String] = [
-                "status": "error",
-                "errorMessage":
-                    "NaverLoginPlugin is not initialized",
-            ]
-            DispatchQueue.main.async {
-                self.pendingResult?(errorInfo)
-                self.pendingResult = nil
-            }
-            return
-        }
-
+        let flutterMethod = NaverLoginPluginMethod(methodName: call.method)
         switch flutterMethod {
         case .initSdk:
-            initSdk(call.arguments as? Dictionary<String, Any>)
-
+            guard let args = call.arguments as? [String: Any] else {
+            result(FlutterError(code: "INVALID_ARGUMENTS", 
+                              message: "Arguments are required", 
+                              details: nil))
+            return
+            }
+            handleInitSdk(args)
         case .logIn:
-            login()
-
+            handleLogin()
         case .logOut:
-            logout()
-
+            handleLogout()
         case .logoutAndDeleteToken:
-            logoutAndDeleteToken()
-
+            handleLogoutAndDeleteToken()
         case .getCurrentAccount:
-            getCurrentAccount()
-
+            handleGetCurrentAccount()
         case .getCurrentAccessToken:
-            getCurrentAccessToken()
-
+            handleGetCurrentAccessToken()
         case .refreshAccessTokenWithRefreshToken:
-            refreshAccessTokenWithRefreshToken()
-
+            handleRefreshToken()
+        case .isLoggedIn:
+            handleIsLoggedIn()
         case .unknown:
-            result(FlutterMethodNotImplemented)
-            self.pendingResult = nil
+            pendingResult?(FlutterMethodNotImplemented)
+            pendingResult = nil
         }
     }
 
-    // MARK: -
+    // MARK: - Handler Methods
 
-    private func initSdk(_ args: Dictionary<String, Any>? = nil) {
-        if didInitialized {
-            DispatchQueue.main.async {
-                self.pendingResult?(true)
-                self.pendingResult = nil
-            }
-            return
-        }
-        guard
-            let sharedConn = NaverThirdPartyLoginConnection.getSharedInstance()
-        else {
-            print(
-                "Error: Failed to get NaverThirdPartyLoginConnection instance.")
-            self.didInitialized = false
-            return
-        }
-        self.loginConn = sharedConn
-
-        self.loginConn?.isNaverAppOauthEnable = true
-        self.loginConn?.isInAppOauthEnable = true
-
-        let mainBundle = Bundle.main
-
-        guard
-            let naverServiceAppUrlScheme = mainBundle.object(
-                forInfoDictionaryKey: "naverServiceAppUrlScheme") as? String,
-            !naverServiceAppUrlScheme.isEmpty
-        else {
-            print(
-                "Error: Missing or empty 'naverServiceAppUrlScheme' in Info.plist"
-            )
-            self.didInitialized = false
-            DispatchQueue.main.async {
-                self.pendingResult?(false)
-                self.pendingResult = nil
-            }
+    private func handleInitSdk(_ args: [String: Any]) {
+        // Info.plist에서 네이버 로그인 설정 값 읽기
+        let infoDictionary = Bundle.main.infoDictionary
+        guard let clientId = infoDictionary?["NidClientID"] as? String,
+              let clientSecret = infoDictionary?["NidClientSecret"] as? String,
+              let appName = infoDictionary?["NidAppName"] as? String,
+              let urlScheme = infoDictionary?["NidUrlScheme"] as? String else {
+            sendError(message: "Required Naver Login configuration not found in Info.plist. Please check NidClientID, NidClientSecret, NidAppName, and NidUrlScheme values.")
             return
         }
 
-        guard
-            let naverConsumerKey = mainBundle.object(
-                forInfoDictionaryKey: "naverConsumerKey") as? String ?? (args?["clientId"] as? String),
-            !naverConsumerKey.isEmpty
-        else {
-            print("Error: Missing or empty 'naverConsumerKey' in Info.plist")
-            self.didInitialized = false
-            DispatchQueue.main.async {
-                self.pendingResult?(false)
-                self.pendingResult = nil
-            }
-            return
-        }
-
-        guard
-            let naverConsumerSecret = mainBundle.object(
-                forInfoDictionaryKey: "naverConsumerSecret") as? String ?? (args?["clientSecret"] as? String),
-            !naverConsumerSecret.isEmpty
-        else {
-            print("Error: Missing or empty 'naverConsumerSecret' in Info.plist")
-            self.didInitialized = false
-            DispatchQueue.main.async {
-                self.pendingResult?(false)
-                self.pendingResult = nil
-            }
-            return
-        }
-
-        guard
-            let naverServiceAppName = mainBundle.object(
-                forInfoDictionaryKey: "naverServiceAppName") as? String ?? (args?["clientName"] as? String),
-            !naverServiceAppName.isEmpty
-        else {
-            print("Error: Missing or empty 'naverServiceAppName' in Info.plist")
-            self.didInitialized = false
-            DispatchQueue.main.async {
-                self.pendingResult?(false)
-                self.pendingResult = nil
-            }
-            return
-        }
-
-        self.loginConn?.consumerKey = naverConsumerKey
-        self.loginConn?.consumerSecret = naverConsumerSecret
-        self.loginConn?.appName = naverServiceAppName
-        self.loginConn?.serviceUrlScheme = naverServiceAppUrlScheme
-        self.loginConn?.delegate = self
-        self.didInitialized = true
-
-        if (args != nil) {
-            DispatchQueue.main.async {
-                self.pendingResult?(true)
-                self.pendingResult = nil
+        // 로그인 동작 설정
+        if let behavior = args["loginBehavior"] as? String {
+            switch behavior.lowercased() {
+            case "web":
+                NidOAuth.shared.setLoginBehavior(.inAppBrowser)
+            case "app":
+                NidOAuth.shared.setLoginBehavior(.app)
+            default:
+                print("Unknown login behavior: \(behavior)")
+                break
             }
         }
+
+        // SDK 초기화 완료 후 결과 전송
+        sendResult(status: .loggedOut)
     }
 
-    private func login() {
+    private func handleLogin() {
         loginState = .inProgress
-        didEnteredBg = false
-        loginConn!.requestThirdPartyLogin()
-    }
-
-    private func logout() {
-        loginConn?.resetToken()
-        let info: [String: String] = [
-            "status": "cancelledByUser",
-            "isLogin": "false",
-        ]
-        DispatchQueue.main.async {
-            self.pendingResult?(info)
-            self.pendingResult = nil
-        }
-    }
-
-    private func logoutAndDeleteToken() {
-        loginConn?.requestDeleteToken()
-        let info: [String: String] = [
-            "status": "cancelledByUser",
-            "isLogin": "false",
-        ]
-        DispatchQueue.main.async {
-            self.pendingResult?(info)
-            self.pendingResult = nil
-        }
-    }
-
-    private func getCurrentAccount() {
-        getUserInfo { result in
+        NidOAuth.shared.requestLogin { [weak self] result in
             switch result {
-            case .success(let info):
-                print(info)
-                DispatchQueue.main.async {
-                    self.pendingResult?(info)
-                    self.pendingResult = nil
+            case .success(let loginResult):
+                let tokenInfo: [String: Any] = [
+                    "accessToken": loginResult.accessToken.tokenString,
+                    "refreshToken": loginResult.refreshToken.tokenString,
+                    "tokenType": "bearer",
+                    "expiresAt": loginResult.accessToken.expiresAt.iso8601String()
+                ]
+                // 프로필 정보 조회
+                self?.getUserProfile(accessToken: loginResult.accessToken.tokenString) { profileResult in
+                    switch profileResult {
+                    case .success(let profile):
+                        self?.sendResult(status: .loggedIn, accessToken: tokenInfo, account: profile)
+                    case .failure(let error):
+                        self?.sendError(message: error.localizedDescription)
+                    }
                 }
             case .failure(let error):
-                print("Error: \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    self.pendingResult?(
-                        FlutterError(
-                            code: "ERROR", message: error.localizedDescription,
-                            details: nil))
-                    self.pendingResult = nil
-                }
+                self?.sendError(message: error.localizedDescription)
+            }
+            self?.loginState = .idle
+        }
+    }
+
+    private func handleLogout() {
+        NidOAuth.shared.logout()
+        sendResult(status: .loggedOut)
+    }
+
+    private func handleLogoutAndDeleteToken() {
+        // 먼저 토큰 삭제 시도
+        NidOAuth.shared.disconnect { [weak self] result in
+            switch result {
+            case .success:
+                // 토큰 삭제 성공 후 로그아웃 실행
+                NidOAuth.shared.logout()
+                self?.sendResult(status: .loggedOut)
+            case .failure(let error):
+                // 토큰 삭제 실패 시에도 로그아웃은 시도
+                NidOAuth.shared.logout()
+                self?.sendError(message: "Token deletion failed: \(error.localizedDescription)")
             }
         }
     }
 
-    private func getUserInfo(
-        completion: @escaping (Result<[String: String], Error>) -> Void
-    ) {
-        let urlString = "https://openapi.naver.com/v1/nid/me"
-
-        guard let url = URL(string: urlString) else {
-            completion(
-                .failure(
-                    NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
+    private func handleGetCurrentAccount() {
+        guard let accessToken = NidOAuth.shared.accessToken?.tokenString else {
+            sendError(message: "No access token available")
             return
         }
 
-        var urlRequest = URLRequest(url: url)
+        NidOAuth.shared.getUserProfile(accessToken: accessToken) { [weak self] result in
+            switch result {
+            case .success(let profile):
+                self?.sendResult(status: .loggedIn, account: profile)
+            case .failure(let error):
+                self?.sendError(message: error.localizedDescription)
+            }
+        }
+    }
 
-        guard let accessToken = loginConn?.accessToken else {
-            completion(
-                .failure(
-                    NSError(domain: "No Access Token", code: 401, userInfo: nil)
-                ))
+    private func handleGetCurrentAccessToken() {
+        guard let token = NidOAuth.shared.accessToken else {
+            sendResult(status: .loggedOut)
             return
         }
 
-        let authValue = "Bearer \(accessToken)"
-        urlRequest.setValue(authValue, forHTTPHeaderField: "Authorization")
+        let tokenInfo: [String: Any] = [
+            "accessToken": token.tokenString,
+            "refreshToken": NidOAuth.shared.refreshToken?.tokenString ?? "",
+            "tokenType": "bearer",
+            "expiresAt": token.expiresAt.iso8601String()
+        ]
 
-        let task = URLSession.shared.dataTask(with: urlRequest) {
-            [weak self] data, response, error in
-            guard self != nil else { return }
+        sendResult(status: .loggedIn, accessToken: tokenInfo)
+    }
 
-            if let error = error {
-                print("Error occurred: \(error.localizedDescription)")
-                completion(.failure(error))
-                return
+    private func handleRefreshToken() {
+        guard let refreshToken = NidOAuth.shared.refreshToken?.tokenString else {
+            sendError(message: "No refresh token available")
+            return
+        }
+
+        // 재인증을 통해 토큰 갱신
+        NidOAuth.shared.reauthenticate { [weak self] result in
+            switch result {
+            case .success(let loginResult):
+                let tokenInfo: [String: Any] = [
+                    "accessToken": loginResult.accessToken.tokenString,
+                    "refreshToken": loginResult.refreshToken.tokenString,
+                    "tokenType": "bearer",
+                    "expiresAt": loginResult.accessToken.expiresAt.iso8601String()
+                ]
+                self?.sendResult(status: .loggedIn, accessToken: tokenInfo)
+            case .failure(let error):
+                self?.sendError(message: error.localizedDescription)
             }
+        }
+    }
 
-            guard let data = data else {
-                print("No data received")
-                completion(
-                    .failure(
-                        NSError(domain: "No Data", code: 204, userInfo: nil)))
-                return
-            }
+    private func handleIsLoggedIn() {
+        if let accessToken = NidOAuth.shared.accessToken?.tokenString {
+            sendResult(status: .loggedIn)
+        } else {
+            sendResult(status: .loggedOut)
+        }
+    }
 
-            do {
-                if let dict = try JSONSerialization.jsonObject(
-                    with: data, options: []) as? [String: Any],
-                    let res = dict["response"] as? [String: Any]
-                {
+    // MARK: - Helper Methods
 
-                    var info: [String: String] = ["status": "loggedIn"]
-
-                    let userFields = [
-                        "email", "gender", "age", "profile_image", "nickname",
-                        "name", "id", "birthday", "birthyear", "mobile",
-                        "mobile_e164",
-                    ]
-
-                    for field in userFields {
-                        if let value = res[field] as? String {
-                            info[field] = value
+    private func verifyAndGetProfile(accessToken: String, completion: @escaping (Bool) -> Void) {
+        NidOAuth.shared.verifyAccessToken(accessToken) { [weak self] result in
+            switch result {
+            case .success(let isValid):
+                if isValid {
+                    self?.getUserProfile(accessToken: accessToken) { profileResult in
+                        switch profileResult {
+                        case .success(let profile):
+                            // 로그인 시에는 토큰과 계정 정보 모두 포함
+                            self?.sendResult(status: .loggedIn, accessToken: nil, account: profile)
+                            completion(true)
+                        case .failure(let error):
+                            self?.sendError(message: error.localizedDescription)
+                            completion(false)
                         }
                     }
-
-                    completion(.success(info))
                 } else {
-                    print("Invalid JSON structure")
-                    completion(
-                        .failure(
-                            NSError(
-                                domain: "Invalid JSON Structure", code: 500,
-                                userInfo: nil)))
+                    self?.sendError(message: "Invalid access token")
+                    completion(false)
                 }
-            } catch let jsonError {
-                print("JSON parsing error: \(jsonError.localizedDescription)")
-                completion(.failure(jsonError))
+            case .failure(let error):
+                self?.sendError(message: error.localizedDescription)
+                completion(false)
             }
         }
-
-        task.resume()
     }
 
-    private func getCurrentAccessToken() {
-        let accessToken = loginConn?.accessToken ?? ""
-        let refreshToken = loginConn?.refreshToken ?? ""
-        let tokenType = loginConn?.tokenType ?? ""
-        let expiresAt =
-            loginConn?.accessTokenExpireDate?.timeIntervalSince1970 ?? 0
-        let expiresAtString = String(format: "%.0f", floor(expiresAt))
+    private func getUserProfile(accessToken: String, completion: @escaping (Result<[String: String], Error>) -> Void) {
+        NidOAuth.shared.getUserProfile(accessToken: accessToken) { result in
+            completion(result.mapError { $0 as Error })
+        }
+    }
 
-        let info: [String: String] = [
-            "status": "getToken",
-            "accessToken": accessToken,
-            "refreshToken": refreshToken,
-            "tokenType": tokenType,
-            "expiresAt": expiresAtString,
-        ]
+    // MARK: - Result Handling
 
+    private func sendResult(status: NaverLoginStatus, accessToken: [String: Any]? = nil, account: [String: String]? = nil) {
+        var result: [String: Any] = ["status": status.rawValue.lowercased()]
+        
+        if let accessToken = accessToken {
+            result["accessToken"] = accessToken
+        }
+        
+        if let account = account {
+            result["account"] = account
+        }
+        
         DispatchQueue.main.async {
-            self.pendingResult?(info)
+            self.pendingResult?(result)
             self.pendingResult = nil
         }
     }
 
-    private func refreshAccessTokenWithRefreshToken() {
-        loginConn?.requestAccessTokenWithRefreshToken()
-    }
-
-    // MARK: - NaverThirdPartyLoginConnectionDelegate Methods
-
-    public func oauth20ConnectionDidFinishRequestACTokenWithAuthCode() {
-        print("oauth20ConnectionDidFinishRequestACTokenWithAuthCode")
-        getCurrentAccount()
-    }
-
-    public func oauth20ConnectionDidFinishDeleteToken() {
-        print("oauth20ConnectionDidFinishDeleteToken")
-        let info: [String: String] = [
-            "status": "cancelledByUser",
-            "isLogin": "false",
+    private func sendError(message: String, result: FlutterResult? = nil) {
+        let errorInfo: [String: Any] = [
+            "status": NaverLoginStatus.error.rawValue.lowercased(),
+            "errorMessage": message
         ]
+        
         DispatchQueue.main.async {
-            self.pendingResult?(info)
+            (result ?? self.pendingResult)?(errorInfo)
             self.pendingResult = nil
         }
     }
+}
 
-    public func oauth20ConnectionDidFinishRequestACTokenWithRefreshToken() {
-        print("oauth20ConnectionDidFinishRequestACTokenWithRefreshToken")
-        getCurrentAccount()
-        loginState = .idle
-    }
-
-    public func oauth20Connection(
-        _ oauthConnection: NaverThirdPartyLoginConnection,
-        didFailWithError error: Error
-    ) {
-        loginConn?.resetToken()
-        print(
-            "oauth20Connection:didFailWithError - error: \(error.localizedDescription)"
-        )
-        let errorInfo: [String: String] = [
-            "status": "error",
-            "errorMessage": error.localizedDescription,
-        ]
-
-        DispatchQueue.main.async {
-            self.pendingResult?(errorInfo)
-            self.pendingResult = nil
-        }
-        loginState = .idle
-    }
-
-    public func oauth20Connection(
-        _ oauthConnection: NaverThirdPartyLoginConnection,
-        didFinishAuthorizationWithResult receiveType:
-            THIRDPARTYLOGIN_RECEIVE_TYPE
-    ) {
-        print(
-            "oauth20Connection:didFinishAuthorizationWithResult - receiveType: \(receiveType)"
-        )
-        switch receiveType {
-        case SUCCESS:
-            print("SUCCESS login")
-            loginState = .inProgress
-        default:
-            print(
-                "FAILED login. But callbacked from didFinishAuthorizationWithResult"
-            )
-            loginState = .idle
-        }
-    }
-
-    public func oauth20Connection(
-        _ oauthConnection: NaverThirdPartyLoginConnection,
-        didFailAuthorizationWithReceive receiveType:
-            THIRDPARTYLOGIN_RECEIVE_TYPE
-    ) {
-        print(
-            "oauth20Connection:didFailAuthorizationWithReceiveType - receiveType: \(receiveType.rawValue)"
-        )
-
-        let errorMessage: String?
-        switch receiveType {
-        case SUCCESS:
-            print(
-                "SUCCESS. But callbacked from didFailAuthorizationWithReceive")
-            errorMessage = nil
-        case PARAMETERNOTSET:
-            errorMessage = "PARAMETERNOTSET"
-        case CANCELBYUSER:
-            errorMessage = "CANCELBYUSER"
-        case NAVERAPPNOTINSTALLED:
-            errorMessage = "NAVERAPPNOTINSTALLED"
-        case NAVERAPPVERSIONINVALID:
-            errorMessage = "NAVERAPPVERSIONINVALID"
-        case OAUTHMETHODNOTSET:
-            errorMessage = "OAUTHMETHODNOTSET"
-        case INVALIDREQUEST:
-            errorMessage = "INVALIDREQUEST"
-        case CLIENTNETWORKPROBLEM:
-            errorMessage = "CLIENTNETWORKPROBLEM"
-        case UNAUTHORIZEDCLIENT:
-            errorMessage = "UNAUTHORIZEDCLIENT"
-        case UNSUPPORTEDRESPONSETYPE:
-            errorMessage = "UNSUPPORTEDRESPONSETYPE"
-        case NETWORKERROR:
-            errorMessage = "NETWORKERROR"
-        case UNKNOWNERROR:
-            errorMessage = "UNKNOWNERROR"
-        default:
-            errorMessage = "UNKNOWN"
-        }
-
-        guard let errorMessage else {
-            loginState = .inProgress
-            return
-        }
-
-        let info: [String: String] = [
-            "status": "error",
-            "errorMessage": errorMessage,
-        ]
-        DispatchQueue.main.async {
-            self.pendingResult?(info)
-            self.pendingResult = nil
-        }
-        loginState = .idle
+extension Date {
+    func iso8601String() -> String {
+        let formatter = ISO8601DateFormatter()
+        return formatter.string(from: self)
     }
 }
