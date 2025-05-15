@@ -2,7 +2,7 @@ import 'package:flutter_naver_login/flutter_naver_login_platform_interface.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_naver_login/interface/types/naver_login_result.dart';
 import 'package:flutter_naver_login/interface/types/naver_account_result.dart';
-import 'package:flutter_naver_login/interface/types/naver_access_token.dart';
+import 'package:flutter_naver_login/interface/types/naver_token.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:flutter_naver_login/interface/types/naver_login_status.dart';
 import 'package:flutter_naver_login/flutter_naver_login_method_channel.dart';
@@ -15,8 +15,9 @@ class MockFlutterNaverLoginPlatform
     required String clientId,
     required String clientName,
     required String clientSecret,
+    String loginBehavior = 'web',
   }) async {
-    // Mock implementation
+    await Future.delayed(Duration.zero); // 비동기 동작 시뮬레이션
   }
 
   @override
@@ -28,7 +29,7 @@ class MockFlutterNaverLoginPlatform
   Future<NaverLoginResult> logIn() async {
     return NaverLoginResult(
       status: NaverLoginStatus.loggedIn,
-      accessToken: NaverAccessToken(
+      accessToken: NaverToken(
         accessToken: 'mockAccessToken',
         refreshToken: 'mockRefreshToken',
         expiresAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),
@@ -45,6 +46,7 @@ class MockFlutterNaverLoginPlatform
 
   @override
   Future<NaverLoginResult> logOutAndDeleteToken() async {
+    print("🔥 logOutAndDeleteToken");
     return NaverLoginResult(status: NaverLoginStatus.loggedOut);
   }
 
@@ -60,7 +62,7 @@ class MockFlutterNaverLoginPlatform
   Future<NaverLoginResult> getCurrentAccessToken() async {
     return NaverLoginResult(
       status: NaverLoginStatus.loggedIn,
-      accessToken: NaverAccessToken(
+      accessToken: NaverToken(
         accessToken: 'mockAccessToken',
         refreshToken: 'mockRefreshToken',
         expiresAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),
@@ -73,7 +75,7 @@ class MockFlutterNaverLoginPlatform
   Future<NaverLoginResult> refreshAccessTokenWithRefreshToken() async {
     return NaverLoginResult(
       status: NaverLoginStatus.loggedIn,
-      accessToken: NaverAccessToken(
+      accessToken: NaverToken(
         accessToken: 'newMockAccessToken',
         refreshToken: 'newMockRefreshToken',
         expiresAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),

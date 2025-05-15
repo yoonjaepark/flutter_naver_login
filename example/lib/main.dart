@@ -164,6 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       final NaverLoginResult res =
           await FlutterNaverLogin.logOutAndDeleteToken();
+      print("🔥 buttonLogoutAndDeleteTokenPressed: $res");
       if (res.status == NaverLoginStatus.loggedOut) {
         setState(() {
           isLogin = false;

@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_naver_login/utils/clock.dart';
 
-/// naver_access_token.dart
+/// naver_token.dart
 ///
 /// 네이버 액세스 토큰을 나타내는 클래스입니다.
 /// 이 클래스는 네이버 로그인 기능의 결과를 정의하고,
 /// 액세스 토큰 정보를 포함합니다.
 @immutable
-class NaverAccessToken {
+class NaverToken {
   final String accessToken;
   final String refreshToken;
   final String expiresAt;
@@ -19,7 +19,7 @@ class NaverAccessToken {
   ///
   /// 매개변수:
   /// - accessToken: 액세스 토큰
-  const NaverAccessToken({
+  const NaverToken({
     required this.accessToken,
     required this.refreshToken,
     required this.expiresAt,
@@ -29,10 +29,10 @@ class NaverAccessToken {
   /// 맵에서 네이버 액세스 토큰을 생성하는 팩토리 메서드입니다.
   ///
   /// 이 메서드는 맵에서 네이버 액세스 토큰의 각 속성을 추출하고,
-  /// 해당 속성을 사용하여 NaverAccessToken 객체를 생성합니다.
+  /// 해당 속성을 사용하여 NaverToken 객체를 생성합니다.
   ///
-  factory NaverAccessToken.fromMap(Map<String, dynamic> map) {
-    return NaverAccessToken(
+  factory NaverToken.fromMap(Map<String, dynamic> map) {
+    return NaverToken(
       accessToken: map['accessToken'] ?? '',
       refreshToken: map['refreshToken'] ?? '',
       expiresAt: map['expiresAt'] ?? '',
@@ -43,9 +43,9 @@ class NaverAccessToken {
   /// 빈 네이버 액세스 토큰을 생성하는 팩토리 메서드입니다.
   ///
   /// 이 메서드는 빈 네이버 액세스 토큰을 생성하고,
-  /// 해당 속성을 사용하여 NaverAccessToken 객체를 생성합니다.
+  /// 해당 속성을 사용하여 NaverToken 객체를 생성합니다.
   ///
-  factory NaverAccessToken.empty() => const NaverAccessToken(
+  factory NaverToken.empty() => const NaverToken(
     accessToken: 'no token',
     refreshToken: 'no refreshToken',
     expiresAt: 'no token',
@@ -80,7 +80,7 @@ class NaverAccessToken {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is NaverAccessToken &&
+      other is NaverToken &&
           runtimeType == other.runtimeType &&
           accessToken == other.accessToken &&
           refreshToken == other.refreshToken &&

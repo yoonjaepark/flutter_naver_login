@@ -1,6 +1,6 @@
 import 'naver_account_result.dart';
 import 'naver_login_status.dart';
-import 'naver_access_token.dart';
+import 'naver_token.dart';
 
 /// naver_login_result.dart
 ///
@@ -8,7 +8,7 @@ import 'naver_access_token.dart';
 /// 이 클래스는 네이버 로그인 기능의 결과를 정의하고,
 /// 로그인 결과 정보를 포함합니다.
 class NaverLoginResult {
-  final NaverAccessToken? accessToken;
+  final NaverToken? accessToken;
   final NaverAccountResult? account;
   final NaverLoginStatus status;
   final String? errorMessage;
@@ -38,7 +38,7 @@ class NaverLoginResult {
     return NaverLoginResult(
       accessToken:
           map['accessToken'] != null
-              ? NaverAccessToken.fromMap(
+              ? NaverToken.fromMap(
                 Map<String, dynamic>.from(map['accessToken']),
               )
               : null,

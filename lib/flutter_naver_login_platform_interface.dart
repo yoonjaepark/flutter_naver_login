@@ -48,6 +48,14 @@ abstract class FlutterNaverLoginPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  /// 네이버 로그인 SDK를 초기화합니다.
+  Future<void> initSdk({
+    required String clientId,
+    required String clientName,
+    required String clientSecret,
+    String loginBehavior = 'web',
+  });
+
   /// 네이버 로그인을 수행합니다.
   Future<NaverLoginResult> logIn();
 
