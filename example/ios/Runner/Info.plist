@@ -55,13 +55,13 @@
 		</dict>
 	</array>
 	<key>NidClientID</key>
-	<string>[NidClientID]</string>
+	<string>HPkxqxTD78VrBP1WLsvn</string>
 	<key>NidClientSecret</key>
-	<string>[NidClientSecret]</string>
+	<string>RrviRRnldR</string>
 	<key>NidAppName</key>
-	<string>[NidAppName]</string>
+	<string>flutternaverloginexample</string>
 	<key>NidUrlScheme</key>
-	<string>[NidUrlScheme]</string>
+	<string>flutternaverloginexample</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>naversearchapp</string>

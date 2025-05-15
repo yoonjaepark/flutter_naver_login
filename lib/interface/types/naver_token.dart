@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_naver_login/utils/clock.dart';
 
-/// naver_token.dart
+/// naver_access_token.dart
 ///
 /// 네이버 액세스 토큰을 나타내는 클래스입니다.
 /// 이 클래스는 네이버 로그인 기능의 결과를 정의하고,
@@ -29,28 +29,36 @@ class NaverToken {
   /// 맵에서 네이버 액세스 토큰을 생성하는 팩토리 메서드입니다.
   ///
   /// 이 메서드는 맵에서 네이버 액세스 토큰의 각 속성을 추출하고,
-  /// 해당 속성을 사용하여 NaverToken 객체를 생성합니다.
+  /// 해당 속성을 사용하여 NaverAccessToken 객체를 생성합니다.
   ///
   factory NaverToken.fromMap(Map<String, dynamic> map) {
+    final m = Map<String, dynamic>.from(map);
     return NaverToken(
-      accessToken: map['accessToken'] ?? '',
-      refreshToken: map['refreshToken'] ?? '',
-      expiresAt: map['expiresAt'] ?? '',
-      tokenType: map['tokenType'] ?? '',
+      accessToken: m['accessToken'] ?? '',
+      refreshToken: m['refreshToken'] ?? '',
+      expiresAt: m['expiresAt'] ?? '',
+      tokenType: m['tokenType'] ?? '',
     );
   }
 
   /// 빈 네이버 액세스 토큰을 생성하는 팩토리 메서드입니다.
   ///
   /// 이 메서드는 빈 네이버 액세스 토큰을 생성하고,
-  /// 해당 속성을 사용하여 NaverToken 객체를 생성합니다.
+  /// 해당 속성을 사용하여 NaverAccessToken 객체를 생성합니다.
   ///
   factory NaverToken.empty() => const NaverToken(
-    accessToken: 'no token',
-    refreshToken: 'no refreshToken',
-    expiresAt: 'no token',
-    tokenType: 'no token',
+    accessToken: '',
+    refreshToken: '',
+    expiresAt: '',
+    tokenType: '',
   );
+
+  Map<String, dynamic> toMap() => {
+    'accessToken': accessToken,
+    'refreshToken': refreshToken,
+    'expiresAt': expiresAt,
+    'tokenType': tokenType,
+  };
 
   /// 네이버 액세스 토큰이 유효한지 확인하는 메서드입니다.
   ///
@@ -58,9 +66,23 @@ class NaverToken {
   /// 유효한 경우 true를 반환하고, 유효하지 않은 경우 false를 반환합니다.
   bool isValid() {
     if (expiresAt.isEmpty || expiresAt == 'no token') return false;
-    bool timeValid = Clock.now().isBefore(
-      DateTime.fromMillisecondsSinceEpoch(int.parse(expiresAt) * 1000),
-    );
+
+    DateTime? expireDate;
+    try {
+      // 1. ISO8601 문자열 시도
+      expireDate = DateTime.parse(expiresAt);
+    } catch (_) {
+      try {
+        // 2. UNIX timestamp(초) 시도
+        expireDate = DateTime.fromMillisecondsSinceEpoch(
+          int.parse(expiresAt) * 1000,
+        );
+      } catch (_) {
+        return false;
+      }
+    }
+
+    bool timeValid = expireDate != null && Clock.now().isBefore(expireDate);
     bool tokenExist = accessToken.isNotEmpty && accessToken != 'no token';
     return timeValid && tokenExist;
   }

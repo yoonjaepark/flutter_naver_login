@@ -15,9 +15,8 @@ class MockFlutterNaverLoginPlatform
     required String clientId,
     required String clientName,
     required String clientSecret,
-    String loginBehavior = 'web',
   }) async {
-    await Future.delayed(Duration.zero); // 비동기 동작 시뮬레이션
+    // Mock implementation
   }
 
   @override
@@ -46,41 +45,31 @@ class MockFlutterNaverLoginPlatform
 
   @override
   Future<NaverLoginResult> logOutAndDeleteToken() async {
-    print("🔥 logOutAndDeleteToken");
     return NaverLoginResult(status: NaverLoginStatus.loggedOut);
   }
 
   @override
-  Future<NaverLoginResult> getCurrentAccount() async {
-    return NaverLoginResult(
-      status: NaverLoginStatus.loggedIn,
-      account: NaverAccountResult(nickname: 'mockUser'),
+  Future<NaverAccountResult> getCurrentAccount() async {
+    return NaverAccountResult(nickname: 'mockUser');
+  }
+
+  @override
+  Future<NaverToken> getCurrentAccessToken() async {
+    return NaverToken(
+      accessToken: 'mockAccessToken',
+      refreshToken: 'mockRefreshToken',
+      expiresAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),
+      tokenType: 'bearer',
     );
   }
 
   @override
-  Future<NaverLoginResult> getCurrentAccessToken() async {
-    return NaverLoginResult(
-      status: NaverLoginStatus.loggedIn,
-      accessToken: NaverToken(
-        accessToken: 'mockAccessToken',
-        refreshToken: 'mockRefreshToken',
-        expiresAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),
-        tokenType: 'bearer',
-      ),
-    );
-  }
-
-  @override
-  Future<NaverLoginResult> refreshAccessTokenWithRefreshToken() async {
-    return NaverLoginResult(
-      status: NaverLoginStatus.loggedIn,
-      accessToken: NaverToken(
-        accessToken: 'newMockAccessToken',
-        refreshToken: 'newMockRefreshToken',
-        expiresAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),
-        tokenType: 'bearer',
-      ),
+  Future<NaverToken> refreshAccessTokenWithRefreshToken() async {
+    return NaverToken(
+      accessToken: 'newMockAccessToken',
+      refreshToken: 'newMockRefreshToken',
+      expiresAt: DateTime.now().add(Duration(days: 1)).toIso8601String(),
+      tokenType: 'bearer',
     );
   }
 }
@@ -109,8 +98,13 @@ void main() {
     FlutterNaverLoginPlatform.instance = fakePlatform;
 
     final result = await fakePlatform.getCurrentAccessToken();
-    expect(result.status, NaverLoginStatus.loggedIn);
-    expect(result.accessToken?.accessToken, 'mockAccessToken');
+    expect(result.accessToken, 'mockAccessToken');
+    expect(result.refreshToken, 'mockRefreshToken');
+    expect(
+      result.expiresAt,
+      DateTime.now().add(Duration(days: 1)).toIso8601String(),
+    );
+    expect(result.tokenType, 'bearer');
   });
 
   test('logOut', () async {

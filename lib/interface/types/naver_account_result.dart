@@ -17,6 +17,7 @@ class NaverAccountResult {
   final String? birthday;
   final String? birthYear;
   final String? mobile;
+  final String? mobileE164;
 
   /// 네이버 계정 결과를 생성하는 생성자입니다.
   ///
@@ -44,6 +45,7 @@ class NaverAccountResult {
     this.birthday,
     this.birthYear,
     this.mobile,
+    this.mobileE164,
   });
 
   /// 맵에서 네이버 계정 결과를 생성하는 팩토리 메서드입니다.
@@ -57,12 +59,13 @@ class NaverAccountResult {
       email: map['email'],
       name: map['name'],
       nickname: map['nickname'],
-      profileImage: map['profileImage'],
+      profileImage: map['profile_image'],
       gender: map['gender'],
       age: map['age'],
       birthday: map['birthday'],
-      birthYear: map['birthYear'],
+      birthYear: map['birthyear'],
       mobile: map['mobile'],
+      mobileE164: map['mobile_e164'],
     );
   }
 
@@ -82,6 +85,7 @@ class NaverAccountResult {
     'birthday': birthday,
     'birthYear': birthYear,
     'mobile': mobile,
+    'mobileE164': mobileE164,
   };
 
   /// 네이버 계정 결과를 비교하는 메서드입니다.
@@ -102,7 +106,8 @@ class NaverAccountResult {
           age == other.age &&
           birthday == other.birthday &&
           birthYear == other.birthYear &&
-          mobile == other.mobile;
+          mobile == other.mobile &&
+          mobileE164 == other.mobileE164;
 
   /// 네이버 계정 결과의 해시 코드를 반환하는 메서드입니다.
   ///
@@ -120,5 +125,6 @@ class NaverAccountResult {
     birthday,
     birthYear,
     mobile,
+    mobileE164,
   );
 }

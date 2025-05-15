@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:flutter_naver_login/interface/types/naver_token.dart';
+import 'package:flutter_naver_login/interface/types/naver_account_result.dart';
 import 'package:flutter_naver_login/interface/types/naver_login_result.dart';
 import 'package:flutter_naver_login/interface/types/naver_login_status.dart';
 
@@ -113,12 +115,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> buttonLoginPressed() async {
     try {
       final NaverLoginResult res = await FlutterNaverLogin.logIn();
+      print("🔥 buttonLoginPressed: ");
+      print(res.status);
       setState(() {
-        name = res.account?.nickname;
-        accessToken = res.accessToken?.accessToken;
-        refreshToken = res.accessToken?.refreshToken;
-        tokenType = res.accessToken?.tokenType;
-        expiresAt = res.accessToken?.expiresAt;
         isLogin = res.status == NaverLoginStatus.loggedIn;
       });
     } catch (error) {
@@ -128,14 +127,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> buttonTokenPressed() async {
     try {
-      final NaverLoginResult res =
-          await FlutterNaverLogin.getCurrentAccessToken();
+      final NaverToken res = await FlutterNaverLogin.getCurrentAccessToken();
       setState(() {
-        refreshToken = res.accessToken?.refreshToken;
-        accessToken = res.accessToken?.accessToken;
-        tokenType = res.accessToken?.tokenType;
-        expiresAt = res.accessToken?.expiresAt;
-        isLogin = res.status == NaverLoginStatus.loggedIn;
+        refreshToken = res.refreshToken;
+        accessToken = res.accessToken;
+        tokenType = res.tokenType;
+        expiresAt = res.expiresAt;
+        isLogin = res.isValid();
       });
     } catch (error) {
       _showSnackError(error.toString());
@@ -164,7 +162,6 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       final NaverLoginResult res =
           await FlutterNaverLogin.logOutAndDeleteToken();
-      print("🔥 buttonLogoutAndDeleteTokenPressed: $res");
       if (res.status == NaverLoginStatus.loggedOut) {
         setState(() {
           isLogin = false;
@@ -182,8 +179,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> buttonGetUserPressed() async {
     try {
-      final NaverLoginResult res = await FlutterNaverLogin.getCurrentAccount();
-      setState(() => name = res.account?.name);
+      final NaverAccountResult res =
+          await FlutterNaverLogin.getCurrentAccount();
+      setState(() => name = res.name);
     } catch (error) {
       _showSnackError(error.toString());
     }

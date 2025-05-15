@@ -23,10 +23,11 @@ private enum NaverLoginPluginMethod {
     case initSdk
     case logIn
     case logOut
-    case logOutAndDeleteToken 
+    case logoutAndDeleteToken
     case getCurrentAccount
     case getCurrentAccessToken
     case refreshAccessTokenWithRefreshToken
+    case isLoggedIn
     case unknown
     
     init(methodName: String) {
@@ -37,14 +38,16 @@ private enum NaverLoginPluginMethod {
             self = .logIn
         case "logOut":
             self = .logOut
-        case "logOutAndDeleteToken": 
-            self = .logOutAndDeleteToken
+        case "logoutAndDeleteToken":
+            self = .logoutAndDeleteToken
         case "getCurrentAccount":
             self = .getCurrentAccount
         case "getCurrentAccessToken":
             self = .getCurrentAccessToken
         case "refreshAccessTokenWithRefreshToken":
             self = .refreshAccessTokenWithRefreshToken
+        case "isLoggedIn":
+            self = .isLoggedIn
         default:
             self = .unknown
         }
@@ -103,7 +106,14 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
         
         // Info.plist에서 네이버 로그인 설정 값 읽기
         let infoDictionary = Bundle.main.infoDictionary
-
+        
+        print("=== Naver Login Plugin Registration ===")
+        print("NidClientID: \(infoDictionary?["NidClientID"] ?? "nil")")
+        print("NidClientSecret: \(infoDictionary?["NidClientSecret"] ?? "nil")")
+        print("NidAppName: \(infoDictionary?["NidAppName"] ?? "nil")")
+        print("NidUrlScheme: \(infoDictionary?["NidUrlScheme"] ?? "nil")")
+        print("===================================")
+        
         guard let clientId = infoDictionary?["NidClientID"] as? String,
               let clientSecret = infoDictionary?["NidClientSecret"] as? String,
               let appName = infoDictionary?["NidAppName"] as? String,
@@ -130,16 +140,13 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
     // MARK: - Handle Method Calls
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        if let pendingResult = self.pendingResult {
-            print("🔥 Previous request was not completed, cleaning up...")
-            pendingResult(FlutterError(code: "REQUEST_CANCELLED",
-                                    message: "Previous request was cancelled",
-                                    details: nil))
-            self.pendingResult = nil
+        print("🔥 Called method: \(call.method)") // 추가
+        if pendingResult != nil {
+            sendError(message: "Another request is in progress. Please wait", result: result)
+            return
         }
         self.pendingResult = result
         let flutterMethod = NaverLoginPluginMethod(methodName: call.method)
-        print("🔥 flutterMethod: \(flutterMethod)")
         switch flutterMethod {
         case .initSdk:
             guard let args = call.arguments as? [String: Any] else {
@@ -153,7 +160,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
             handleLogin()
         case .logOut:
             handleLogout()
-        case .logOutAndDeleteToken:
+        case .logoutAndDeleteToken:
             handleLogoutAndDeleteToken()
         case .getCurrentAccount:
             handleGetCurrentAccount()
@@ -161,53 +168,69 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
             handleGetCurrentAccessToken()
         case .refreshAccessTokenWithRefreshToken:
             handleRefreshToken()
+        case .isLoggedIn:
+            handleIsLoggedIn()
         case .unknown:
             pendingResult?(FlutterMethodNotImplemented)
             pendingResult = nil
         }
     }
 
+    // MARK: - Handler Methods
+
     private func handleInitSdk(_ args: [String: Any]) {
-        // 필수 파라미터 확인
-        guard let clientId = args["clientId"] as? String,
-            let clientName = args["clientName"] as? String,
-            let clientSecret = args["clientSecret"] as? String else {
-            print("🔥 Missing required parameters")
-            sendError(message: "Required parameters (clientId, clientName, clientSecret) are missing")
+        // Info.plist에서 네이버 로그인 설정 값 읽기
+        let infoDictionary = Bundle.main.infoDictionary
+        
+        print("=== Naver Login Configuration ===")
+        print("NidClientID: \(infoDictionary?["NidClientID"] ?? "nil")")
+        print("NidClientSecret: \(infoDictionary?["NidClientSecret"] ?? "nil")")
+        print("NidAppName: \(infoDictionary?["NidAppName"] ?? "nil")")
+        print("NidUrlScheme: \(infoDictionary?["NidUrlScheme"] ?? "nil")")
+        print("LoginBehavior: \(args["loginBehavior"] ?? "nil")")
+        print("==============================")
+        
+        guard let clientId = infoDictionary?["NidClientID"] as? String,
+              let clientSecret = infoDictionary?["NidClientSecret"] as? String,
+              let appName = infoDictionary?["NidAppName"] as? String,
+              let urlScheme = infoDictionary?["NidUrlScheme"] as? String else {
+            sendError(message: "Required Naver Login configuration not found in Info.plist. Please check NidClientID, NidClientSecret, NidAppName, and NidUrlScheme values.")
             return
         }
+
         // 로그인 동작 설정
         if let behavior = args["loginBehavior"] as? String {
+            print("Setting login behavior to: \(behavior)")
             switch behavior.lowercased() {
             case "web":
                 NidOAuth.shared.setLoginBehavior(.inAppBrowser)
             case "app":
                 NidOAuth.shared.setLoginBehavior(.app)
             default:
-                print("🔥 Unknown login behavior: \(behavior), using default (web)")
-                NidOAuth.shared.setLoginBehavior(.inAppBrowser)
+                print("Unknown login behavior: \(behavior)")
+                break
             }
         }
-        // SDK 초기화
-        NidOAuth.shared.initialize()
-        // 초기화 완료
+
+        // SDK 초기화 완료 후 결과 전송
         sendResult(status: .loggedOut)
     }
 
-   
     private func handleLogin() {
         loginState = .inProgress
-        NidOAuth.shared.requestLogin { [weak self] (result: Result<LoginResult, NidError>) in
+        print("Naver Login Plugin Login")
+        NidOAuth.shared.requestLogin { [weak self] result in
             switch result {
-            case .success(let loginResult: LoginResult):
+            case .success(let loginResult):
                 let tokenInfo: [String: Any] = [
                     "accessToken": loginResult.accessToken.tokenString,
                     "refreshToken": loginResult.refreshToken.tokenString,
                     "tokenType": "bearer",
                     "expiresAt": loginResult.accessToken.expiresAt.iso8601String()
                 ]
-                // 프로필 정보 조회 - 타입 명시적 지정
-                self?.getUserProfile(accessToken: loginResult.accessToken.tokenString) { (profileResult: Result<[String: String], Error>) in
+                print(tokenInfo)
+                // 프로필 정보 조회
+                self?.getUserProfile(accessToken: loginResult.accessToken.tokenString) { profileResult in
                     switch profileResult {
                     case .success(let profile):
                         self?.sendResult(status: .loggedIn, accessToken: tokenInfo, account: profile)
@@ -228,13 +251,17 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
     }
 
     private func handleLogoutAndDeleteToken() {
+        // 먼저 토큰 삭제 시도
         NidOAuth.shared.disconnect { [weak self] result in
             switch result {
             case .success:
-                print("🔥 handleLogoutAndDeleteToken success")
+                // 토큰 삭제 성공 후 로그아웃 실행
+                NidOAuth.shared.logout()
                 self?.sendResult(status: .loggedOut)
             case .failure(let error):
-                self?.sendError(message: error.localizedDescription)
+                // 토큰 삭제 실패 시에도 로그아웃은 시도
+                NidOAuth.shared.logout()
+                self?.sendError(message: "Token deletion failed: \(error.localizedDescription)")
             }
         }
     }
@@ -256,31 +283,20 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
     }
 
     private func handleGetCurrentAccessToken() {
+        print("🔥 handleGetCurrentAccessToken", NidOAuth.shared.accessToken)
         guard let token = NidOAuth.shared.accessToken else {
             sendResult(status: .loggedOut)
             return
         }
-    
-        NidOAuth.shared.verifyAccessToken(token.tokenString) { [weak self] result in
-            switch result {
-            case .success(let isValid):
-                if isValid {
-                    print("🔥 Valid token found")
-                    let tokenInfo: [String: Any] = [
-                        "accessToken": token.tokenString,
-                        "refreshToken": NidOAuth.shared.refreshToken?.tokenString ?? "",
-                        "tokenType": "bearer",
-                        "expiresAt": token.expiresAt.iso8601String()
-                    ]
-                    self?.sendResult(status: .loggedIn, accessToken: tokenInfo)
-                } else {
-                    print("🔥 Token is invalid")
-                    self?.sendResult(status: .loggedOut)
-                }
-            case .failure(let error):
-                self?.sendResult(status: .loggedOut)
-            }
-        }
+
+        let tokenInfo: [String: Any] = [
+            "accessToken": token.tokenString,
+            "refreshToken": NidOAuth.shared.refreshToken?.tokenString ?? "",
+            "tokenType": "bearer",
+            "expiresAt": token.expiresAt.iso8601String()
+        ]
+
+        sendResult(status: .loggedIn, accessToken: tokenInfo)
     }
 
     private func handleRefreshToken() {
@@ -303,6 +319,14 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
             case .failure(let error):
                 self?.sendError(message: error.localizedDescription)
             }
+        }
+    }
+
+    private func handleIsLoggedIn() {
+        if let accessToken = NidOAuth.shared.accessToken?.tokenString {
+            sendResult(status: .loggedIn)
+        } else {
+            sendResult(status: .loggedOut)
         }
     }
 
@@ -344,7 +368,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
     // MARK: - Result Handling
 
     private func sendResult(status: NaverLoginStatus, accessToken: [String: Any]? = nil, account: [String: String]? = nil) {
-        var result: [String: Any] = ["status": status.rawValue]
+        var result: [String: Any] = ["status": status.rawValue.lowercased()]
         
         if let accessToken = accessToken {
             result["accessToken"] = accessToken
@@ -362,7 +386,7 @@ public class FlutterNaverLoginPlugin: NSObject, FlutterPlugin {
 
     private func sendError(message: String, result: FlutterResult? = nil) {
         let errorInfo: [String: Any] = [
-            "status": NaverLoginStatus.error.rawValue,
+            "status": NaverLoginStatus.error.rawValue.lowercased(),
             "errorMessage": message
         ]
         

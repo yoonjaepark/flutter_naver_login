@@ -19,10 +19,11 @@
 /// ```
 library;
 
+import 'package:flutter_naver_login/flutter_naver_login_method_channel.dart';
+import 'package:flutter_naver_login/interface/types/naver_token.dart';
+import 'package:flutter_naver_login/interface/types/naver_account_result.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:flutter_naver_login/interface/types/naver_login_result.dart';
-import 'package:flutter_naver_login/interface/types/naver_login_status.dart';
-import 'flutter_naver_login_method_channel.dart';
 
 /// 네이버 로그인 기능을 제공하는 주요 클래스
 ///
@@ -48,14 +49,6 @@ abstract class FlutterNaverLoginPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  /// 네이버 로그인 SDK를 초기화합니다.
-  Future<void> initSdk({
-    required String clientId,
-    required String clientName,
-    required String clientSecret,
-    String loginBehavior = 'web',
-  });
-
   /// 네이버 로그인을 수행합니다.
   Future<NaverLoginResult> logIn();
 
@@ -66,17 +59,17 @@ abstract class FlutterNaverLoginPlatform extends PlatformInterface {
   Future<NaverLoginResult> logOutAndDeleteToken();
 
   /// 현재 로그인된 사용자의 계정 정보를 조회합니다.
-  Future<NaverLoginResult> getCurrentAccount();
+  Future<NaverAccountResult> getCurrentAccount();
 
   /// 현재 액세스 토큰 정보를 조회합니다.
-  Future<NaverLoginResult> getCurrentAccessToken();
+  Future<NaverToken> getCurrentAccessToken();
 
   /// 리프레시 토큰을 사용하여 액세스 토큰을 갱신합니다.
-  Future<NaverLoginResult> refreshAccessTokenWithRefreshToken();
+  Future<NaverToken> refreshAccessTokenWithRefreshToken();
 
   /// 현재 로그인 상태를 확인합니다.
   Future<bool> isLoggedIn() async {
     final result = await getCurrentAccessToken();
-    return result.status == NaverLoginStatus.loggedIn;
+    return result.isValid();
   }
 }

@@ -49,7 +49,7 @@ class NaverLoginResult {
               )
               : null,
       status: NaverLoginStatus.values.firstWhere(
-        (e) => e.toString().split('.').last == map['status'],
+        (e) => e.toString().split('.').last.toLowerCase() == map['status'].toString().toLowerCase(),
         orElse: () => NaverLoginStatus.error,
       ),
       errorMessage: map['errorMessage'],
@@ -62,7 +62,7 @@ class NaverLoginResult {
   /// 해당 맵을 반환합니다.
   ///
   Map<String, dynamic> toMap() => {
-    'accessToken': accessToken?.toString(),
+    'accessToken': accessToken?.toMap(),
     'account': account?.toMap(),
     'status': status.index,
     'errorMessage': errorMessage,

@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_naver_login/interface/types/naver_account_result.dart';
 import 'package:flutter_naver_login/interface/types/naver_login_result.dart';
+import 'package:flutter_naver_login/interface/types/naver_token.dart';
 import 'flutter_naver_login_platform_interface.dart';
 
 /// 플러그인에서 사용할 메서드를 나타내는 열거형
@@ -55,7 +57,7 @@ class FlutterNaverLogin {
   ///
   /// 반환값은 [NaverLoginResult]로, 사용자의 프로필 정보를 포함합니다.
   /// 로그인되지 않은 경우 적절한 상태값을 가진 [NaverLoginResult]를 반환합니다.
-  static Future<NaverLoginResult> getCurrentAccount() {
+  static Future<NaverAccountResult> getCurrentAccount() {
     return FlutterNaverLoginPlatform.instance.getCurrentAccount();
   }
 
@@ -68,17 +70,17 @@ class FlutterNaverLogin {
 
   /// 현재 액세스 토큰 정보를 가져옵니다.
   ///
-  /// 반환값은 [NaverLoginResult]로, 토큰 관련 정보를 포함합니다.
-  /// 유효한 토큰이 없는 경우 적절한 상태값을 가진 [NaverLoginResult]를 반환합니다.
-  static Future<NaverLoginResult> getCurrentAccessToken() {
+  /// 반환값은 [NaverToken]로, 토큰 관련 정보를 포함합니다.
+  /// 유효한 토큰이 없는 경우 적절한 상태값을 가진 [NaverToken]을 반환합니다.
+  static Future<NaverToken> getCurrentAccessToken() {
     return FlutterNaverLoginPlatform.instance.getCurrentAccessToken();
   }
 
   /// 리프레시 토큰을 사용하여 액세스 토큰을 갱신합니다.
   ///
   /// 액세스 토큰이 만료된 경우 이 메서드를 사용하여 새로운 액세스 토큰을 발급받을 수 있습니다.
-  /// 반환값은 [NaverLoginResult]로, 갱신된 토큰 정보를 포함합니다.
-  static Future<NaverLoginResult> refreshAccessTokenWithRefreshToken() {
+  /// 반환값은 [NaverToken]로, 갱신된 토큰 정보를 포함합니다.
+  static Future<NaverToken> refreshAccessTokenWithRefreshToken() {
     return FlutterNaverLoginPlatform.instance
         .refreshAccessTokenWithRefreshToken();
   }
