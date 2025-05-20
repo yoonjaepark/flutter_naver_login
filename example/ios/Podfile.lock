@@ -2,10 +2,10 @@ PODS:
   - Flutter (1.0.0)
   - flutter_naver_login (0.0.1):
     - Flutter
-    - naveridlogin-sdk-ios (~> 4.2.3)
+    - NidThirdPartyLogin (~> 5.0.0)
   - integration_test (0.0.1):
     - Flutter
-  - naveridlogin-sdk-ios (4.2.3)
+  - NidThirdPartyLogin (5.0.1)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -14,7 +14,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - naveridlogin-sdk-ios
+    - NidThirdPartyLogin
 
 EXTERNAL SOURCES:
   Flutter:
@@ -26,10 +26,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_naver_login: 7e0f992a5f9c39345e9602b42fd2400e95355651
+  flutter_naver_login: 6e80dabbf52e2715e734c2606734654fd385a111
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
-  naveridlogin-sdk-ios: d9d46d02119d303023d7000cd5963864d5bb89e5
+  NidThirdPartyLogin: ed291a543cc60a433bcad522b6bf7d3126ad4fdc
 
-PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+PODFILE CHECKSUM: 251cb053df7158f337c0712f2ab29f4e0fa474ce
 
 COCOAPODS: 1.15.2

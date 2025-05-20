@@ -1,11 +1,11 @@
 name: flutter_naver_login
 description: A Flutter plugin for using the native Naver Login SDKs on Android and iOS.
-version: 2.0.0
+version: 2.1.0
 homepage: https://github.com/yoonjaepark/flutter_naver_login
 
 environment:
-  sdk: ^3.5.3
-  flutter: '>=3.10.0'
+  sdk: ^3.7.2
+  flutter: ">=3.3.0"
 
 dependencies:
   flutter:
@@ -15,12 +15,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -40,7 +35,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.yoonjaepark.flutter_naver_login
+        package: com.example.flutter_naver_login
         pluginClass: FlutterNaverLoginPlugin
       ios:
         pluginClass: FlutterNaverLoginPlugin

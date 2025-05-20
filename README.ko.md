@@ -4,26 +4,23 @@
 [![Build Status](https://img.shields.io/badge/naverIosSDK-v5.0.0-success.svg)](https://github.com/naver/naveridlogin-sdk-ios-swift)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
 
-A Flutter plugin for using the native Naver Login SDKs on Android and iOS.
 
-## AndroidX support
+Android와 iOS에서 네이버 로그인 SDK를 사용하기 위한 Flutter 플러그인입니다.
 
-- for [AndroidX Flutter projects](https://flutter.dev/docs/development/packages-and-plugins/androidx-compatibility)
+## 설치
 
-## Installation
-
-### 1. Add dependency
-Add the following to your `pubspec.yaml` file:
+### 1. 의존성 추가
+`pubspec.yaml` 파일에 다음 내용을 추가하세요:
 
 ```yaml
 dependencies:
   flutter_naver_login: ^2.1.0
 ```
 
-### 2. Platform Setup
+### 2. 플랫폼 설정
 
 #### Android
-1. Add the following to your `android/app/src/main/res/values/strings.xml`:
+1. `android/app/src/main/res/values/strings.xml` 파일에 다음 내용을 추가하세요:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -34,13 +31,14 @@ dependencies:
 </resources>
 ```
 
-2. Update your `android/app/src/main/AndroidManifest.xml`:
+2. `android/app/src/main/AndroidManifest.xml` 파일을 수정하세요:
 
 ```xml
 <application
     android:name="io.flutter.app.FlutterApplication"
     android:label="your_app_name"
     android:icon="@mipmap/ic_launcher">
+    <!-- 중요: task affinity가 필요하지 않은 경우 android:taskAffinity="" 라인을 제거하세요 -->
     <meta-data
         android:name="com.naver.sdk.clientId"
         android:value="@string/client_id" />
@@ -53,7 +51,9 @@ dependencies:
 </application>
 ```
 
-3. Use `FlutterFragmentActivity` in your MainActivity:
+> **참고**: AndroidManifest.xml에서 `android:taskAffinity=""` 라인이 보인다면, task affinity 기능이 특별히 필요한 경우가 아니라면 제거하세요.
+
+3. MainActivity에서 `FlutterFragmentActivity`를 사용하세요:
 
 ```kotlin
 import io.flutter.embedding.android.FlutterFragmentActivity
@@ -62,13 +62,13 @@ class MainActivity: FlutterFragmentActivity()
 ```
 
 #### iOS
-1. Install pods:
+1. pods 설치:
 ```bash
 cd ios
 pod install
 ```
 
-2. Update your `ios/Runner/Info.plist`:
+2. `ios/Runner/Info.plist` 파일을 수정하세요:
 
 ```xml
 <key>CFBundleURLTypes</key>
@@ -99,7 +99,7 @@ pod install
 <string>[ServiceAppName]</string>
 ```
 
-3. Update your AppDelegate:
+3. AppDelegate를 수정하세요:
 
 ```swift
 import NaverThirdPartyLogin
@@ -119,156 +119,156 @@ class AppDelegate: FlutterAppDelegate {
 }
 ```
 
-## Usage
+## 사용 방법
 
-### Types
+### 타입
 
 #### NaverLoginResult
 ```dart
 class NaverLoginResult {
-  final NaverLoginStatus status;
-  final NaverAccountResult? account;
+  final NaverLoginStatus status;  // 로그인 상태
+  final NaverAccountResult? account;  // 계정 정보
 }
 ```
 
 #### NaverToken
 ```dart
 class NaverToken {
-  final String accessToken;
-  final String refreshToken;
-  final String tokenType;
-  final String expiresAt;
+  final String accessToken;  // 액세스 토큰
+  final String refreshToken;  // 리프레시 토큰
+  final String tokenType;  // 토큰 타입
+  final String expiresAt;  // 만료 시간
   
-  bool isValid();
+  bool isValid();  // 토큰 유효성 검사
 }
 ```
 
 #### NaverAccountResult
 ```dart
 class NaverAccountResult {
-  final String id;
-  final String nickname;
-  final String name;
-  final String email;
-  final String gender;
-  final String age;
-  final String birthday;
-  final String birthyear;
-  final String profileImage;
-  final String mobile;
-  final String mobileE164;
+  final String id;  // 사용자 ID
+  final String nickname;  // 닉네임
+  final String name;  // 이름
+  final String email;  // 이메일
+  final String gender;  // 성별
+  final String age;  // 나이
+  final String birthday;  // 생일
+  final String birthyear;  // 출생년도
+  final String profileImage;  // 프로필 이미지
+  final String mobile;  // 휴대폰 번호
+  final String mobileE164;  // E164 형식의 휴대폰 번호
 }
 ```
 
 #### NaverLoginStatus
 ```dart
 enum NaverLoginStatus {
-  loggedIn,
-  loggedOut,
-  error
+  loggedIn,  // 로그인됨
+  loggedOut,  // 로그아웃됨
+  error  // 에러
 }
 ```
 
-### API Examples
+### API 사용 예제
 
-#### Login
+#### 로그인
 ```dart
 try {
   final NaverLoginResult res = await FlutterNaverLogin.logIn();
   if (res.status == NaverLoginStatus.loggedIn) {
-    // Login successful
+    // 로그인 성공
     final account = res.account;
-    print('User name: ${account?.name}');
+    print('사용자 이름: ${account?.name}');
   }
 } catch (error) {
-  print('Login failed: $error');
+  print('로그인 실패: $error');
 }
 ```
 
-#### Get Current Access Token
+#### 현재 액세스 토큰 가져오기
 ```dart
 try {
   final NaverToken token = await FlutterNaverLogin.getCurrentAccessToken();
   if (token.isValid()) {
-    print('Access Token: ${token.accessToken}');
-    print('Refresh Token: ${token.refreshToken}');
-    print('Token Type: ${token.tokenType}');
-    print('Expires At: ${token.expiresAt}');
+    print('액세스 토큰: ${token.accessToken}');
+    print('리프레시 토큰: ${token.refreshToken}');
+    print('토큰 타입: ${token.tokenType}');
+    print('만료 시간: ${token.expiresAt}');
   }
 } catch (error) {
-  print('Failed to get token: $error');
+  print('토큰 가져오기 실패: $error');
 }
 ```
 
-#### Get Current Account
+#### 현재 계정 정보 가져오기
 ```dart
 try {
   final NaverAccountResult account = await FlutterNaverLogin.getCurrentAccount();
-  print('User name: ${account.name}');
-  print('User email: ${account.email}');
-  print('User profile: ${account.profileImage}');
+  print('사용자 이름: ${account.name}');
+  print('이메일: ${account.email}');
+  print('프로필 이미지: ${account.profileImage}');
 } catch (error) {
-  print('Failed to get account: $error');
+  print('계정 정보 가져오기 실패: $error');
 }
 ```
 
-#### Logout
+#### 로그아웃
 ```dart
 try {
   final NaverLoginResult res = await FlutterNaverLogin.logOut();
   if (res.status == NaverLoginStatus.loggedOut) {
-    // Logout successful
+    // 로그아웃 성공
   }
 } catch (error) {
-  print('Logout failed: $error');
+  print('로그아웃 실패: $error');
 }
 ```
 
-#### Logout and Delete Token
+#### 로그아웃 및 토큰 삭제
 ```dart
 try {
   final NaverLoginResult res = await FlutterNaverLogin.logOutAndDeleteToken();
   if (res.status == NaverLoginStatus.loggedOut) {
-    // Logout and token deletion successful
+    // 로그아웃 및 토큰 삭제 성공
   }
 } catch (error) {
-  print('Logout and token deletion failed: $error');
+  print('로그아웃 및 토큰 삭제 실패: $error');
 }
 ```
 
-## Troubleshooting
+## 문제 해결
 
-### iOS Issues
+### iOS 문제
 
-1. **CocoaPods Version Error**
-   - Solution: Update your Podfile to specify the minimum deployment target:
+1. **CocoaPods 버전 에러**
+   - 해결방법: Podfile에 최소 배포 타겟을 지정하세요:
    ```ruby
    platform :ios, '10.0'
    ```
 
-2. **Build System Error**
-   - Solution: In Xcode, go to File > Project Settings and change Build System to "Legacy Build System"
+2. **빌드 시스템 에러**
+   - 해결방법: Xcode에서 File > Project Settings로 이동하여 Build System을 "Legacy Build System"으로 변경하세요
 
-3. **Linker Error**
-   - Solution: Clean the build folder and rebuild:
+3. **링커 에러**
+   - 해결방법: 빌드 폴더를 정리하고 다시 빌드하세요:
    ```bash
    cd ios
    pod deintegrate
    pod install
    ```
 
-### Android Issues
+### Android 문제
 
-1. **Back Button Issue**
-   - Solution: Use the provided `MainActivity` code with `shouldAutomaticallyHandleOnBackPressed`
+1. **뒤로가기 버튼 문제**
+   - 해결방법: `shouldAutomaticallyHandleOnBackPressed`가 포함된 `MainActivity` 코드를 사용하세요
 
-2. **Proguard Issues**
-   - Solution: Add the provided Proguard rules to your `proguard-rules.pro` file
+2. **Proguard 문제**
+   - 해결방법: `proguard-rules.pro` 파일에 제공된 Proguard 규칙을 추가하세요
 
-## Contributing
+## 기여하기
 
-Feel free to contribute to this project by submitting issues or pull requests.
+이슈나 풀 리퀘스트를 통해 프로젝트에 기여해주세요.
 
-## License
+## 라이선스
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+이 프로젝트는 MIT 라이선스 하에 있습니다. 자세한 내용은 LICENSE 파일을 참조하세요. 

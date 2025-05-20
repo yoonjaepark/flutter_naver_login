@@ -2,93 +2,124 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class NaverAccountResult {
-  final String nickname;
-  final String id;
-  final String name;
-  final String email;
-  final String gender;
-  final String age;
-  final String birthday;
-  final String birthyear;
-  final String profileImage;
-  final String mobile;
-  final String mobileE164;
+  final String? id;
+  final String? email;
+  final String? name;
+  final String? nickname;
+  final String? profileImage;
+  final String? gender;
+  final String? age;
+  final String? birthday;
+  final String? birthYear;
+  final String? mobile;
+  final String? mobileE164;
 
+  /// 네이버 계정 결과를 생성하는 생성자입니다.
+  ///
+  /// 이 생성자는 네이버 계정 결과의 각 속성을 초기화합니다.
+  ///
+  /// 매개변수:
+  /// - id: 계정 ID
+  /// - email: 이메일 주소
+  /// - name: 이름
+  /// - nickname: 닉네임
+  /// - profileImage: 프로필 이미지 URL
+  /// - gender: 성별
+  /// - age: 연령대
+  /// - birthday: 생일
+  /// - birthYear: 출생연도
+  /// - mobile: 휴대폰 번호
   const NaverAccountResult({
-    required this.nickname,
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.gender,
-    required this.age,
-    required this.birthday,
-    required this.birthyear,
-    required this.profileImage,
-    required this.mobile,
-    required this.mobileE164,
+    this.id,
+    this.email,
+    this.name,
+    this.nickname,
+    this.profileImage,
+    this.gender,
+    this.age,
+    this.birthday,
+    this.birthYear,
+    this.mobile,
+    this.mobileE164,
   });
 
-  factory NaverAccountResult.fromMap(Map<String, dynamic> map) =>
-      NaverAccountResult(
-        nickname: map['nickname'] ?? '',
-        id: map['id'] ?? '',
-        name: map['name'] ?? '',
-        email: map['email'] ?? '',
-        gender: map['gender'] ?? '',
-        age: map['age'] ?? '',
-        birthday: map['birthday'] ?? '',
-        birthyear: map['birthyear'] ?? '',
-        profileImage: map['profile_image'] ?? '',
-        mobile: map['mobile'] ?? '',
-        mobileE164: map['mobileE164'] ?? '',
-      );
-
-  @override
-  String toString() {
-    return '{ '
-        'nickname: $nickname, '
-        'id: $id, '
-        'name: $name, '
-        'email: $email, '
-        'gender: $gender, '
-        'age: $age, '
-        'birthday: $birthday, '
-        'birthyear: $birthyear, '
-        'profileImage: $profileImage, '
-        'mobile: $mobile, '
-        'mobileE164: $mobileE164'
-        ' }';
+  /// 맵에서 네이버 계정 결과를 생성하는 팩토리 메서드입니다.
+  ///
+  /// 이 메서드는 맵에서 네이버 계정 결과의 각 속성을 추출하고,
+  /// 해당 속성을 사용하여 NaverAccountResult 객체를 생성합니다.
+  ///
+  factory NaverAccountResult.fromMap(Map map) {
+    return NaverAccountResult(
+      id: map['id'],
+      email: map['email'],
+      name: map['name'],
+      nickname: map['nickname'],
+      profileImage: map['profile_image'],
+      gender: map['gender'],
+      age: map['age'],
+      birthday: map['birthday'],
+      birthYear: map['birthyear'],
+      mobile: map['mobile'],
+      mobileE164: map['mobile_e164'],
+    );
   }
 
+  /// 네이버 계정 결과를 맵으로 변환하는 메서드입니다.
+  ///
+  /// 이 메서드는 NaverAccountResult 객체의 각 속성을 맵으로 변환하고,
+  /// 해당 맵을 반환합니다.
+  ///
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'email': email,
+    'name': name,
+    'nickname': nickname,
+    'profileImage': profileImage,
+    'gender': gender,
+    'age': age,
+    'birthday': birthday,
+    'birthYear': birthYear,
+    'mobile': mobile,
+    'mobileE164': mobileE164,
+  };
+
+  /// 네이버 계정 결과를 비교하는 메서드입니다.
+  ///
+  /// 이 메서드는 네이버 계정 결과를 비교하고,
+  /// 같은 경우 true를 반환하고, 다른 경우 false를 반환합니다.
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is NaverAccountResult &&
           runtimeType == other.runtimeType &&
-          nickname == other.nickname &&
           id == other.id &&
-          name == other.name &&
           email == other.email &&
+          name == other.name &&
+          nickname == other.nickname &&
+          profileImage == other.profileImage &&
           gender == other.gender &&
           age == other.age &&
           birthday == other.birthday &&
-          birthyear == other.birthyear &&
-          profileImage == other.profileImage &&
+          birthYear == other.birthYear &&
           mobile == other.mobile &&
           mobileE164 == other.mobileE164;
 
+  /// 네이버 계정 결과의 해시 코드를 반환하는 메서드입니다.
+  ///
+  /// 이 메서드는 네이버 계정 결과의 각 속성을 해시 코드로 변환하고,
+  /// 해당 해시 코드를 반환합니다.
   @override
   int get hashCode => Object.hash(
-        nickname,
-        id,
-        name,
-        email,
-        gender,
-        age,
-        birthday,
-        birthyear,
-        profileImage,
-        mobile,
-        mobileE164,
-      );
+    id,
+    email,
+    name,
+    nickname,
+    profileImage,
+    gender,
+    age,
+    birthday,
+    birthYear,
+    mobile,
+    mobileE164,
+  );
 }
