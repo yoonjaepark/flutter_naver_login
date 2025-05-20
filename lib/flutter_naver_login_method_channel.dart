@@ -71,11 +71,11 @@ class MethodChannelFlutterNaverLogin extends FlutterNaverLoginPlatform {
         return NaverAccountResult();
       }
       return NaverAccountResult.fromMap(
-        result?['account'] is Map
-            ? Map<String, dynamic>.from(result!['account'])
+        result['account'] is Map
+            ? Map<String, dynamic>.from(result['account'])
             : {},
       );
-    } on PlatformException catch (e) {
+    } on PlatformException {
       return NaverAccountResult();
     }
   }
@@ -106,7 +106,7 @@ class MethodChannelFlutterNaverLogin extends FlutterNaverLoginPlatform {
       } else {
         return NaverToken.empty();
       }
-    } on PlatformException catch (e) {
+    } on PlatformException {
       return NaverToken.empty();
     }
   }
@@ -122,7 +122,7 @@ class MethodChannelFlutterNaverLogin extends FlutterNaverLoginPlatform {
         return NaverToken.empty();
       }
       return NaverToken.fromMap(Map<String, dynamic>.from(result));
-    } on PlatformException catch (e) {
+    } on PlatformException {
       return NaverToken.empty();
     }
   }

@@ -1,8 +1,3 @@
-/// naver_account_result.dart
-///
-/// 네이버 계정 결과를 나타내는 클래스입니다.
-/// 이 클래스는 네이버 로그인 기능의 결과를 정의하고,
-/// 계정 정보를 포함합니다.
 import 'package:flutter/foundation.dart';
 
 @immutable

@@ -27,7 +27,7 @@ enum FlutterPluginMethod {
 /// 이 클래스는 네이버 로그인 SDK와의 인터페이스를 제공합니다.
 class FlutterNaverLogin {
   /// 네이티브 플랫폼과 통신하기 위한 메서드 채널
-  static const MethodChannel _channel = MethodChannel('flutter_naver_login');
+  static const MethodChannel channel = MethodChannel('flutter_naver_login');
 
   /// 네이버 로그인을 수행합니다.
   ///
