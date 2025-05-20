@@ -13,11 +13,9 @@ library;
 /// DateTime을 반환하는 함수를 나타내는 typedef입니다.
 typedef CurrentDateTimeResolver = DateTime Function();
 
-// ignore: prefer_function_declarations_over_variables
 /// 기본 시간 처리 함수입니다.
 /// 실제 시스템의 현재 시간을 반환합니다.
-// ignore: prefer_function_declarations_over_variables
-final defaultDateTimeResolver = () => DateTime.now();
+DateTime defaultDateTimeResolver() => DateTime.now();
 
 /// 시간 처리를 위한 유틸리티 클래스입니다.
 ///

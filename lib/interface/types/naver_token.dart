@@ -62,29 +62,15 @@ class NaverToken {
 
   /// 네이버 액세스 토큰이 유효한지 확인하는 메서드입니다.
   ///
-  /// 이 메서드는 액세스 토큰이 유효한지 확인하고,
-  /// 유효한 경우 true를 반환하고, 유효하지 않은 경우 false를 반환합니다.
+  /// 토큰의 유효성을 검사합니다.
+  ///
+  /// 만료 시간이 있고, 현재 시간이 만료 시간보다 이전인 경우 true를 반환합니다.
+  /// 그 외의 경우 false를 반환합니다.
   bool isValid() {
-    if (expiresAt.isEmpty || expiresAt == 'no token') return false;
-
-    DateTime? expireDate;
-    try {
-      // 1. ISO8601 문자열 시도
-      expireDate = DateTime.parse(expiresAt);
-    } catch (_) {
-      try {
-        // 2. UNIX timestamp(초) 시도
-        expireDate = DateTime.fromMillisecondsSinceEpoch(
-          int.parse(expiresAt) * 1000,
-        );
-      } catch (_) {
-        return false;
-      }
-    }
-
-    bool timeValid = expireDate != null && Clock.now().isBefore(expireDate);
-    bool tokenExist = accessToken.isNotEmpty && accessToken != 'no token';
-    return timeValid && tokenExist;
+    if (expiresAt == null) return false;
+    final expireDate = DateTime.tryParse(expiresAt!);
+    if (expireDate == null) return false;
+    return Clock.now().isBefore(expireDate);
   }
 
   /// 네이버 액세스 토큰을 문자열로 변환하는 메서드입니다.
