@@ -67,8 +67,7 @@ class NaverToken {
   /// 만료 시간이 있고, 현재 시간이 만료 시간보다 이전인 경우 true를 반환합니다.
   /// 그 외의 경우 false를 반환합니다.
   bool isValid() {
-    if (expiresAt == null) return false;
-    final expireDate = DateTime.tryParse(expiresAt!);
+    final expireDate = DateTime.tryParse(expiresAt);
     if (expireDate == null) return false;
     return Clock.now().isBefore(expireDate);
   }
