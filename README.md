@@ -10,6 +10,9 @@ A Flutter plugin for using the native Naver Login SDKs on Android and iOS.
 
 - for [AndroidX Flutter projects](https://flutter.dev/docs/development/packages-and-plugins/androidx-compatibility)
 
+## Migration 
+[from pre-2.1.0 to 2.1.0](#migration-guide).
+
 ## Installation
 
 ### 1. Add dependency
@@ -89,6 +92,42 @@ pod install
     <string>naversearchthirdlogin</string>
 </array>
 
+<key>NidUrlScheme</key>
+<string>[UrlScheme]</string>
+<key>NidClientID</key>
+<string>[ConsumerKey]</string>
+<key>NidClientSecret</key>
+<string>[ConsumerSecret]</string>
+<key>NidAppName</key>
+<string>[ServiceAppName]</string>
+```
+
+3. Update your AppDelegate:
+
+```swift
+import NidThirdPartyLogin
+
+@UIApplicationMain
+class AppDelegate: FlutterAppDelegate {
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if (NidOAuth.shared.handleURL(url) == true) { // If the URL was passed from the Naver app
+          return true
+        }
+     		
+        // Handle URLs coming from other apps
+        return false
+    }
+}
+```
+
+## Migration Guide
+
+### iOS Migration from pre-2.1.0 to 2.1.0
+
+#### 1. Update Info.plist
+
+##### Before 2.1.0:
+```xml
 <key>naverServiceAppUrlScheme</key>
 <string>[UrlScheme]</string>
 <key>naverConsumerKey</key>
@@ -99,8 +138,21 @@ pod install
 <string>[ServiceAppName]</string>
 ```
 
-3. Update your AppDelegate:
+##### After 2.1.0:
+```xml
+<key>NidUrlScheme</key>
+<string>[UrlScheme]</string>
+<key>NidClientID</key>
+<string>[ConsumerKey]</string>
+<key>NidClientSecret</key>
+<string>[ConsumerSecret]</string>
+<key>NidAppName</key>
+<string>[ServiceAppName]</string>
+```
 
+#### 2. Update AppDelegate
+
+##### Before 2.1.0:
 ```swift
 import NaverThirdPartyLogin
 
@@ -117,6 +169,33 @@ class AppDelegate: FlutterAppDelegate {
         return applicationResult
     }
 }
+```
+
+##### After 2.1.0:
+```swift
+import NidThirdPartyLogin
+
+@UIApplicationMain
+class AppDelegate: FlutterAppDelegate {
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if (NidOAuth.shared.handleURL(url) == true) { // If the URL was passed from the Naver app
+          return true
+        }
+        
+        // Handle URLs coming from other apps
+        return false
+    }
+}
+```
+
+#### 3. Migration Process
+
+```bash
+cd ios
+pod deintegrate
+pod install
+flutter clean
+flutter pub get
 ```
 
 ## Usage
