@@ -7,6 +7,9 @@
 
 Android와 iOS에서 네이버 로그인 SDK를 사용하기 위한 Flutter 플러그인입니다.
 
+### 마이그레이션
+- [from: 2.1.0 이전 to: 2.1.0 이후](#마이그레이션-가이드)
+
 ## 설치
 
 ### 1. 의존성 추가
@@ -89,6 +92,44 @@ pod install
     <string>naversearchthirdlogin</string>
 </array>
 
+<key>NidUrlScheme</key>
+<string>[UrlScheme]</string>
+<key>NidClientID</key>
+<string>[ConsumerKey]</string>
+<key>NidClientSecret</key>
+<string>[ConsumerSecret]</string>
+<key>NidAppName</key>
+<string>[ServiceAppName]</string>
+```
+
+3. AppDelegate를 수정하세요:
+
+```swift
+import NidThirdPartyLogin
+
+@UIApplicationMain
+class AppDelegate: FlutterAppDelegate {
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if (NidOAuth.shared.handleURL(url) == true) { // 네이버앱에서 전달된 url인 경우
+          return true
+        }
+        
+        // 다른 앱에서 들어온 url 처리
+        return false
+    }
+}
+```
+
+## 마이그레이션 가이드
+
+### iOS 마이그레이션 (2.1.0 이전 버전에서 2.1.0으로)
+
+#### 1. Info.plist 수정
+
+##### 2.1.0 이전 버전:
+
+```xml
+
 <key>naverServiceAppUrlScheme</key>
 <string>[UrlScheme]</string>
 <key>naverConsumerKey</key>
@@ -99,7 +140,23 @@ pod install
 <string>[ServiceAppName]</string>
 ```
 
-3. AppDelegate를 수정하세요:
+##### 2.1.0 이후 버전:
+
+```xml
+
+<key>NidUrlScheme</key>
+<string>[UrlScheme]</string>
+<key>NidClientID</key>
+<string>[ConsumerKey]</string>
+<key>NidClientSecret</key>
+<string>[ConsumerSecret]</string>
+<key>NidAppName</key>
+<string>[ServiceAppName]</string>
+```
+
+#### 2. AppDelegate 수정
+
+##### 2.1.0 이전 버전:
 
 ```swift
 import NaverThirdPartyLogin
@@ -115,6 +172,24 @@ class AppDelegate: FlutterAppDelegate {
            applicationResult = super.application(app, open: url, options: options)
         }
         return applicationResult
+    }
+}
+```
+
+##### 2.1.0 이후 버전:
+
+```swift
+import NidThirdPartyLogin
+
+@UIApplicationMain
+class AppDelegate: FlutterAppDelegate {
+    override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if (NidOAuth.shared.handleURL(url) == true) { // 네이버앱에서 전달된 url인 경우
+          return true
+        }
+        
+        // 다른 앱에서 들어온 url 처리
+        return false
     }
 }
 ```
