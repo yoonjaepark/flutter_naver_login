@@ -1,3 +1,10 @@
+## 2.1.1
+* iOS migration guide updates
+  * Added detailed migration steps from pre-2.1.0 to 2.1.0
+  * Updated Info.plist key changes (naverServiceAppUrlScheme → NidUrlScheme, etc.)
+  * Updated AppDelegate implementation with NidThirdPartyLogin
+  * Added migration process guide with pod deintegrate steps
+
 ## 2.1.0
 * Complete README.md structure overhaul
   * Clear separation of Installation, Platform Setup, Usage, and Troubleshooting sections

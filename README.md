@@ -1,5 +1,5 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v2.1.0-success.svg)](https://pub.dev/packages/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v2.1.1-success.svg)](https://pub.dev/packages/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/naverAosSDK-v5.10.0-success.svg)](https://github.com/naver/naveridlogin-sdk-android)
 [![Build Status](https://img.shields.io/badge/naverIosSDK-v5.0.0-success.svg)](https://github.com/naver/naveridlogin-sdk-ios-swift)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
@@ -322,7 +322,7 @@ try {
 1. **CocoaPods Version Error**
    - Solution: Update your Podfile to specify the minimum deployment target:
    ```ruby
-   platform :ios, '10.0'
+   platform :ios, '13.0' // https://github.com/naver/naveridlogin-sdk-ios-swift
    ```
 
 2. **Build System Error**

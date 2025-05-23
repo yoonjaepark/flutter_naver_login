@@ -1,5 +1,5 @@
 # flutter_naver_login
-[![Build Status](https://img.shields.io/badge/pub-v2.1.0-success.svg)](https://pub.dev/packages/flutter_naver_login)
+[![Build Status](https://img.shields.io/badge/pub-v2.1.1-success.svg)](https://pub.dev/packages/flutter_naver_login)
 [![Build Status](https://img.shields.io/badge/naverAosSDK-v5.10.0-success.svg)](https://github.com/naver/naveridlogin-sdk-android)
 [![Build Status](https://img.shields.io/badge/naverIosSDK-v5.0.0-success.svg)](https://github.com/naver/naveridlogin-sdk-ios-swift)
 [![Build Status](https://img.shields.io/badge/build-passing-success.svg)](https://travis-ci.org/roughike/flutter_naver_login)
@@ -17,7 +17,7 @@ Android와 iOS에서 네이버 로그인 SDK를 사용하기 위한 Flutter 플�
 
 ```yaml
 dependencies:
-  flutter_naver_login: ^2.1.0
+  flutter_naver_login: ^2.1.1
 ```
 
 ### 2. 플랫폼 설정
@@ -318,7 +318,7 @@ try {
 1. **CocoaPods 버전 에러**
    - 해결방법: Podfile에 최소 배포 타겟을 지정하세요:
    ```ruby
-   platform :ios, '10.0'
+   platform :ios, '13.0' // https://github.com/naver/naveridlogin-sdk-ios-swift 참고
    ```
 
 2. **빌드 시스템 에러**
